@@ -1,0 +1,38 @@
+{
+  "overrides": [
+    {
+      "files": ["*.js", "*.ts", "*.tsx"],
+      "options": {
+        "tabWidth": 2,
+        "singleQuote": true,
+        "trailingComma": "all"
+      }
+    },
+    {
+      "files": ["*.html"],
+      "options": {
+        "tabWidth": 2,
+        "printWidth": 120
+      }
+    },
+    {
+      "files": ["*.css", "*.scss"],
+      "options": {
+        "tabWidth": 2
+      }
+    },
+    {
+      "files": ["*.json"],
+      "options": {
+        "tabWidth": 2
+      }
+    },
+    {
+      "files": ["*.md", "*.mdx"],
+      "options": {
+        "proseWrap": "always",
+        "singleQuote": true
+      }
+    }
+  ]
+}

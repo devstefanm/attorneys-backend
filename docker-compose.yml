@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  attorneys-db:
+    image: postgres:latest
+    container_name: attorneys-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=ASDasd123
+      - POSTGRES_DB=attorneys-db
+      - POSTGRES_URL=attorneys-db
+      - POSTGRES_DB_SCHEMA=attorneys-db
+    ports:
+      - 5432:5432
+    networks: 
+      - attorneys-network
+    volumes:
+      - attorneys-data:/var/lib/postgresql
+  attorneys-backend:
+    build: .
+    image: postgres/attorneys-backend
+    container_name: attorneys-backend
+    env_file: .env.production
+    depends_on:
+      - attorneys-db
+    networks:
+      - attorneys-network
+    ports:
+      - 5000:5000
+    links:
+      - attorneys-db
+
+networks: 
+  attorneys-network:
+    name: attorneys-network
+    driver: bridge
+
+volumes:
+  attorneys-data:
+    name: attorneys-data

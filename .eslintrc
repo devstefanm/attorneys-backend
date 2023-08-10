@@ -1,0 +1,9 @@
+{
+  "rules": {
+    "no-var": "warn",
+    "no-unused-vars": "warn",
+    "no-console": "warn",
+    "unused-imports/no-unused-imports": "warn"
+  },
+  "parser": "@typescript-eslint/parser"
+}

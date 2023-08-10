@@ -1,0 +1,46 @@
+import * as dotenv from 'dotenv';
+
+dotenv.config({ path: `../../.env.${process.env.NODE_ENV}` });
+
+import { Knex } from 'knex';
+
+const config: { [key: string]: Knex.Config } = {
+  development: {
+    client: 'postgresql',
+    connection: {
+      database: process.env.DATABASE,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      host: process.env.DB_HOST,
+      port: Number(process.env.DB_PORT),
+    },
+    pool: {
+      max: Number(process.env.DB_POOL_SIZE),
+      idleTimeoutMillis: Number(process.env.DB_POOL_CLIENT_IDLE_TIMEOUT),
+    },
+    migrations: {
+      directory: './attorneys-db/migrations/initial',
+      tableName: 'knex_migrations',
+    },
+  },
+  production: {
+    client: 'postgresql',
+    connection: {
+      database: process.env.DATABASE,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      host: process.env.DB_HOST,
+      port: Number(process.env.DB_PORT),
+    },
+    pool: {
+      max: Number(process.env.DB_POOL_SIZE),
+      idleTimeoutMillis: Number(process.env.DB_POOL_CLIENT_IDLE_TIMEOUT),
+    },
+    migrations: {
+      directory: './dist/attorneys-db/migrations/initial',
+      tableName: 'knex_migrations',
+    },
+  },
+};
+
+export default config;
