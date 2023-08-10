@@ -35,26 +35,28 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getExecutorsNamesService = void 0;
-var catchErrorStack_1 = __importDefault(require("../utils/catchErrorStack"));
-var universalHelpers_1 = require("./helpers/universalHelpers");
-var getExecutorsNamesService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var error_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, (0, universalHelpers_1.getFullNamesServiceTemplate)('executors')(req, res)];
-            case 1: return [2 /*return*/, _a.sent()];
-            case 2:
-                error_1 = _a.sent();
-                return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_1)];
-            case 3: return [2 /*return*/];
-        }
-    });
-}); };
-exports.getExecutorsNamesService = getExecutorsNamesService;
+var casesService_1 = require("../services/casesService");
+var cases = {
+    getCasesList: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+        var _a, _b, error_1;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _c.trys.push([0, 2, , 3]);
+                    _b = (_a = res).json;
+                    return [4 /*yield*/, (0, casesService_1.getCasesListService)(req, res)];
+                case 1:
+                    _b.apply(_a, [_c.sent()]);
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_1 = _c.sent();
+                    console.error({ error: error_1.message });
+                    res.json({ error: error_1.message });
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    }); },
+};
+exports.default = cases;

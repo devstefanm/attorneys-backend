@@ -41,14 +41,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getCourtsNamesService = void 0;
 var catchErrorStack_1 = __importDefault(require("../utils/catchErrorStack"));
-var fetchNames_1 = require("../utils/fetchNames");
+var universalHelpers_1 = require("./helpers/universalHelpers");
 var getCourtsNamesService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, (0, fetchNames_1.getShortNamesServiceTemplate)('courts')(req, res)];
+                return [4 /*yield*/, (0, universalHelpers_1.getShortNamesServiceTemplate)('courts')(req, res)];
             case 1: return [2 /*return*/, _a.sent()];
             case 2:
                 error_1 = _a.sent();

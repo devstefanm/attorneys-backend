@@ -35,6 +35,8 @@ var clients_1 = __importDefault(require("./routes/clients"));
 var courts_1 = __importDefault(require("./routes/courts"));
 var executors_1 = __importDefault(require("./routes/executors"));
 var employers_1 = __importDefault(require("./routes/employers"));
+var cases_1 = __importDefault(require("./routes/cases"));
+var transactions_1 = __importDefault(require("./routes/transactions"));
 var PORT = process.env.PORT || 5000;
 var app = (0, express_1.default)();
 var corsOptions = { credentials: true, origin: '*' };
@@ -50,6 +52,8 @@ app.use('/api', [
     courts_1.default,
     executors_1.default,
     employers_1.default,
+    cases_1.default,
+    transactions_1.default,
 ]);
 app.listen(PORT, function () {
     console.log("Server has started on port ".concat(PORT));
