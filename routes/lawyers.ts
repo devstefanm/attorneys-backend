@@ -4,8 +4,9 @@ import { authenticateToken } from 'middlewares/schemas/authenticateToken';
 
 const router = express.Router();
 
-const { getLawyersNames } = lawyers;
+const { getLawyersNames, getLawyersList } = lawyers;
 
 router.get('/lawyers/names', authenticateToken, getLawyersNames);
+router.get('/lawyers-list', authenticateToken, getLawyersList);
 
 export default router;

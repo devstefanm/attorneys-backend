@@ -2,7 +2,7 @@ import { Knex } from 'knex';
 
 type QueryBuilder = Knex.QueryBuilder<any, any>;
 
-export const buildNameSearchConditions = (
+export const buildCasesNameSearchConditions = (
   builder: QueryBuilder,
   term: string,
 ) => {

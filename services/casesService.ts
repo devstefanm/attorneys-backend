@@ -9,7 +9,7 @@ import {
 } from './helpers/universalHelpers';
 import {
   buildLawyerNameSearchConditions,
-  buildNameSearchConditions,
+  buildCasesNameSearchConditions,
   generateJmbgAndPibSearchQuery,
 } from './helpers/casesHelpers';
 
@@ -43,7 +43,8 @@ export const getCasesListService = async (
       .leftJoin('clients as cl', 'c.client_id', 'cl.id')
       .leftJoin('courts as co', 'c.court_id', 'co.id')
       .leftJoin('ssn_numbers as s', 'c.ssn_number_id', 's.id')
-      .leftJoin('packages as pck', 'c.package_id', 'pck.id');
+      .leftJoin('packages as pck', 'c.package_id', 'pck.id')
+      .first();
 
     const casesQuery = db('cases as c')
       .select(
@@ -132,12 +133,12 @@ export const getCasesListService = async (
       const namesArr = specialCharactersChecker(nameForSearch);
       casesQuery.where(function () {
         for (const term of namesArr) {
-          buildNameSearchConditions(this, term);
+          buildCasesNameSearchConditions(this, term);
         }
       });
       totalCountQuery.where(function () {
         for (const term of namesArr) {
-          buildNameSearchConditions(this, term);
+          buildCasesNameSearchConditions(this, term);
         }
       });
     }
@@ -193,7 +194,7 @@ export const getCasesListService = async (
       return mapApiToResponse(404, `${upperCaseCasesList}.NOT_FOUND`);
     }
 
-    const totalCases = Number(totalCountResult[0].total_cases);
+    const totalCases = Number(totalCountResult.total_cases);
     const totalPages = Math.ceil(Number(totalCases) / Number(size));
 
     const apiResponse: ICasesListApiResponseData = {

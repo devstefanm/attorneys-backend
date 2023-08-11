@@ -7,6 +7,7 @@ var lawyersController_1 = __importDefault(require("../controllers/lawyersControl
 var express_1 = __importDefault(require("express"));
 var authenticateToken_1 = require("../middlewares/schemas/authenticateToken");
 var router = express_1.default.Router();
-var getLawyersNames = lawyersController_1.default.getLawyersNames;
+var getLawyersNames = lawyersController_1.default.getLawyersNames, getLawyersList = lawyersController_1.default.getLawyersList;
 router.get('/lawyers/names', authenticateToken_1.authenticateToken, getLawyersNames);
+router.get('/lawyers-list', authenticateToken_1.authenticateToken, getLawyersList);
 exports.default = router;

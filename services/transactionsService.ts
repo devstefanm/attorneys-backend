@@ -28,7 +28,8 @@ export const getTransactionsListService = async (
     const totalCountQuery = db('transactions as t')
       .count('t.id as total_transactions')
       .leftJoin('cases as c', 't.case_id', 'c.id')
-      .leftJoin('excerpts as e', 't.excerpt_id', 'e.id');
+      .leftJoin('excerpts as e', 't.excerpt_id', 'e.id')
+      .first();
 
     const transactionsQuery = db('transactions as t')
       .select(
@@ -95,12 +96,6 @@ export const getTransactionsListService = async (
       generateBigIntSearchQuery(totalCountQuery, caseNumber, 'c.case_number');
     }
 
-    if (case_number) {
-      const caseNumber = case_number as string;
-      generateBigIntSearchQuery(transactionsQuery, caseNumber, 'c.case_number');
-      generateBigIntSearchQuery(totalCountQuery, caseNumber, 'c.case_number');
-    }
-
     if (excerpt_number) {
       const excerptNumber = excerpt_number as string;
       generateBigIntSearchQuery(
@@ -125,15 +120,15 @@ export const getTransactionsListService = async (
       return mapApiToResponse(404, `${upperCaseTransactionsList}.NOT_FOUND`);
     }
 
-    const totalCases = Number(totalCountResult[0].total_transactions);
-    const totalPages = Math.ceil(Number(totalCases) / Number(size));
+    const totalTransactions = Number(totalCountResult.total_transactions);
+    const totalPages = Math.ceil(Number(totalTransactions) / Number(size));
 
     const apiResponse: ITransactionsListApiResponseData = {
       transactions,
       meta: {
         sort: (sort as string) ?? 'asc',
         sortBy: (sortBy as string) ?? 'created_at',
-        total_number: totalCases,
+        total_number: totalTransactions,
         total_pages: totalPages,
         page: page as number,
       },

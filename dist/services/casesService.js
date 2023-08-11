@@ -64,7 +64,8 @@ var getCasesListService = function (req, res) { return __awaiter(void 0, void 0,
                     .leftJoin('clients as cl', 'c.client_id', 'cl.id')
                     .leftJoin('courts as co', 'c.court_id', 'co.id')
                     .leftJoin('ssn_numbers as s', 'c.ssn_number_id', 's.id')
-                    .leftJoin('packages as pck', 'c.package_id', 'pck.id');
+                    .leftJoin('packages as pck', 'c.package_id', 'pck.id')
+                    .first();
                 casesQuery = (0, attorneys_db_1.db)('cases as c')
                     .select('c.id', 'c.case_number', 'c.contract_number', 'c.status', 'c.principal', 'c.interest', 'd.is_legal', 'd.cession', 'p.first_name', 'p.last_name', 'p.jmbg', 'o.name', 'o.pib', 'l.office_name as lawyer_office_name', 'l.first_name as lawyer_first_name', 'l.last_name as lawyer_last_name', 'cl.name as client_name', 'co.name as court_name', 's.ssn as ssn', 'pck.package_name as package')
                     .leftJoin('debtors as d', 'c.debtor_id', 'd.id')
@@ -130,13 +131,13 @@ var getCasesListService = function (req, res) { return __awaiter(void 0, void 0,
                     casesQuery.where(function () {
                         for (var _i = 0, namesArr_2 = namesArr_1; _i < namesArr_2.length; _i++) {
                             var term = namesArr_2[_i];
-                            (0, casesHelpers_1.buildNameSearchConditions)(this, term);
+                            (0, casesHelpers_1.buildCasesNameSearchConditions)(this, term);
                         }
                     });
                     totalCountQuery.where(function () {
                         for (var _i = 0, namesArr_3 = namesArr_1; _i < namesArr_3.length; _i++) {
                             var term = namesArr_3[_i];
-                            (0, casesHelpers_1.buildNameSearchConditions)(this, term);
+                            (0, casesHelpers_1.buildCasesNameSearchConditions)(this, term);
                         }
                     });
                 }
@@ -181,7 +182,7 @@ var getCasesListService = function (req, res) { return __awaiter(void 0, void 0,
                     res.status(404);
                     return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "".concat(upperCaseCasesList, ".NOT_FOUND"))];
                 }
-                totalCases = Number(totalCountResult[0].total_cases);
+                totalCases = Number(totalCountResult.total_cases);
                 totalPages = Math.ceil(Number(totalCases) / Number(size));
                 apiResponse = {
                     cases: cases,

@@ -52,6 +52,9 @@ var config = {
             password: process.env.DB_PASSWORD,
             host: process.env.DB_HOST,
             port: Number(process.env.DB_PORT),
+            ssl: {
+                rejectUnauthorized: false,
+            },
         },
         pool: {
             max: Number(process.env.DB_POOL_SIZE),

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateJmbgAndPibSearchQuery = exports.buildLawyerNameSearchConditions = exports.buildNameSearchConditions = void 0;
-var buildNameSearchConditions = function (builder, term) {
+exports.generateJmbgAndPibSearchQuery = exports.buildLawyerNameSearchConditions = exports.buildCasesNameSearchConditions = void 0;
+var buildCasesNameSearchConditions = function (builder, term) {
     if (term.includes(' ')) {
         var _a = term.split(' '), firstName_1 = _a[0], lastName_1 = _a[1];
         builder
@@ -39,7 +39,7 @@ var buildNameSearchConditions = function (builder, term) {
         });
     }
 };
-exports.buildNameSearchConditions = buildNameSearchConditions;
+exports.buildCasesNameSearchConditions = buildCasesNameSearchConditions;
 var buildLawyerNameSearchConditions = function (builder, term) {
     if (term.includes(' ')) {
         var _a = term.split(' '), firstName_2 = _a[0], lastName_2 = _a[1];

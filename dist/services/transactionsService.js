@@ -45,7 +45,7 @@ var catchErrorStack_1 = __importDefault(require("../utils/catchErrorStack"));
 var mapApiToResponse_1 = __importDefault(require("../utils/mapApiToResponse"));
 var universalHelpers_1 = require("./helpers/universalHelpers");
 var getTransactionsListService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b, sort, _c, sortBy, _d, size, _e, page, amount, posting_method, case_number, excerpt_number, offset, upperCaseTransactionsList, totalCountQuery, transactionsQuery, amountValue, postingMethod_1, caseNumber, caseNumber, excerptNumber, _f, totalCountResult, transactions, totalCases, totalPages, apiResponse, error_1;
+    var _a, _b, sort, _c, sortBy, _d, size, _e, page, amount, posting_method, case_number, excerpt_number, offset, upperCaseTransactionsList, totalCountQuery, transactionsQuery, amountValue, postingMethod_1, caseNumber, excerptNumber, _f, totalCountResult, transactions, totalTransactions, totalPages, apiResponse, error_1;
     var _g, _h;
     return __generator(this, function (_j) {
         switch (_j.label) {
@@ -57,7 +57,8 @@ var getTransactionsListService = function (req, res) { return __awaiter(void 0, 
                 totalCountQuery = (0, attorneys_db_1.db)('transactions as t')
                     .count('t.id as total_transactions')
                     .leftJoin('cases as c', 't.case_id', 'c.id')
-                    .leftJoin('excerpts as e', 't.excerpt_id', 'e.id');
+                    .leftJoin('excerpts as e', 't.excerpt_id', 'e.id')
+                    .first();
                 transactionsQuery = (0, attorneys_db_1.db)('transactions as t')
                     .select('t.id', 't.type', 't.amount', 't.posting_method', 't.payment_date', 'c.case_number', 'e.excerpt_number')
                     .leftJoin('cases as c', 't.case_id', 'c.id')
@@ -110,11 +111,6 @@ var getTransactionsListService = function (req, res) { return __awaiter(void 0, 
                     (0, universalHelpers_1.generateBigIntSearchQuery)(transactionsQuery, caseNumber, 'c.case_number');
                     (0, universalHelpers_1.generateBigIntSearchQuery)(totalCountQuery, caseNumber, 'c.case_number');
                 }
-                if (case_number) {
-                    caseNumber = case_number;
-                    (0, universalHelpers_1.generateBigIntSearchQuery)(transactionsQuery, caseNumber, 'c.case_number');
-                    (0, universalHelpers_1.generateBigIntSearchQuery)(totalCountQuery, caseNumber, 'c.case_number');
-                }
                 if (excerpt_number) {
                     excerptNumber = excerpt_number;
                     (0, universalHelpers_1.generateBigIntSearchQuery)(transactionsQuery, excerptNumber, 'e.excerpt_number');
@@ -130,14 +126,14 @@ var getTransactionsListService = function (req, res) { return __awaiter(void 0, 
                     res.status(404);
                     return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "".concat(upperCaseTransactionsList, ".NOT_FOUND"))];
                 }
-                totalCases = Number(totalCountResult[0].total_transactions);
-                totalPages = Math.ceil(Number(totalCases) / Number(size));
+                totalTransactions = Number(totalCountResult.total_transactions);
+                totalPages = Math.ceil(Number(totalTransactions) / Number(size));
                 apiResponse = {
                     transactions: transactions,
                     meta: {
                         sort: (_g = sort) !== null && _g !== void 0 ? _g : 'asc',
                         sortBy: (_h = sortBy) !== null && _h !== void 0 ? _h : 'created_at',
-                        total_number: totalCases,
+                        total_number: totalTransactions,
                         total_pages: totalPages,
                         page: page,
                     },
