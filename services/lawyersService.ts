@@ -72,6 +72,7 @@ export const getLawyersListService = async (
         'l.office_name',
         'l.email',
         'l.address',
+        'l.created_at',
         'ci.name',
         'pn.number',
         'pn.display_number',
@@ -100,6 +101,7 @@ export const getLawyersListService = async (
         lawyersQuery.orderBy('case_count', sort as string);
         break;
       default:
+        lawyersQuery.orderBy('l.created_at', 'asc');
         break;
     }
 

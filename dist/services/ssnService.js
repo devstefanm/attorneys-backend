@@ -39,101 +39,73 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getClientsListService = exports.getClientsNamesService = void 0;
-var catchErrorStack_1 = __importDefault(require("../utils/catchErrorStack"));
+exports.getSSNListService = void 0;
+var attorneys_db_1 = require("../attorneys-db");
 var mapApiToResponse_1 = __importDefault(require("../utils/mapApiToResponse"));
 var universalHelpers_1 = require("./helpers/universalHelpers");
-var attorneys_db_1 = require("../attorneys-db");
-var clientsHelpers_1 = require("./helpers/clientsHelpers");
-var getClientsNamesService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var error_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, (0, universalHelpers_1.getShortNamesServiceTemplate)('clients')(req, res)];
-            case 1: return [2 /*return*/, _a.sent()];
-            case 2:
-                error_1 = _a.sent();
-                return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_1)];
-            case 3: return [2 /*return*/];
-        }
-    });
-}); };
-exports.getClientsNamesService = getClientsNamesService;
-var getClientsListService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b, sort, _c, sortBy, _d, size, _e, page, name, offset, upperCaseClientsList, totalCountQuery, clientsQuery, nameForSearch, namesArr_1, _f, totalCountResult, clients, totalClients, totalPages, apiResponse, error_2;
+var catchErrorStack_1 = __importDefault(require("../utils/catchErrorStack"));
+var getSSNListService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, _b, sort, _c, sortBy, _d, size, _e, page, ssn, offset, upperCaseSSNList, totalCountQuery, ssnNumbersQuery, ssnNumber, _f, totalCountResult, ssnNumbers, totalSSN, totalPages, apiResponse, error_1;
     var _g, _h;
     return __generator(this, function (_j) {
         switch (_j.label) {
             case 0:
                 _j.trys.push([0, 2, , 3]);
-                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'asc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'cl.created_at' : _c, _d = _a.size, size = _d === void 0 ? 10 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, name = _a.name;
+                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'asc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'ssn.created_at' : _c, _d = _a.size, size = _d === void 0 ? 10 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, ssn = _a.ssn;
                 offset = (Number(page) - 1) * Number(size);
-                upperCaseClientsList = 'clientsList'.toUpperCase();
-                totalCountQuery = (0, attorneys_db_1.db)('clients as cl')
-                    .count('cl.id as total_clients')
-                    .leftJoin('cases as c', 'cl.id', 'c.client_id')
+                upperCaseSSNList = 'ssnList'.toUpperCase();
+                totalCountQuery = (0, attorneys_db_1.db)('ssn_numbers as ssn')
+                    .count('ssn.id as total_ssn')
+                    .leftJoin('cases as c', 'ssn.id', 'c.ssn_number_id')
                     .first();
-                clientsQuery = (0, attorneys_db_1.db)('clients as cl')
-                    .select('cl.name', attorneys_db_1.db.raw('COUNT(c.id) as case_count'))
-                    .leftJoin('cases as c', 'cl.id', 'c.client_id')
+                ssnNumbersQuery = (0, attorneys_db_1.db)('ssn_numbers as ssn')
+                    .select('ssn.ssn', attorneys_db_1.db.raw('COUNT(c.id) as case_count'))
+                    .leftJoin('cases as c', 'ssn.id', 'c.ssn_number_id')
                     .offset(offset)
                     .limit(Number(size))
-                    .groupBy('cl.name', 'cl.created_at');
+                    .groupBy('ssn.ssn', 'ssn.created_at');
                 switch (sortBy) {
-                    case 'name':
-                        clientsQuery.orderBy('cl.name', sort);
+                    case 'ssn':
+                        ssnNumbersQuery.orderBy('ssn.ssn', sort);
                         break;
                     default:
-                        clientsQuery.orderBy('cl.created_at', 'asc');
+                        ssnNumbersQuery.orderBy('ssn.created_at', 'asc');
                         break;
                 }
-                if (name) {
-                    nameForSearch = name;
-                    namesArr_1 = (0, universalHelpers_1.specialCharactersChecker)(nameForSearch);
-                    clientsQuery.where(function () {
-                        for (var _i = 0, namesArr_2 = namesArr_1; _i < namesArr_2.length; _i++) {
-                            var term = namesArr_2[_i];
-                            (0, clientsHelpers_1.buildClientsNameSearchConditions)(this, term);
-                        }
-                    });
-                    totalCountQuery.where(function () {
-                        for (var _i = 0, namesArr_3 = namesArr_1; _i < namesArr_3.length; _i++) {
-                            var term = namesArr_3[_i];
-                            (0, clientsHelpers_1.buildClientsNameSearchConditions)(this, term);
-                        }
-                    });
+                if (ssn) {
+                    ssnNumber = ssn;
+                    (0, universalHelpers_1.generateBigIntSearchQuery)(ssnNumbersQuery, ssnNumber, 'ssn.ssn');
+                    (0, universalHelpers_1.generateBigIntSearchQuery)(totalCountQuery, ssnNumber, 'ssn.ssn');
                 }
                 return [4 /*yield*/, Promise.all([
                         totalCountQuery,
-                        clientsQuery,
+                        ssnNumbersQuery,
                     ])];
             case 1:
-                _f = _j.sent(), totalCountResult = _f[0], clients = _f[1];
-                if (clients.length === 0 || !totalCountResult) {
+                _f = _j.sent(), totalCountResult = _f[0], ssnNumbers = _f[1];
+                if (ssnNumbers.length === 0 || !totalCountResult) {
                     res.status(404);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "".concat(upperCaseClientsList, ".NOT_FOUND"))];
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "".concat(upperCaseSSNList, ".NOT_FOUND"))];
                 }
-                totalClients = Number(totalCountResult.total_clients);
-                totalPages = Math.ceil(Number(totalClients) / Number(size));
+                totalSSN = Number(totalCountResult.total_ssn);
+                totalPages = Math.ceil(Number(totalSSN) / Number(size));
                 apiResponse = {
-                    clients: clients,
+                    ssn_numbers: ssnNumbers,
                     meta: {
                         sort: (_g = sort) !== null && _g !== void 0 ? _g : 'asc',
                         sortBy: (_h = sortBy) !== null && _h !== void 0 ? _h : 'created_at',
-                        total_number: totalClients,
+                        total_number: totalSSN,
                         total_pages: totalPages,
                         page: page,
                     },
                 };
                 res.status(200);
-                return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "".concat(upperCaseClientsList, ".SUCCESSFULY_RETRIEVED_NAMES"), apiResponse)];
+                return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "".concat(upperCaseSSNList, ".SUCCESSFULY_RETRIEVED_NAMES"), apiResponse)];
             case 2:
-                error_2 = _j.sent();
-                return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_2)];
+                error_1 = _j.sent();
+                return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_1)];
             case 3: return [2 /*return*/];
         }
     });
 }); };
-exports.getClientsListService = getClientsListService;
+exports.getSSNListService = getSSNListService;

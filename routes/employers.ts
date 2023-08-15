@@ -4,8 +4,9 @@ import { authenticateToken } from 'middlewares/schemas/authenticateToken';
 
 const router = express.Router();
 
-const { getEmployersNames } = employers;
+const { getEmployersNames, getEmployersList } = employers;
 
 router.get('/employers/names', authenticateToken, getEmployersNames);
+router.get('/employers-list', authenticateToken, getEmployersList);
 
 export default router;

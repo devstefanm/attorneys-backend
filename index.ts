@@ -9,6 +9,8 @@ import executorsRoutes from './routes/executors';
 import employersRoutes from './routes/employers';
 import casesRoutes from './routes/cases';
 import transactionsRoutes from './routes/transactions';
+import packagesRoutes from './routes/packages';
+import ssnRoutes from './routes/ssnNumbers';
 
 const PORT = process.env.PORT || 5000;
 
@@ -30,6 +32,8 @@ app.use('/api', [
   employersRoutes,
   casesRoutes,
   transactionsRoutes,
+  packagesRoutes,
+  ssnRoutes,
 ]);
 
 app.listen(PORT, () => {

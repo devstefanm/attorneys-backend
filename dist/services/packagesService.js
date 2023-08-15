@@ -39,101 +39,85 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCourtsListService = exports.getCourtsNamesService = void 0;
-var catchErrorStack_1 = __importDefault(require("../utils/catchErrorStack"));
-var universalHelpers_1 = require("./helpers/universalHelpers");
-var mapApiToResponse_1 = __importDefault(require("../utils/mapApiToResponse"));
+exports.getPackagesListService = void 0;
 var attorneys_db_1 = require("../attorneys-db");
-var courtsHelpers_1 = require("./helpers/courtsHelpers");
-var getCourtsNamesService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var error_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, (0, universalHelpers_1.getShortNamesServiceTemplate)('courts')(req, res)];
-            case 1: return [2 /*return*/, _a.sent()];
-            case 2:
-                error_1 = _a.sent();
-                return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_1)];
-            case 3: return [2 /*return*/];
-        }
-    });
-}); };
-exports.getCourtsNamesService = getCourtsNamesService;
-var getCourtsListService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b, sort, _c, sortBy, _d, size, _e, page, name, offset, upperCaseCourtsList, totalCountQuery, courtsQuery, nameForSearch, namesArr_1, _f, totalCountResult, courts, totalCourts, totalPages, apiResponse, error_2;
+var mapApiToResponse_1 = __importDefault(require("../utils/mapApiToResponse"));
+var universalHelpers_1 = require("./helpers/universalHelpers");
+var catchErrorStack_1 = __importDefault(require("../utils/catchErrorStack"));
+var packagesHelpers_1 = require("./helpers/packagesHelpers");
+var getPackagesListService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, _b, sort, _c, sortBy, _d, size, _e, page, package_name, offset, upperCasePackagesList, totalCountQuery, packagesQuery, nameForSearch, namesArr_1, _f, totalCountResult, packages, totalPackages, totalPages, apiResponse, error_1;
     var _g, _h;
     return __generator(this, function (_j) {
         switch (_j.label) {
             case 0:
                 _j.trys.push([0, 2, , 3]);
-                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'asc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'co.created_at' : _c, _d = _a.size, size = _d === void 0 ? 10 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, name = _a.name;
+                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'asc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'pck.created_at' : _c, _d = _a.size, size = _d === void 0 ? 10 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, package_name = _a.package_name;
                 offset = (Number(page) - 1) * Number(size);
-                upperCaseCourtsList = 'courtsList'.toUpperCase();
-                totalCountQuery = (0, attorneys_db_1.db)('courts as co')
-                    .count('co.id as total_courts')
-                    .leftJoin('cases as c', 'co.id', 'c.court_id')
+                upperCasePackagesList = 'packagesList'.toUpperCase();
+                totalCountQuery = (0, attorneys_db_1.db)('packages as pck')
+                    .count('pck.id as total_packages')
+                    .leftJoin('cases as c', 'pck.id', 'c.package_id')
                     .first();
-                courtsQuery = (0, attorneys_db_1.db)('courts as co')
-                    .select('co.name', attorneys_db_1.db.raw('COUNT(c.id) as case_count'))
-                    .leftJoin('cases as c', 'co.id', 'c.court_id')
+                packagesQuery = (0, attorneys_db_1.db)('packages as pck')
+                    .select('pck.package_name', attorneys_db_1.db.raw('COUNT(c.id) as case_count'))
+                    .leftJoin('cases as c', 'pck.id', 'c.package_id')
                     .offset(offset)
                     .limit(Number(size))
-                    .groupBy('co.name', 'co.created_at');
+                    .groupBy('pck.package_name', 'pck.created_at');
                 switch (sortBy) {
                     case 'name':
-                        courtsQuery.orderBy('co.name', sort);
+                        packagesQuery.orderBy('pck.package_name', sort);
                         break;
                     default:
-                        courtsQuery.orderBy('co.created_at', 'asc');
+                        packagesQuery.orderBy('pck.created_at', 'asc');
                         break;
                 }
-                if (name) {
-                    nameForSearch = name;
+                if (package_name) {
+                    nameForSearch = package_name;
                     namesArr_1 = (0, universalHelpers_1.specialCharactersChecker)(nameForSearch);
-                    courtsQuery.where(function () {
+                    packagesQuery.where(function () {
                         for (var _i = 0, namesArr_2 = namesArr_1; _i < namesArr_2.length; _i++) {
                             var term = namesArr_2[_i];
-                            (0, courtsHelpers_1.buildCourtsNameSearchConditions)(this, term);
+                            (0, packagesHelpers_1.buildPackagesNameSearchConditions)(this, term);
                         }
                     });
                     totalCountQuery.where(function () {
                         for (var _i = 0, namesArr_3 = namesArr_1; _i < namesArr_3.length; _i++) {
                             var term = namesArr_3[_i];
-                            (0, courtsHelpers_1.buildCourtsNameSearchConditions)(this, term);
+                            (0, packagesHelpers_1.buildPackagesNameSearchConditions)(this, term);
                         }
                     });
                 }
                 return [4 /*yield*/, Promise.all([
                         totalCountQuery,
-                        courtsQuery,
+                        packagesQuery,
                     ])];
             case 1:
-                _f = _j.sent(), totalCountResult = _f[0], courts = _f[1];
-                if (courts.length === 0 || !totalCountResult) {
+                _f = _j.sent(), totalCountResult = _f[0], packages = _f[1];
+                if (packages.length === 0 || !totalCountResult) {
                     res.status(404);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "".concat(upperCaseCourtsList, ".NOT_FOUND"))];
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "".concat(upperCasePackagesList, ".NOT_FOUND"))];
                 }
-                totalCourts = Number(totalCountResult.total_courts);
-                totalPages = Math.ceil(Number(totalCourts) / Number(size));
+                totalPackages = Number(totalCountResult.total_packages);
+                totalPages = Math.ceil(Number(totalPackages) / Number(size));
                 apiResponse = {
-                    courts: courts,
+                    packages: packages,
                     meta: {
                         sort: (_g = sort) !== null && _g !== void 0 ? _g : 'asc',
                         sortBy: (_h = sortBy) !== null && _h !== void 0 ? _h : 'created_at',
-                        total_number: totalCourts,
+                        total_number: totalPackages,
                         total_pages: totalPages,
                         page: page,
                     },
                 };
                 res.status(200);
-                return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "".concat(upperCaseCourtsList, ".SUCCESSFULY_RETRIEVED_NAMES"), apiResponse)];
+                return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "".concat(upperCasePackagesList, ".SUCCESSFULY_RETRIEVED_NAMES"), apiResponse)];
             case 2:
-                error_2 = _j.sent();
-                return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_2)];
+                error_1 = _j.sent();
+                return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_1)];
             case 3: return [2 /*return*/];
         }
     });
 }); };
-exports.getCourtsListService = getCourtsListService;
+exports.getPackagesListService = getPackagesListService;

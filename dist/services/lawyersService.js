@@ -84,7 +84,7 @@ var getLawyersListService = function (req, res) { return __awaiter(void 0, void 
                     .leftJoin('phone_numbers as pn', 'l.id', 'pn.lawyer_id')
                     .offset(offset)
                     .limit(Number(size))
-                    .groupBy('l.first_name', 'l.last_name', 'l.office_name', 'l.email', 'l.address', 'ci.name', 'pn.number', 'pn.display_number');
+                    .groupBy('l.first_name', 'l.last_name', 'l.office_name', 'l.email', 'l.address', 'l.created_at', 'ci.name', 'pn.number', 'pn.display_number');
                 switch (sortBy) {
                     case 'name':
                         lawyersQuery.orderBy('l.first_name', sort);
@@ -108,6 +108,7 @@ var getLawyersListService = function (req, res) { return __awaiter(void 0, void 
                         lawyersQuery.orderBy('case_count', sort);
                         break;
                     default:
+                        lawyersQuery.orderBy('l.created_at', 'asc');
                         break;
                 }
                 if (name) {

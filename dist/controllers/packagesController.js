@@ -36,16 +36,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var executorsService_1 = require("../services/executorsService");
-var executors = {
-    getExecutorsNames: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+var packagesService_1 = require("../services/packagesService");
+var packages = {
+    getPackagesList: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
         var _a, _b, error_1;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
                     _c.trys.push([0, 2, , 3]);
                     _b = (_a = res).json;
-                    return [4 /*yield*/, (0, executorsService_1.getExecutorsNamesService)(req, res)];
+                    return [4 /*yield*/, (0, packagesService_1.getPackagesListService)(req, res)];
                 case 1:
                     _b.apply(_a, [_c.sent()]);
                     return [3 /*break*/, 3];
@@ -58,25 +58,5 @@ var executors = {
             }
         });
     }); },
-    getExecutorsList: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
-        var _a, _b, error_2;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
-                case 0:
-                    _c.trys.push([0, 2, , 3]);
-                    _b = (_a = res).json;
-                    return [4 /*yield*/, (0, executorsService_1.getExecutorsListService)(req, res)];
-                case 1:
-                    _b.apply(_a, [_c.sent()]);
-                    return [3 /*break*/, 3];
-                case 2:
-                    error_2 = _c.sent();
-                    console.error({ error: error_2.message });
-                    res.json({ error: error_2.message });
-                    return [3 /*break*/, 3];
-                case 3: return [2 /*return*/];
-            }
-        });
-    }); },
 };
-exports.default = executors;
+exports.default = packages;

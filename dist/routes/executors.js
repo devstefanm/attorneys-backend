@@ -7,6 +7,7 @@ var executorsController_1 = __importDefault(require("../controllers/executorsCon
 var express_1 = __importDefault(require("express"));
 var authenticateToken_1 = require("../middlewares/schemas/authenticateToken");
 var router = express_1.default.Router();
-var getExecutorsNames = executorsController_1.default.getExecutorsNames;
+var getExecutorsNames = executorsController_1.default.getExecutorsNames, getExecutorsList = executorsController_1.default.getExecutorsList;
 router.get('/executors/names', authenticateToken_1.authenticateToken, getExecutorsNames);
+router.get('/executors-list', authenticateToken_1.authenticateToken, getExecutorsList);
 exports.default = router;
