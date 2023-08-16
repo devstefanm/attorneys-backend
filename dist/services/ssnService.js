@@ -68,6 +68,9 @@ var getSSNListService = function (req, res) { return __awaiter(void 0, void 0, v
                     case 'ssn':
                         ssnNumbersQuery.orderBy('ssn.ssn', sort);
                         break;
+                    case 'number_of_cases':
+                        ssnNumbersQuery.orderBy('case_count', sort);
+                        break;
                     default:
                         ssnNumbersQuery.orderBy('ssn.created_at', 'asc');
                         break;

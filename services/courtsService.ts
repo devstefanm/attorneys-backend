@@ -30,7 +30,7 @@ export const getCourtsListService = async (
       sortBy = 'co.created_at',
       size = 10,
       page = 1,
-      name,
+      court,
     } = req.query;
 
     const offset = (Number(page) - 1) * Number(size);
@@ -43,23 +43,26 @@ export const getCourtsListService = async (
       .first();
 
     const courtsQuery = db('courts as co')
-      .select('co.name', db.raw('COUNT(c.id) as case_count'))
+      .select('co.name as court', db.raw('COUNT(c.id) as case_count'))
       .leftJoin('cases as c', 'co.id', 'c.court_id')
       .offset(offset)
       .limit(Number(size))
       .groupBy('co.name', 'co.created_at');
 
     switch (sortBy) {
-      case 'name':
+      case 'court':
         courtsQuery.orderBy('co.name', sort as string);
+        break;
+      case 'number_of_cases':
+        courtsQuery.orderBy('case_count', sort as string);
         break;
       default:
         courtsQuery.orderBy('co.created_at', 'asc');
         break;
     }
 
-    if (name) {
-      const nameForSearch = name as string;
+    if (court) {
+      const nameForSearch = court as string;
       const namesArr = specialCharactersChecker(nameForSearch);
       courtsQuery.where(function () {
         for (const term of namesArr) {

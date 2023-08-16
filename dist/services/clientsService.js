@@ -62,13 +62,13 @@ var getClientsNamesService = function (req, res) { return __awaiter(void 0, void
 }); };
 exports.getClientsNamesService = getClientsNamesService;
 var getClientsListService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b, sort, _c, sortBy, _d, size, _e, page, name, offset, upperCaseClientsList, totalCountQuery, clientsQuery, nameForSearch, namesArr_1, _f, totalCountResult, clients, totalClients, totalPages, apiResponse, error_2;
+    var _a, _b, sort, _c, sortBy, _d, size, _e, page, client, offset, upperCaseClientsList, totalCountQuery, clientsQuery, nameForSearch, namesArr_1, _f, totalCountResult, clients, totalClients, totalPages, apiResponse, error_2;
     var _g, _h;
     return __generator(this, function (_j) {
         switch (_j.label) {
             case 0:
                 _j.trys.push([0, 2, , 3]);
-                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'asc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'cl.created_at' : _c, _d = _a.size, size = _d === void 0 ? 10 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, name = _a.name;
+                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'asc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'cl.created_at' : _c, _d = _a.size, size = _d === void 0 ? 10 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, client = _a.client;
                 offset = (Number(page) - 1) * Number(size);
                 upperCaseClientsList = 'clientsList'.toUpperCase();
                 totalCountQuery = (0, attorneys_db_1.db)('clients as cl')
@@ -76,21 +76,24 @@ var getClientsListService = function (req, res) { return __awaiter(void 0, void 
                     .leftJoin('cases as c', 'cl.id', 'c.client_id')
                     .first();
                 clientsQuery = (0, attorneys_db_1.db)('clients as cl')
-                    .select('cl.name', attorneys_db_1.db.raw('COUNT(c.id) as case_count'))
+                    .select('cl.name as client', attorneys_db_1.db.raw('COUNT(c.id) as case_count'))
                     .leftJoin('cases as c', 'cl.id', 'c.client_id')
                     .offset(offset)
                     .limit(Number(size))
                     .groupBy('cl.name', 'cl.created_at');
                 switch (sortBy) {
-                    case 'name':
+                    case 'client':
                         clientsQuery.orderBy('cl.name', sort);
+                        break;
+                    case 'number_of_cases':
+                        clientsQuery.orderBy('case_count', sort);
                         break;
                     default:
                         clientsQuery.orderBy('cl.created_at', 'asc');
                         break;
                 }
-                if (name) {
-                    nameForSearch = name;
+                if (client) {
+                    nameForSearch = client;
                     namesArr_1 = (0, universalHelpers_1.specialCharactersChecker)(nameForSearch);
                     clientsQuery.where(function () {
                         for (var _i = 0, namesArr_2 = namesArr_1; _i < namesArr_2.length; _i++) {

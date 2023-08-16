@@ -62,13 +62,13 @@ var getCourtsNamesService = function (req, res) { return __awaiter(void 0, void 
 }); };
 exports.getCourtsNamesService = getCourtsNamesService;
 var getCourtsListService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b, sort, _c, sortBy, _d, size, _e, page, name, offset, upperCaseCourtsList, totalCountQuery, courtsQuery, nameForSearch, namesArr_1, _f, totalCountResult, courts, totalCourts, totalPages, apiResponse, error_2;
+    var _a, _b, sort, _c, sortBy, _d, size, _e, page, court, offset, upperCaseCourtsList, totalCountQuery, courtsQuery, nameForSearch, namesArr_1, _f, totalCountResult, courts, totalCourts, totalPages, apiResponse, error_2;
     var _g, _h;
     return __generator(this, function (_j) {
         switch (_j.label) {
             case 0:
                 _j.trys.push([0, 2, , 3]);
-                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'asc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'co.created_at' : _c, _d = _a.size, size = _d === void 0 ? 10 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, name = _a.name;
+                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'asc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'co.created_at' : _c, _d = _a.size, size = _d === void 0 ? 10 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, court = _a.court;
                 offset = (Number(page) - 1) * Number(size);
                 upperCaseCourtsList = 'courtsList'.toUpperCase();
                 totalCountQuery = (0, attorneys_db_1.db)('courts as co')
@@ -76,21 +76,24 @@ var getCourtsListService = function (req, res) { return __awaiter(void 0, void 0
                     .leftJoin('cases as c', 'co.id', 'c.court_id')
                     .first();
                 courtsQuery = (0, attorneys_db_1.db)('courts as co')
-                    .select('co.name', attorneys_db_1.db.raw('COUNT(c.id) as case_count'))
+                    .select('co.name as court', attorneys_db_1.db.raw('COUNT(c.id) as case_count'))
                     .leftJoin('cases as c', 'co.id', 'c.court_id')
                     .offset(offset)
                     .limit(Number(size))
                     .groupBy('co.name', 'co.created_at');
                 switch (sortBy) {
-                    case 'name':
+                    case 'court':
                         courtsQuery.orderBy('co.name', sort);
+                        break;
+                    case 'number_of_cases':
+                        courtsQuery.orderBy('case_count', sort);
                         break;
                     default:
                         courtsQuery.orderBy('co.created_at', 'asc');
                         break;
                 }
-                if (name) {
-                    nameForSearch = name;
+                if (court) {
+                    nameForSearch = court;
                     namesArr_1 = (0, universalHelpers_1.specialCharactersChecker)(nameForSearch);
                     courtsQuery.where(function () {
                         for (var _i = 0, namesArr_2 = namesArr_1; _i < namesArr_2.length; _i++) {

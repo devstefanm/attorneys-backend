@@ -75,6 +75,9 @@ export const getExecutorsListService = async (
       case 'display_phone_number':
         executorsQuery.orderBy('pn.display_number', sort as string);
         break;
+      case 'city':
+        executorsQuery.orderBy('ci.name', sort as string);
+        break;
       case 'number_of_cases':
         executorsQuery.orderBy('case_count', sort as string);
         break;

@@ -11,6 +11,7 @@ import casesRoutes from './routes/cases';
 import transactionsRoutes from './routes/transactions';
 import packagesRoutes from './routes/packages';
 import ssnRoutes from './routes/ssnNumbers';
+import citiesRoutes from './routes/cities';
 
 const PORT = process.env.PORT || 5000;
 
@@ -25,15 +26,16 @@ app.use(cookieParser());
 // Routes
 app.use('/auth', authRoutes);
 app.use('/api', [
-  lawyersRoutes,
+  casesRoutes,
+  citiesRoutes,
   clientsRoutes,
   courtsRoutes,
-  executorsRoutes,
   employersRoutes,
-  casesRoutes,
-  transactionsRoutes,
+  executorsRoutes,
+  lawyersRoutes,
   packagesRoutes,
   ssnRoutes,
+  transactionsRoutes,
 ]);
 
 app.listen(PORT, () => {

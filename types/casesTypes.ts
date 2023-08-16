@@ -1,11 +1,7 @@
 import { IDebtor } from './debtorsTypes';
 import { IOrganization } from './organizationsTypes';
 import { IPeople } from './peopleTypes';
-import {
-  IEntityMetadata,
-  ITableMetadata,
-  ITableResponseData,
-} from './universalTypes';
+import { IEntityMetadata, ITableResponseData } from './universalTypes';
 
 export enum EStatus {
   active = 'active',

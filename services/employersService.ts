@@ -30,7 +30,7 @@ export const getEmployersListService = async (
       sortBy = 'emp.created_at',
       size = 10,
       page = 1,
-      name,
+      employer,
     } = req.query;
 
     const offset = (Number(page) - 1) * Number(size);
@@ -43,23 +43,26 @@ export const getEmployersListService = async (
       .first();
 
     const employersQuery = db('employers as emp')
-      .select('emp.name', db.raw('COUNT(p.id) as employees_count'))
+      .select('emp.name as employer', db.raw('COUNT(p.id) as employees_count'))
       .leftJoin('people as p', 'emp.id', 'p.employer_id')
       .offset(offset)
       .limit(Number(size))
       .groupBy('emp.name', 'emp.created_at');
 
     switch (sortBy) {
-      case 'name':
+      case 'employer':
         employersQuery.orderBy('emp.name', sort as string);
+        break;
+      case 'number_of_employees':
+        employersQuery.orderBy('employees_count', sort as string);
         break;
       default:
         employersQuery.orderBy('emp.created_at', 'asc');
         break;
     }
 
-    if (name) {
-      const nameForSearch = name as string;
+    if (employer) {
+      const nameForSearch = employer as string;
       const namesArr = specialCharactersChecker(nameForSearch);
       employersQuery.where(function () {
         for (const term of namesArr) {

@@ -36,8 +36,11 @@ export const getPackagesListService = async (
       .groupBy('pck.package_name', 'pck.created_at');
 
     switch (sortBy) {
-      case 'name':
+      case 'package_name':
         packagesQuery.orderBy('pck.package_name', sort as string);
+        break;
+      case 'number_of_cases':
+        packagesQuery.orderBy('case_count', sort as string);
         break;
       default:
         packagesQuery.orderBy('pck.created_at', 'asc');

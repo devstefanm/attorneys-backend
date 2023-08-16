@@ -66,8 +66,11 @@ var getPackagesListService = function (req, res) { return __awaiter(void 0, void
                     .limit(Number(size))
                     .groupBy('pck.package_name', 'pck.created_at');
                 switch (sortBy) {
-                    case 'name':
+                    case 'package_name':
                         packagesQuery.orderBy('pck.package_name', sort);
+                        break;
+                    case 'number_of_cases':
+                        packagesQuery.orderBy('case_count', sort);
                         break;
                     default:
                         packagesQuery.orderBy('pck.created_at', 'asc');

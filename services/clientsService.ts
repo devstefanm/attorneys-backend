@@ -30,7 +30,7 @@ export const getClientsListService = async (
       sortBy = 'cl.created_at',
       size = 10,
       page = 1,
-      name,
+      client,
     } = req.query;
 
     const offset = (Number(page) - 1) * Number(size);
@@ -43,23 +43,26 @@ export const getClientsListService = async (
       .first();
 
     const clientsQuery = db('clients as cl')
-      .select('cl.name', db.raw('COUNT(c.id) as case_count'))
+      .select('cl.name as client', db.raw('COUNT(c.id) as case_count'))
       .leftJoin('cases as c', 'cl.id', 'c.client_id')
       .offset(offset)
       .limit(Number(size))
       .groupBy('cl.name', 'cl.created_at');
 
     switch (sortBy) {
-      case 'name':
+      case 'client':
         clientsQuery.orderBy('cl.name', sort as string);
+        break;
+      case 'number_of_cases':
+        clientsQuery.orderBy('case_count', sort as string);
         break;
       default:
         clientsQuery.orderBy('cl.created_at', 'asc');
         break;
     }
 
-    if (name) {
-      const nameForSearch = name as string;
+    if (client) {
+      const nameForSearch = client as string;
       const namesArr = specialCharactersChecker(nameForSearch);
       clientsQuery.where(function () {
         for (const term of namesArr) {

@@ -41,6 +41,9 @@ export const getSSNListService = async (
       case 'ssn':
         ssnNumbersQuery.orderBy('ssn.ssn', sort as string);
         break;
+      case 'number_of_cases':
+        ssnNumbersQuery.orderBy('case_count', sort as string);
+        break;
       default:
         ssnNumbersQuery.orderBy('ssn.created_at', 'asc');
         break;

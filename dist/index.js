@@ -39,6 +39,7 @@ var cases_1 = __importDefault(require("./routes/cases"));
 var transactions_1 = __importDefault(require("./routes/transactions"));
 var packages_1 = __importDefault(require("./routes/packages"));
 var ssnNumbers_1 = __importDefault(require("./routes/ssnNumbers"));
+var cities_1 = __importDefault(require("./routes/cities"));
 var PORT = process.env.PORT || 5000;
 var app = (0, express_1.default)();
 var corsOptions = { credentials: true, origin: '*' };
@@ -49,15 +50,16 @@ app.use((0, cookie_parser_1.default)());
 // Routes
 app.use('/auth', auth_1.default);
 app.use('/api', [
-    lawyers_1.default,
+    cases_1.default,
+    cities_1.default,
     clients_1.default,
     courts_1.default,
-    executors_1.default,
     employers_1.default,
-    cases_1.default,
-    transactions_1.default,
+    executors_1.default,
+    lawyers_1.default,
     packages_1.default,
     ssnNumbers_1.default,
+    transactions_1.default,
 ]);
 app.listen(PORT, function () {
     console.log("Server has started on port ".concat(PORT));

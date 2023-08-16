@@ -92,6 +92,9 @@ var getExecutorsListService = function (req, res) { return __awaiter(void 0, voi
                     case 'display_phone_number':
                         executorsQuery.orderBy('pn.display_number', sort);
                         break;
+                    case 'city':
+                        executorsQuery.orderBy('ci.name', sort);
+                        break;
                     case 'number_of_cases':
                         executorsQuery.orderBy('case_count', sort);
                         break;

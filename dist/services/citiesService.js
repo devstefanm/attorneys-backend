@@ -39,19 +39,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getEmployersListService = exports.getEmployersNamesService = void 0;
+exports.getCitiesListService = exports.getCitiesNamesService = void 0;
 var catchErrorStack_1 = __importDefault(require("../utils/catchErrorStack"));
-var universalHelpers_1 = require("./helpers/universalHelpers");
 var mapApiToResponse_1 = __importDefault(require("../utils/mapApiToResponse"));
+var universalHelpers_1 = require("./helpers/universalHelpers");
 var attorneys_db_1 = require("../attorneys-db");
-var employersHelpers_1 = require("./helpers/employersHelpers");
-var getEmployersNamesService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+var citiesHelpers_1 = require("./helpers/citiesHelpers");
+var getCitiesNamesService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, (0, universalHelpers_1.getShortNamesServiceTemplate)('employers')(req, res)];
+                return [4 /*yield*/, (0, universalHelpers_1.getShortNamesServiceTemplate)('cities')(req, res)];
             case 1: return [2 /*return*/, _a.sent()];
             case 2:
                 error_1 = _a.sent();
@@ -60,78 +60,88 @@ var getEmployersNamesService = function (req, res) { return __awaiter(void 0, vo
         }
     });
 }); };
-exports.getEmployersNamesService = getEmployersNamesService;
-var getEmployersListService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b, sort, _c, sortBy, _d, size, _e, page, employer, offset, upperCaseEmployersList, totalCountQuery, employersQuery, nameForSearch, namesArr_1, _f, totalCountResult, employers, totalEmployers, totalPages, apiResponse, error_2;
+exports.getCitiesNamesService = getCitiesNamesService;
+var getCitiesListService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, _b, sort, _c, sortBy, _d, size, _e, page, city, offset, upperCaseCitiesList, totalCountQuery, citiesQuery, nameForSearch, namesArr_1, _f, totalCountResult, cities, totalCities, totalPages, apiResponse, error_2;
     var _g, _h;
     return __generator(this, function (_j) {
         switch (_j.label) {
             case 0:
                 _j.trys.push([0, 2, , 3]);
-                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'asc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'emp.created_at' : _c, _d = _a.size, size = _d === void 0 ? 10 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, employer = _a.employer;
+                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'asc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'ci.created_at' : _c, _d = _a.size, size = _d === void 0 ? 10 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, city = _a.city;
                 offset = (Number(page) - 1) * Number(size);
-                upperCaseEmployersList = 'employersList'.toUpperCase();
-                totalCountQuery = (0, attorneys_db_1.db)('employers as emp')
-                    .count('emp.id as total_employers')
-                    .leftJoin('people as p', 'emp.id', 'p.employer_id')
+                upperCaseCitiesList = 'citiesList'.toUpperCase();
+                totalCountQuery = (0, attorneys_db_1.db)('cities as ci')
+                    .count('ci.id as total_cities')
+                    .leftJoin('debtors as d', 'ci.id', 'd.city_id')
+                    .leftJoin('executors as e', 'ci.id', 'e.city_id')
+                    .leftJoin('lawyers as l', 'ci.id', 'l.city_id')
                     .first();
-                employersQuery = (0, attorneys_db_1.db)('employers as emp')
-                    .select('emp.name as employer', attorneys_db_1.db.raw('COUNT(p.id) as employees_count'))
-                    .leftJoin('people as p', 'emp.id', 'p.employer_id')
+                citiesQuery = (0, attorneys_db_1.db)('cities as ci')
+                    .select('ci.name as city', attorneys_db_1.db.raw('COUNT(DISTINCT d.id) as debtor_count'), attorneys_db_1.db.raw('COUNT(DISTINCT e.id) as executor_count'), attorneys_db_1.db.raw('COUNT(DISTINCT l.id) as lawyer_count'))
+                    .leftJoin('debtors as d', 'ci.id', 'd.city_id')
+                    .leftJoin('executors as e', 'ci.id', 'e.city_id')
+                    .leftJoin('lawyers as l', 'ci.id', 'l.city_id')
                     .offset(offset)
                     .limit(Number(size))
-                    .groupBy('emp.name', 'emp.created_at');
+                    .groupBy('ci.name', 'ci.created_at');
                 switch (sortBy) {
-                    case 'employer':
-                        employersQuery.orderBy('emp.name', sort);
+                    case 'city':
+                        citiesQuery.orderBy('ci.name', sort);
                         break;
-                    case 'number_of_employees':
-                        employersQuery.orderBy('employees_count', sort);
+                    case 'number_of_debtors':
+                        citiesQuery.orderBy('debtor_count', sort);
+                        break;
+                    case 'number_of_executors':
+                        citiesQuery.orderBy('executor_count', sort);
+                        break;
+                    case 'number_of_lawyers':
+                        citiesQuery.orderBy('lawyer_count', sort);
                         break;
                     default:
-                        employersQuery.orderBy('emp.created_at', 'asc');
+                        citiesQuery.orderBy('ci.created_at', 'asc');
                         break;
                 }
-                if (employer) {
-                    nameForSearch = employer;
+                if (city) {
+                    nameForSearch = city;
                     namesArr_1 = (0, universalHelpers_1.specialCharactersChecker)(nameForSearch);
-                    employersQuery.where(function () {
+                    citiesQuery.where(function () {
                         for (var _i = 0, namesArr_2 = namesArr_1; _i < namesArr_2.length; _i++) {
                             var term = namesArr_2[_i];
-                            (0, employersHelpers_1.buildEmployersNameSearchConditions)(this, term);
+                            (0, citiesHelpers_1.buildCitiesNameSearchConditions)(this, term);
                         }
                     });
                     totalCountQuery.where(function () {
                         for (var _i = 0, namesArr_3 = namesArr_1; _i < namesArr_3.length; _i++) {
                             var term = namesArr_3[_i];
-                            (0, employersHelpers_1.buildEmployersNameSearchConditions)(this, term);
+                            (0, citiesHelpers_1.buildCitiesNameSearchConditions)(this, term);
                         }
                     });
                 }
                 return [4 /*yield*/, Promise.all([
                         totalCountQuery,
-                        employersQuery,
+                        citiesQuery,
                     ])];
             case 1:
-                _f = _j.sent(), totalCountResult = _f[0], employers = _f[1];
-                if (employers.length === 0 || !totalCountResult) {
+                _f = _j.sent(), totalCountResult = _f[0], cities = _f[1];
+                if (cities.length === 0 || !totalCountResult) {
                     res.status(404);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "".concat(upperCaseEmployersList, ".NOT_FOUND"))];
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "".concat(upperCaseCitiesList, ".NOT_FOUND"))];
                 }
-                totalEmployers = Number(totalCountResult.total_employers);
-                totalPages = Math.ceil(Number(totalEmployers) / Number(size));
+                totalCities = Number(totalCountResult.total_cities);
+                totalPages = Math.ceil(Number(totalCities) / Number(size));
                 apiResponse = {
-                    employers: employers,
+                    cities: cities,
                     meta: {
                         sort: (_g = sort) !== null && _g !== void 0 ? _g : 'asc',
                         sortBy: (_h = sortBy) !== null && _h !== void 0 ? _h : 'created_at',
-                        total_number: totalEmployers,
+                        total_number: totalCities,
                         total_pages: totalPages,
                         page: page,
                     },
                 };
                 res.status(200);
-                return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "".concat(upperCaseEmployersList, ".SUCCESSFULY_RETRIEVED_NAMES"), apiResponse)];
+                return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "".concat(upperCaseCitiesList, ".SUCCESSFULY_RETRIEVED_NAMES"), apiResponse)];
             case 2:
                 error_2 = _j.sent();
                 return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_2)];
@@ -139,4 +149,4 @@ var getEmployersListService = function (req, res) { return __awaiter(void 0, voi
         }
     });
 }); };
-exports.getEmployersListService = getEmployersListService;
+exports.getCitiesListService = getCitiesListService;

@@ -10,13 +10,20 @@ import specialCharacters from 'utils/specialCharacters';
 
 type QueryBuilder = Knex.QueryBuilder<any, any>;
 
-type EntityName = 'clients' | 'courts' | 'employers' | 'executors' | 'lawyers';
+type EntityName =
+  | 'clients'
+  | 'courts'
+  | 'employers'
+  | 'executors'
+  | 'lawyers'
+  | 'cities';
 type UpperCaseEntityName =
   | 'CLIENTS'
   | 'COURTS'
   | 'EMPLOYERS'
   | 'EXECUTORS'
-  | 'LAWYERS';
+  | 'LAWYERS'
+  | 'CITIES';
 type ShortNameApiResponseData = IClient | IEmployer;
 type FullNameApiResponseData = IExecutor | ILawyer;
 
