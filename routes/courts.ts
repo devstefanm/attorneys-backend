@@ -6,7 +6,7 @@ const router = express.Router();
 
 const { getCourtsNames, getCourtsList } = courts;
 
-router.get('/courts/names', authenticateToken, getCourtsNames);
+router.get('/courts-names', authenticateToken, getCourtsNames);
 router.get('/courts-list', authenticateToken, getCourtsList);
 
 export default router;

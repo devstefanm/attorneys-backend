@@ -39,25 +39,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPackagesNamesServiceTemplate = exports.generatePackagesNameSearchQuery = exports.buildPackagesNameSearchConditions = void 0;
-var attorneys_db_1 = require("../../attorneys-db");
+exports.getSSNNumbersServiceTemplate = exports.generateSSNNumberSearchQuery = void 0;
 var mapApiToResponse_1 = __importDefault(require("../../utils/mapApiToResponse"));
 var universalHelpers_1 = require("./universalHelpers");
-var buildPackagesNameSearchConditions = function (builder, term) {
-    builder.orWhere(function () {
-        this.whereRaw('LOWER(pck.package_name) LIKE ?', [
-            "%".concat(term.toLowerCase(), "%"),
-        ]);
-    });
-};
-exports.buildPackagesNameSearchConditions = buildPackagesNameSearchConditions;
-var generatePackagesNameSearchQuery = function (query, searchTerms) {
+var attorneys_db_1 = require("../../attorneys-db");
+var generateSSNNumberSearchQuery = function (query, searchTerms) {
     query.where(function () {
         var _loop_1 = function (term) {
             this_1.orWhere(function () {
-                this.whereRaw('LOWER(package_name) LIKE ?', [
-                    "%".concat(term.toLowerCase(), "%"),
-                ]);
+                this.whereRaw('LOWER(ssn) LIKE ?', ["%".concat(term.toLowerCase(), "%")]);
             });
         };
         var this_1 = this;
@@ -68,30 +58,30 @@ var generatePackagesNameSearchQuery = function (query, searchTerms) {
     });
     return query;
 };
-exports.generatePackagesNameSearchQuery = generatePackagesNameSearchQuery;
-var getPackagesNamesServiceTemplate = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var search, searchTerm, query, upperCaseEntity, searchTerms, names;
+exports.generateSSNNumberSearchQuery = generateSSNNumberSearchQuery;
+var getSSNNumbersServiceTemplate = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var search, searchTerm, query, upperCaseEntity, searchTerms, ssnNumbers;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 search = req.query.search;
                 searchTerm = search;
-                query = (0, attorneys_db_1.db)('packages').select('package_name', 'id');
-                upperCaseEntity = 'packages'.toUpperCase();
+                query = (0, attorneys_db_1.db)('ssn_numbers').select('ssn', 'id');
+                upperCaseEntity = 'ssn_numbers'.toUpperCase();
                 if (search) {
                     searchTerms = (0, universalHelpers_1.specialCharactersChecker)(searchTerm);
-                    (0, exports.generatePackagesNameSearchQuery)(query, searchTerms);
+                    (0, exports.generateSSNNumberSearchQuery)(query, searchTerms);
                 }
                 return [4 /*yield*/, query];
             case 1:
-                names = _a.sent();
-                if (names.length <= 0) {
+                ssnNumbers = _a.sent();
+                if (ssnNumbers.length <= 0) {
                     res.status(404);
                     return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "".concat(upperCaseEntity, ".NOT_FOUND"))];
                 }
                 res.status(200);
-                return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "".concat(upperCaseEntity, ".SUCCESSFULY_RETRIEVED_NAMES"), names)];
+                return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "".concat(upperCaseEntity, ".SUCCESSFULY_RETRIEVED_NAMES"), ssnNumbers)];
         }
     });
 }); };
-exports.getPackagesNamesServiceTemplate = getPackagesNamesServiceTemplate;
+exports.getSSNNumbersServiceTemplate = getSSNNumbersServiceTemplate;

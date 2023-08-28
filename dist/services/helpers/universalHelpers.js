@@ -51,7 +51,7 @@ var getShortNamesServiceTemplate = function (entity) {
                 case 0:
                     search = req.query.search;
                     searchTerm = search;
-                    query = (0, attorneys_db_1.db)(entity).select('name');
+                    query = (0, attorneys_db_1.db)(entity).select('name', 'id');
                     upperCaseEntity = entity.toUpperCase();
                     if (search) {
                         searchTerms = (0, exports.specialCharactersChecker)(searchTerm);
@@ -79,7 +79,7 @@ var getFullNamesServiceTemplate = function (entity) {
                 case 0:
                     search = req.query.search;
                     searchTerm = search;
-                    query = (0, attorneys_db_1.db)(entity).select('first_name', 'last_name');
+                    query = (0, attorneys_db_1.db)(entity).select('first_name', 'last_name', 'id');
                     upperCaseEntity = entity.toUpperCase();
                     if (search) {
                         searchTerms = (0, exports.specialCharactersChecker)(searchTerm);

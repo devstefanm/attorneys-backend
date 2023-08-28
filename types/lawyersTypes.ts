@@ -18,3 +18,9 @@ export interface ILawyerForList extends ILawyer, ICity, IPhoneNumber {
 export interface ILawyersListApiResponseData extends ITableResponseData {
   lawyers: ILawyerForList[];
 }
+
+export interface ICaseLawyerData {
+  lawyer_office_name: string;
+  lawyer_first_name: string;
+  lawyer_last_name: string;
+}

@@ -38,7 +38,7 @@ export const getCitiesListService = async (
     const upperCaseCitiesList = 'citiesList'.toUpperCase();
 
     const totalCountQuery = db('cities as ci')
-      .count('ci.id as total_cities')
+      .select(db.raw('COUNT(DISTINCT ci.id) as total_cities'))
       .leftJoin('debtors as d', 'ci.id', 'd.city_id')
       .leftJoin('executors as e', 'ci.id', 'e.city_id')
       .leftJoin('lawyers as l', 'ci.id', 'l.city_id')

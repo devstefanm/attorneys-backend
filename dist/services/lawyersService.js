@@ -72,7 +72,7 @@ var getLawyersListService = function (req, res) { return __awaiter(void 0, void 
                 offset = (Number(page) - 1) * Number(size);
                 upperCaseLawyersList = 'lawyersList'.toUpperCase();
                 totalCountQuery = (0, attorneys_db_1.db)('lawyers as l')
-                    .count('l.id as total_lawyers')
+                    .select(attorneys_db_1.db.raw('COUNT(DISTINCT l.id) as total_lawyers'))
                     .leftJoin('cases as c', 'l.id', 'c.lawyer_id')
                     .leftJoin('cities as ci', 'l.city_id', 'ci.id')
                     .leftJoin('phone_numbers as pn', 'l.id', 'pn.lawyer_id')

@@ -72,7 +72,7 @@ var getCourtsListService = function (req, res) { return __awaiter(void 0, void 0
                 offset = (Number(page) - 1) * Number(size);
                 upperCaseCourtsList = 'courtsList'.toUpperCase();
                 totalCountQuery = (0, attorneys_db_1.db)('courts as co')
-                    .count('co.id as total_courts')
+                    .select(attorneys_db_1.db.raw('COUNT(DISTINCT co.id) as total_courts'))
                     .leftJoin('cases as c', 'co.id', 'c.court_id')
                     .first();
                 courtsQuery = (0, attorneys_db_1.db)('courts as co')

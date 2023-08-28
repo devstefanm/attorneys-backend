@@ -38,7 +38,7 @@ export const getCourtsListService = async (
     const upperCaseCourtsList = 'courtsList'.toUpperCase();
 
     const totalCountQuery = db('courts as co')
-      .count('co.id as total_courts')
+      .select(db.raw('COUNT(DISTINCT co.id) as total_courts'))
       .leftJoin('cases as c', 'co.id', 'c.court_id')
       .first();
 

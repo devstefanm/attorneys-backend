@@ -38,7 +38,7 @@ export const getEmployersListService = async (
     const upperCaseEmployersList = 'employersList'.toUpperCase();
 
     const totalCountQuery = db('employers as emp')
-      .count('emp.id as total_employers')
+      .select(db.raw('COUNT(DISTINCT emp.id) as total_employers'))
       .leftJoin('people as p', 'emp.id', 'p.employer_id')
       .first();
 

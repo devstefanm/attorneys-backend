@@ -1,33 +1,18 @@
-import { db } from 'attorneys-db';
 import { Request, Response } from 'express';
 import { Knex } from 'knex';
-import { IPackage } from 'types/packagesTypes';
+import { ISSNNumber } from 'types/ssnNumbersTypes';
 import mapApiToResponse, { IApiResponse } from 'utils/mapApiToResponse';
 import { specialCharactersChecker } from './universalHelpers';
+import { db } from 'attorneys-db';
 
-type QueryBuilder = Knex.QueryBuilder<any, any>;
-
-export const buildPackagesNameSearchConditions = (
-  builder: QueryBuilder,
-  term: string,
-) => {
-  builder.orWhere(function () {
-    this.whereRaw('LOWER(pck.package_name) LIKE ?', [
-      `%${term.toLowerCase()}%`,
-    ]);
-  });
-};
-
-export const generatePackagesNameSearchQuery = (
+export const generateSSNNumberSearchQuery = (
   query: Knex.QueryBuilder,
   searchTerms: string[],
 ) => {
   query.where(function () {
     for (const term of searchTerms) {
       this.orWhere(function () {
-        this.whereRaw('LOWER(package_name) LIKE ?', [
-          `%${term.toLowerCase()}%`,
-        ]);
+        this.whereRaw('LOWER(ssn) LIKE ?', [`%${term.toLowerCase()}%`]);
       });
     }
   });
@@ -35,25 +20,25 @@ export const generatePackagesNameSearchQuery = (
   return query;
 };
 
-export const getPackagesNamesServiceTemplate = async (
+export const getSSNNumbersServiceTemplate = async (
   req: Request,
   res: Response,
-): Promise<IApiResponse<IPackage[] | undefined>> => {
+): Promise<IApiResponse<ISSNNumber[] | undefined>> => {
   const { search } = req.query; // The search term is passed as a query parameter
   const searchTerm = search as string;
   // Query the table based on the search term
-  let query = db('packages').select('package_name', 'id');
+  let query = db('ssn_numbers').select('ssn', 'id');
 
-  const upperCaseEntity = 'packages'.toUpperCase();
+  const upperCaseEntity = 'ssn_numbers'.toUpperCase();
 
   if (search) {
     const searchTerms = specialCharactersChecker(searchTerm);
-    generatePackagesNameSearchQuery(query, searchTerms);
+    generateSSNNumberSearchQuery(query, searchTerms);
   }
 
-  const names: IPackage[] = await query;
+  const ssnNumbers: ISSNNumber[] = await query;
 
-  if (names.length <= 0) {
+  if (ssnNumbers.length <= 0) {
     res.status(404);
     return mapApiToResponse(404, `${upperCaseEntity}.NOT_FOUND`);
   }
@@ -62,6 +47,6 @@ export const getPackagesNamesServiceTemplate = async (
   return mapApiToResponse(
     200,
     `${upperCaseEntity}.SUCCESSFULY_RETRIEVED_NAMES`,
-    names,
+    ssnNumbers,
   );
 };

@@ -8,6 +8,6 @@ var express_1 = __importDefault(require("express"));
 var authenticateToken_1 = require("../middlewares/schemas/authenticateToken");
 var router = express_1.default.Router();
 var getCourtsNames = courtsController_1.default.getCourtsNames, getCourtsList = courtsController_1.default.getCourtsList;
-router.get('/courts/names', authenticateToken_1.authenticateToken, getCourtsNames);
+router.get('/courts-names', authenticateToken_1.authenticateToken, getCourtsNames);
 router.get('/courts-list', authenticateToken_1.authenticateToken, getCourtsList);
 exports.default = router;

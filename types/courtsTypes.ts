@@ -12,3 +12,7 @@ export interface ICourtForList extends ICourt {
 export interface ICourtsListApiResponseData extends ITableResponseData {
   courts: ICourtForList[];
 }
+
+export interface ICaseCourtData {
+  court_name: string;
+}

@@ -12,3 +12,7 @@ export interface IPackageForList extends IPackage {
 export interface IPackagesListApiResponseData extends ITableResponseData {
   packages: IPackageForList[];
 }
+
+export interface ICasePackageData {
+  package: string;
+}

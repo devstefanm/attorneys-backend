@@ -1,6 +1,11 @@
+import { ICaseClientData } from './clientsTypes';
+import { ICaseCourtData } from './courtsTypes';
 import { IDebtor } from './debtorsTypes';
+import { ICaseLawyerData } from './lawyersTypes';
 import { IOrganization } from './organizationsTypes';
+import { ICasePackageData } from './packagesTypes';
 import { IPeople } from './peopleTypes';
+import { ICaseSSNData } from './ssnNumbersTypes';
 import { IEntityMetadata, ITableResponseData } from './universalTypes';
 
 export enum EStatus {
@@ -19,16 +24,33 @@ export interface ICase extends IEntityMetadata {
   interest?: number;
 }
 
-export interface ICaseForList extends ICase, IDebtor, IPeople, IOrganization {
-  lawyer_office_name: string;
-  lawyer_first_name: string;
-  lawyer_last_name: string;
-  client_name: string;
-  court_name: string;
-  ssn: string;
-  package: string;
-}
+export interface ICaseForList
+  extends ICase,
+    IDebtor,
+    IPeople,
+    IOrganization,
+    ICaseLawyerData,
+    ICaseClientData,
+    ICaseCourtData,
+    ICaseSSNData,
+    ICasePackageData {}
 
 export interface ICasesListApiResponseData extends ITableResponseData {
   cases: ICaseForList[];
+}
+
+export interface IPostCaseData {
+  caseData: ICase;
+  debtorData: IDebtor;
+  personData: IPeople;
+  organizationData: IOrganization;
+  lawyerData: ICaseLawyerData;
+  clientData: ICaseClientData;
+  courtData: ICaseCourtData;
+  ssnData: ICaseSSNData;
+  packageData: ICasePackageData;
+}
+
+export interface ICreateCaseApiResponseData {
+  case_id: number;
 }

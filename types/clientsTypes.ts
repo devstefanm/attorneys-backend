@@ -12,3 +12,7 @@ export interface IClientForList extends IClient {
 export interface IClientsListApiResponseData extends ITableResponseData {
   clients: IClientForList[];
 }
+
+export interface ICaseClientData {
+  client_name: string;
+}

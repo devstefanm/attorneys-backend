@@ -38,7 +38,7 @@ export const getExecutorsListService = async (
     const upperCaseExecutorsList = 'executorsList'.toUpperCase();
 
     const totalCountQuery = db('executors as e')
-      .count('e.id as total_executors')
+      .select(db.raw('COUNT(DISTINCT e.id) as total_executors'))
       .leftJoin('case_executors as ce', 'e.id', 'ce.executor_id')
       .leftJoin('cities as ci', 'e.city_id', 'ci.id')
       .leftJoin('phone_numbers as pn', 'e.id', 'pn.lawyer_id')

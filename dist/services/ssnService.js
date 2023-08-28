@@ -39,13 +39,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSSNListService = void 0;
+exports.getSSNListService = exports.getSSNNumbersService = void 0;
 var attorneys_db_1 = require("../attorneys-db");
 var mapApiToResponse_1 = __importDefault(require("../utils/mapApiToResponse"));
 var universalHelpers_1 = require("./helpers/universalHelpers");
 var catchErrorStack_1 = __importDefault(require("../utils/catchErrorStack"));
+var ssnNumbersHelpers_1 = require("./helpers/ssnNumbersHelpers");
+var getSSNNumbersService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var error_1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, (0, ssnNumbersHelpers_1.getSSNNumbersServiceTemplate)(req, res)];
+            case 1: return [2 /*return*/, _a.sent()];
+            case 2:
+                error_1 = _a.sent();
+                return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_1)];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.getSSNNumbersService = getSSNNumbersService;
 var getSSNListService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b, sort, _c, sortBy, _d, size, _e, page, ssn, offset, upperCaseSSNList, totalCountQuery, ssnNumbersQuery, ssnNumber, _f, totalCountResult, ssnNumbers, totalSSN, totalPages, apiResponse, error_1;
+    var _a, _b, sort, _c, sortBy, _d, size, _e, page, ssn, offset, upperCaseSSNList, totalCountQuery, ssnNumbersQuery, ssnNumber, _f, totalCountResult, ssnNumbers, totalSSN, totalPages, apiResponse, error_2;
     var _g, _h;
     return __generator(this, function (_j) {
         switch (_j.label) {
@@ -55,7 +72,7 @@ var getSSNListService = function (req, res) { return __awaiter(void 0, void 0, v
                 offset = (Number(page) - 1) * Number(size);
                 upperCaseSSNList = 'ssnList'.toUpperCase();
                 totalCountQuery = (0, attorneys_db_1.db)('ssn_numbers as ssn')
-                    .count('ssn.id as total_ssn')
+                    .select(attorneys_db_1.db.raw('COUNT(DISTINCT ssn.id) as total_ssn'))
                     .leftJoin('cases as c', 'ssn.id', 'c.ssn_number_id')
                     .first();
                 ssnNumbersQuery = (0, attorneys_db_1.db)('ssn_numbers as ssn')
@@ -105,8 +122,8 @@ var getSSNListService = function (req, res) { return __awaiter(void 0, void 0, v
                 res.status(200);
                 return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "".concat(upperCaseSSNList, ".SUCCESSFULY_RETRIEVED_NAMES"), apiResponse)];
             case 2:
-                error_1 = _j.sent();
-                return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_1)];
+                error_2 = _j.sent();
+                return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_2)];
             case 3: return [2 /*return*/];
         }
     });

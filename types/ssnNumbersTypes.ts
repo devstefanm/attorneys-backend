@@ -12,3 +12,7 @@ export interface ISSNForList extends ISSNNumber {
 export interface ISSNListApiResponseData extends ITableResponseData {
   ssn_numbers: ISSNForList[];
 }
+
+export interface ICaseSSNData {
+  ssn: string;
+}

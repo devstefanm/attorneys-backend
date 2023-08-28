@@ -7,6 +7,7 @@ var ssnController_1 = __importDefault(require("../controllers/ssnController"));
 var express_1 = __importDefault(require("express"));
 var authenticateToken_1 = require("../middlewares/schemas/authenticateToken");
 var router = express_1.default.Router();
-var getSSNList = ssnController_1.default.getSSNList;
+var getSSNList = ssnController_1.default.getSSNList, getSSNNumbers = ssnController_1.default.getSSNNumbers;
 router.get('/ssn-list', authenticateToken_1.authenticateToken, getSSNList);
+router.get('/ssn-numbers', authenticateToken_1.authenticateToken, getSSNNumbers);
 exports.default = router;

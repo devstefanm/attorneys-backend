@@ -72,7 +72,7 @@ var getEmployersListService = function (req, res) { return __awaiter(void 0, voi
                 offset = (Number(page) - 1) * Number(size);
                 upperCaseEmployersList = 'employersList'.toUpperCase();
                 totalCountQuery = (0, attorneys_db_1.db)('employers as emp')
-                    .count('emp.id as total_employers')
+                    .select(attorneys_db_1.db.raw('COUNT(DISTINCT emp.id) as total_employers'))
                     .leftJoin('people as p', 'emp.id', 'p.employer_id')
                     .first();
                 employersQuery = (0, attorneys_db_1.db)('employers as emp')

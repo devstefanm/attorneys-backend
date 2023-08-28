@@ -1,12 +1,21 @@
 import { db } from 'attorneys-db';
 import { Request, Response } from 'express';
 import mapApiToResponse, { IApiResponse } from 'utils/mapApiToResponse';
-import {
-  generateBigIntSearchQuery,
-  specialCharactersChecker,
-} from './helpers/universalHelpers';
+import { generateBigIntSearchQuery } from './helpers/universalHelpers';
 import catchErrorStack from 'utils/catchErrorStack';
-import { ISSNListApiResponseData } from 'types/ssnNumbersTypes';
+import { ISSNListApiResponseData, ISSNNumber } from 'types/ssnNumbersTypes';
+import { getSSNNumbersServiceTemplate } from './helpers/ssnNumbersHelpers';
+
+export const getSSNNumbersService = async (
+  req: Request,
+  res: Response,
+): Promise<IApiResponse<ISSNNumber[] | undefined>> => {
+  try {
+    return await getSSNNumbersServiceTemplate(req, res);
+  } catch (error) {
+    return catchErrorStack(res, error);
+  }
+};
 
 export const getSSNListService = async (
   req: Request,
@@ -26,7 +35,7 @@ export const getSSNListService = async (
     const upperCaseSSNList = 'ssnList'.toUpperCase();
 
     const totalCountQuery = db('ssn_numbers as ssn')
-      .count('ssn.id as total_ssn')
+      .select(db.raw('COUNT(DISTINCT ssn.id) as total_ssn'))
       .leftJoin('cases as c', 'ssn.id', 'c.ssn_number_id')
       .first();
 

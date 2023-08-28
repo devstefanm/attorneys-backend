@@ -38,7 +38,7 @@ export const getClientsListService = async (
     const upperCaseClientsList = 'clientsList'.toUpperCase();
 
     const totalCountQuery = db('clients as cl')
-      .count('cl.id as total_clients')
+      .select(db.raw('COUNT(DISTINCT cl.id) as total_clients'))
       .leftJoin('cases as c', 'cl.id', 'c.client_id')
       .first();
 

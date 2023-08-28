@@ -11,7 +11,7 @@ export const getTransactionsListService = async (
 ): Promise<IApiResponse<ITransactionsListApiResponseData | undefined>> => {
   try {
     const {
-      sort = 'asc',
+      sort = 'desc',
       sortBy = 't.created_at',
       size = 10,
       page = 1,
@@ -26,7 +26,7 @@ export const getTransactionsListService = async (
     const upperCaseTransactionsList = 'transactionsList'.toUpperCase();
 
     const totalCountQuery = db('transactions as t')
-      .count('t.id as total_transactions')
+      .select(db.raw('COUNT(DISTINCT t.id) as total_transactions'))
       .leftJoin('cases as c', 't.case_id', 'c.id')
       .leftJoin('excerpts as e', 't.excerpt_id', 'e.id')
       .first();
@@ -66,7 +66,7 @@ export const getTransactionsListService = async (
         transactionsQuery.orderBy('e.excerpt_number', sort as string);
         break;
       default:
-        transactionsQuery.orderBy('c.created_at', 'asc');
+        transactionsQuery.orderBy('t.created_at', 'desc');
         break;
     }
 

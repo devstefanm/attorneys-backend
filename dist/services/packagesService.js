@@ -39,14 +39,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPackagesListService = void 0;
+exports.getPackagesListService = exports.getPackagesNamesService = void 0;
 var attorneys_db_1 = require("../attorneys-db");
 var mapApiToResponse_1 = __importDefault(require("../utils/mapApiToResponse"));
 var universalHelpers_1 = require("./helpers/universalHelpers");
 var catchErrorStack_1 = __importDefault(require("../utils/catchErrorStack"));
 var packagesHelpers_1 = require("./helpers/packagesHelpers");
+var getPackagesNamesService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var error_1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, (0, packagesHelpers_1.getPackagesNamesServiceTemplate)(req, res)];
+            case 1: return [2 /*return*/, _a.sent()];
+            case 2:
+                error_1 = _a.sent();
+                return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_1)];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.getPackagesNamesService = getPackagesNamesService;
 var getPackagesListService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b, sort, _c, sortBy, _d, size, _e, page, package_name, offset, upperCasePackagesList, totalCountQuery, packagesQuery, nameForSearch, namesArr_1, _f, totalCountResult, packages, totalPackages, totalPages, apiResponse, error_1;
+    var _a, _b, sort, _c, sortBy, _d, size, _e, page, package_name, offset, upperCasePackagesList, totalCountQuery, packagesQuery, nameForSearch, namesArr_1, _f, totalCountResult, packages, totalPackages, totalPages, apiResponse, error_2;
     var _g, _h;
     return __generator(this, function (_j) {
         switch (_j.label) {
@@ -56,7 +72,7 @@ var getPackagesListService = function (req, res) { return __awaiter(void 0, void
                 offset = (Number(page) - 1) * Number(size);
                 upperCasePackagesList = 'packagesList'.toUpperCase();
                 totalCountQuery = (0, attorneys_db_1.db)('packages as pck')
-                    .count('pck.id as total_packages')
+                    .select(attorneys_db_1.db.raw('COUNT(DISTINCT pck.id) as total_packages'))
                     .leftJoin('cases as c', 'pck.id', 'c.package_id')
                     .first();
                 packagesQuery = (0, attorneys_db_1.db)('packages as pck')
@@ -117,8 +133,8 @@ var getPackagesListService = function (req, res) { return __awaiter(void 0, void
                 res.status(200);
                 return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "".concat(upperCasePackagesList, ".SUCCESSFULY_RETRIEVED_NAMES"), apiResponse)];
             case 2:
-                error_1 = _j.sent();
-                return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_1)];
+                error_2 = _j.sent();
+                return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_2)];
             case 3: return [2 /*return*/];
         }
     });

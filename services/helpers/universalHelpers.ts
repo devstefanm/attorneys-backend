@@ -16,14 +16,16 @@ type EntityName =
   | 'employers'
   | 'executors'
   | 'lawyers'
-  | 'cities';
+  | 'cities'
+  | 'packages';
 type UpperCaseEntityName =
   | 'CLIENTS'
   | 'COURTS'
   | 'EMPLOYERS'
   | 'EXECUTORS'
   | 'LAWYERS'
-  | 'CITIES';
+  | 'CITIES'
+  | 'PACKAGES';
 type ShortNameApiResponseData = IClient | IEmployer;
 type FullNameApiResponseData = IExecutor | ILawyer;
 
@@ -36,7 +38,7 @@ export const getShortNamesServiceTemplate =
     const { search } = req.query; // The search term is passed as a query parameter
     const searchTerm = search as string;
     // Query the table based on the search term
-    let query = db(entity).select('name');
+    let query = db(entity).select('name', 'id');
 
     const upperCaseEntity = entity.toUpperCase() as UpperCaseEntityName;
 
@@ -69,7 +71,7 @@ export const getFullNamesServiceTemplate =
     const { search } = req.query; // The search term is passed as a query parameter
     const searchTerm = search as string;
     // Query the table based on the search term
-    let query = db(entity).select('first_name', 'last_name');
+    let query = db(entity).select('first_name', 'last_name', 'id');
 
     const upperCaseEntity = entity.toUpperCase() as UpperCaseEntityName;
 

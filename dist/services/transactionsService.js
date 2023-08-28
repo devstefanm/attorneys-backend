@@ -51,11 +51,11 @@ var getTransactionsListService = function (req, res) { return __awaiter(void 0, 
         switch (_j.label) {
             case 0:
                 _j.trys.push([0, 2, , 3]);
-                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'asc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 't.created_at' : _c, _d = _a.size, size = _d === void 0 ? 10 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, amount = _a.amount, posting_method = _a.posting_method, case_number = _a.case_number, excerpt_number = _a.excerpt_number;
+                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'desc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 't.created_at' : _c, _d = _a.size, size = _d === void 0 ? 10 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, amount = _a.amount, posting_method = _a.posting_method, case_number = _a.case_number, excerpt_number = _a.excerpt_number;
                 offset = (Number(page) - 1) * Number(size);
                 upperCaseTransactionsList = 'transactionsList'.toUpperCase();
                 totalCountQuery = (0, attorneys_db_1.db)('transactions as t')
-                    .count('t.id as total_transactions')
+                    .select(attorneys_db_1.db.raw('COUNT(DISTINCT t.id) as total_transactions'))
                     .leftJoin('cases as c', 't.case_id', 'c.id')
                     .leftJoin('excerpts as e', 't.excerpt_id', 'e.id')
                     .first();
@@ -85,7 +85,7 @@ var getTransactionsListService = function (req, res) { return __awaiter(void 0, 
                         transactionsQuery.orderBy('e.excerpt_number', sort);
                         break;
                     default:
-                        transactionsQuery.orderBy('c.created_at', 'asc');
+                        transactionsQuery.orderBy('t.created_at', 'desc');
                         break;
                 }
                 if (amount) {

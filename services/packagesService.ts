@@ -1,10 +1,27 @@
 import { db } from 'attorneys-db';
 import { Request, Response } from 'express';
 import mapApiToResponse, { IApiResponse } from 'utils/mapApiToResponse';
-import { specialCharactersChecker } from './helpers/universalHelpers';
+import {
+  getShortNamesServiceTemplate,
+  specialCharactersChecker,
+} from './helpers/universalHelpers';
 import catchErrorStack from 'utils/catchErrorStack';
-import { buildPackagesNameSearchConditions } from './helpers/packagesHelpers';
-import { IPackagesListApiResponseData } from 'types/packagesTypes';
+import {
+  buildPackagesNameSearchConditions,
+  getPackagesNamesServiceTemplate,
+} from './helpers/packagesHelpers';
+import { IPackage, IPackagesListApiResponseData } from 'types/packagesTypes';
+
+export const getPackagesNamesService = async (
+  req: Request,
+  res: Response,
+): Promise<IApiResponse<IPackage[] | undefined>> => {
+  try {
+    return await getPackagesNamesServiceTemplate(req, res);
+  } catch (error) {
+    return catchErrorStack(res, error);
+  }
+};
 
 export const getPackagesListService = async (
   req: Request,
@@ -24,7 +41,7 @@ export const getPackagesListService = async (
     const upperCasePackagesList = 'packagesList'.toUpperCase();
 
     const totalCountQuery = db('packages as pck')
-      .count('pck.id as total_packages')
+      .select(db.raw('COUNT(DISTINCT pck.id) as total_packages'))
       .leftJoin('cases as c', 'pck.id', 'c.package_id')
       .first();
 
