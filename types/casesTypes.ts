@@ -8,7 +8,7 @@ import { IPeople } from './peopleTypes';
 import { ICaseSSNData } from './ssnNumbersTypes';
 import { IEntityMetadata, ITableResponseData } from './universalTypes';
 
-export enum EStatus {
+export enum EState {
   active = 'active',
   closed = 'closed',
 }
@@ -17,7 +17,7 @@ export interface ICase extends IEntityMetadata {
   id?: number;
   case_number: number;
   contract_number: number;
-  status: EStatus;
+  state: EState;
   closing_date?: string;
   business_number?: number;
   principal: number;
