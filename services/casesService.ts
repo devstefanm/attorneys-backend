@@ -8,6 +8,7 @@ import catchErrorStack from 'utils/catchErrorStack';
 import mapApiToResponse, { IApiResponse } from 'utils/mapApiToResponse';
 import {
   generateBigIntSearchQuery,
+  generateShortNameSearchQuery,
   specialCharactersChecker,
 } from './helpers/universalHelpers';
 import {
@@ -18,6 +19,8 @@ import {
 import { IPeople } from 'types/peopleTypes';
 import { IOrganization } from 'types/organizationsTypes';
 import { mapPhoneNumberForDisplay } from './helpers/phoneNumbersHelpers';
+import { Knex } from 'knex';
+import { casesSchema } from 'middlewares/schemas/casesSchemas';
 
 export const getCasesListService = async (
   req: Request,
@@ -37,8 +40,7 @@ export const getCasesListService = async (
       executors,
       ssn,
       package: package_name,
-      court,
-      client,
+      business_numbers,
       filter = 'active',
     } = req.query;
 
@@ -46,20 +48,26 @@ export const getCasesListService = async (
 
     const upperCaseCasesList = 'casesList'.toUpperCase();
 
-    const totalCountQuery = db('cases as c')
-      .select(db.raw('COUNT(DISTINCT c.id) as total_cases'))
-      .leftJoin('debtors as d', 'c.debtor_id', 'd.id')
-      .leftJoin('people as p', 'd.person_id', 'p.id')
-      .leftJoin('organizations as o', 'd.organization_id', 'o.id')
-      .leftJoin('lawyers as l', 'c.lawyer_id', 'l.id')
-      .leftJoin('clients as cl', 'c.client_id', 'cl.id')
-      .leftJoin('courts as co', 'c.court_id', 'co.id')
-      .leftJoin('ssn_numbers as s', 'c.ssn_number_id', 's.id')
-      .leftJoin('packages as pck', 'c.package_id', 'pck.id')
-      .leftJoin('statuses as st', 'c.status_id', 'st.id')
-      .leftJoin('case_executors as ce', 'c.id', 'ce.case_id')
-      .leftJoin('executors as e', 'ce.executor_id', 'e.id')
-      .first();
+    let totalCountQuery: Knex.QueryBuilder = db('cases as c');
+
+    if (!executors || !business_numbers) {
+      totalCountQuery = totalCountQuery
+        .select(db.raw('COUNT(DISTINCT c.id) as total_cases'))
+        .leftJoin('debtors as d', 'c.debtor_id', 'd.id')
+        .leftJoin('people as p', 'd.person_id', 'p.id')
+        .leftJoin('organizations as o', 'd.organization_id', 'o.id')
+        .leftJoin('lawyers as l', 'c.lawyer_id', 'l.id')
+        .leftJoin('clients as cl', 'c.client_id', 'cl.id')
+        .leftJoin('courts as co', 'c.court_id', 'co.id')
+        .leftJoin('ssn_numbers as s', 'c.ssn_number_id', 's.id')
+        .leftJoin('packages as pck', 'c.package_id', 'pck.id')
+        .leftJoin('statuses as st', 'c.status_id', 'st.id')
+        .leftJoin('case_executors as ce', 'c.id', 'ce.case_id')
+        .leftJoin('executors as e', 'ce.executor_id', 'e.id')
+        .leftJoin('case_business_numbers as cbn', 'c.id', 'cbn.case_id')
+        .leftJoin('business_numbers as bn', 'cbn.business_number_id', 'bn.id')
+        .first();
+    }
 
     const casesQuery = db('cases as c')
       .select(
@@ -79,14 +87,13 @@ export const getCasesListService = async (
         'l.office_name as lawyer_office_name',
         'l.first_name as lawyer_first_name',
         'l.last_name as lawyer_last_name',
-        'cl.name as client_name',
-        'co.name as court_name',
         's.ssn as ssn',
         'pck.package_name as package',
         'st.name as status',
         db.raw(
           "string_agg(e.first_name || ' ' || e.last_name, ', ') as executors",
         ),
+        db.raw("string_agg(distinct bn.number, ', ') as business_numbers"),
       )
       .leftJoin('debtors as d', 'c.debtor_id', 'd.id')
       .leftJoin('people as p', 'd.person_id', 'p.id')
@@ -99,6 +106,8 @@ export const getCasesListService = async (
       .leftJoin('statuses as st', 'c.status_id', 'st.id')
       .leftJoin('case_executors as ce', 'c.id', 'ce.case_id')
       .leftJoin('executors as e', 'ce.executor_id', 'e.id')
+      .leftJoin('case_business_numbers as cbn', 'c.id', 'cbn.case_id')
+      .leftJoin('business_numbers as bn', 'cbn.business_number_id', 'bn.id')
       .groupBy(
         'c.id',
         'c.case_number',
@@ -116,8 +125,6 @@ export const getCasesListService = async (
         'l.office_name',
         'l.first_name',
         'l.last_name',
-        'cl.name',
-        'co.name',
         's.ssn',
         'pck.package_name',
         'st.name',
@@ -236,24 +243,31 @@ export const getCasesListService = async (
 
     if (package_name) {
       const packageName = package_name as string;
-      generateBigIntSearchQuery(casesQuery, packageName, 'pck.package_name');
-      generateBigIntSearchQuery(
+      const packageNamesArr = specialCharactersChecker(packageName);
+      generateShortNameSearchQuery(
+        casesQuery,
+        packageNamesArr,
+        'pck.package_name',
+      );
+      generateShortNameSearchQuery(
         totalCountQuery,
-        packageName,
+        packageNamesArr,
         'pck.package_name',
       );
     }
 
-    if (court) {
-      const courtName = court as string;
-      generateBigIntSearchQuery(casesQuery, courtName, 'co.name');
-      generateBigIntSearchQuery(totalCountQuery, courtName, 'co.name');
-    }
+    if (business_numbers) {
+      const businesNumberForSearch = business_numbers as string;
+      const businesNumbersArr = specialCharactersChecker(
+        businesNumberForSearch,
+      );
+      const conditions = businesNumbersArr.map((searchTerm) => {
+        return db.raw("string_agg(distinct bn.number, ', ') ILIKE ?", [
+          `%${searchTerm}%`,
+        ]);
+      });
 
-    if (client) {
-      const clientName = client as string;
-      generateBigIntSearchQuery(casesQuery, clientName, 'cl.name');
-      generateBigIntSearchQuery(totalCountQuery, clientName, 'cl.name');
+      casesQuery.havingRaw(conditions.map((c) => `(${c})`).join(' OR '));
     }
 
     if (executors) {
@@ -267,7 +281,6 @@ export const getCasesListService = async (
       });
 
       casesQuery.havingRaw(conditions.map((c) => `(${c})`).join(' OR '));
-      totalCountQuery.havingRaw(conditions.map((c) => `(${c})`).join(' OR '));
     }
 
     const [totalCountResult, cases] = await Promise.all([
@@ -280,9 +293,10 @@ export const getCasesListService = async (
       return mapApiToResponse(404, `${upperCaseCasesList}.NOT_FOUND`);
     }
 
-    const totalCases = executors
-      ? cases.length
-      : Number(totalCountResult.total_cases);
+    const totalCases =
+      executors || business_numbers
+        ? cases.length
+        : Number(totalCountResult.total_cases);
     const totalPages = Math.ceil(Number(totalCases) / Number(size));
 
     const apiResponse: ICasesListApiResponseData = {
@@ -312,13 +326,20 @@ export const createCaseService = async (
   res: Response,
 ): Promise<IApiResponse<ICreateCaseApiResponseData | undefined>> => {
   try {
+    // const { error } = casesSchema.validate(req.body);
+
+    // if (error) {
+    //   res.status(400);
+    //   return catchErrorStack(res, error.details[0].message);
+    // }
+
     const {
       first_name,
       last_name,
       jmbg,
       employed,
       employer_id,
-      executor_id,
+      executor_ids,
       name,
       pib,
       cession,
@@ -540,6 +561,14 @@ export const createCaseService = async (
         .returning('id')
     )[0].id;
 
+    if (business_numbers.concat(phone_numbers, executor_ids).includes(null)) {
+      res.status(500);
+      catchErrorStack(
+        res,
+        'Phone numbers, beiliffs nor business numbers cannot include null',
+      );
+    }
+
     if (business_numbers && business_numbers.length > 0) {
       await Promise.all(
         business_numbers.map(async (businessNumber: string) => {
@@ -585,11 +614,13 @@ export const createCaseService = async (
       );
     }
 
-    if (executor_id) {
-      await db('case_executors').insert({
-        executor_id,
-        case_id: newCaseId,
-      });
+    if (executor_ids && executor_ids.length > 0) {
+      for (const executor_id of executor_ids) {
+        await db('case_executors').insert({
+          executor_id,
+          case_id: newCaseId,
+        });
+      }
     }
 
     let apiResponse: ICreateCaseApiResponseData | undefined = undefined;

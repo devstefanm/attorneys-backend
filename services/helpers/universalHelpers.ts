@@ -143,11 +143,12 @@ export const generateFullNameSearchQuery = (
 export const generateShortNameSearchQuery = (
   query: Knex.QueryBuilder,
   searchTerms: string[],
+  name: string = 'name',
 ) => {
   query.where(function () {
     for (const term of searchTerms) {
       this.orWhere(function () {
-        this.whereRaw('LOWER(name) LIKE ?', [`%${term.toLowerCase()}%`]);
+        this.whereRaw(`LOWER(${name}) LIKE ?`, [`%${term.toLowerCase()}%`]);
       });
     }
   });
