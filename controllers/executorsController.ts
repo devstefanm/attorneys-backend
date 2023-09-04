@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import {
-  getExecutorsListService,
-  getExecutorsNamesService,
-} from 'services/executorsService';
+import { getExecutorsListService } from 'services/executorsServices/getExecutorsListService';
+import { getExecutorsNamesService } from 'services/executorsServices/getExecutorsNamesService';
 
 const executors = {
   getExecutorsNames: async (

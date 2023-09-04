@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import {
-  getPackagesListService,
-  getPackagesNamesService,
-} from 'services/packagesService';
+import { getPackagesListService } from 'services/packagesServices/getPackagesListService';
+import { getPackagesNamesService } from 'services/packagesServices/getPackagesNamesService';
 
 const packages = {
   getPackagesList: async (req: Request, res: Response, _next: NextFunction) => {

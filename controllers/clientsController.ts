@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import {
-  getClientsListService,
-  getClientsNamesService,
-} from 'services/clientsService';
+import { getClientsListService } from 'services/clientsServices/getClientsListService';
+import { getClientsNamesService } from 'services/clientsServices/getClientsNamesService';
 
 const clients = {
   getClientsNames: async (req: Request, res: Response, _next: NextFunction) => {

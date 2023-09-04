@@ -7,6 +7,7 @@ import { ILawyer } from 'types/lawyersTypes';
 import mapApiToResponse, { IApiResponse } from 'utils/mapApiToResponse';
 import { Knex } from 'knex';
 import specialCharacters from 'utils/specialCharacters';
+import { ICreateEntityApiResponseData } from 'types/universalTypes';
 
 type QueryBuilder = Knex.QueryBuilder<any, any>;
 
@@ -205,3 +206,45 @@ export const generateDecimalSearchQuery = (
 
   return query;
 };
+
+export const postShortNameServiceTemplate =
+  (entity: string) =>
+  async (
+    req: Request,
+    res: Response,
+  ): Promise<IApiResponse<ICreateEntityApiResponseData | undefined>> => {
+    const { name } = req.body;
+
+    let newEntityId = null;
+
+    if (name) {
+      newEntityId = (
+        await db(entity)
+          .insert({
+            name,
+          })
+          .returning('id')
+      )[0].id;
+    } else {
+      res.status(400);
+      return mapApiToResponse(400, `message.no_${entity}_name`);
+    }
+
+    let apiResponse: ICreateEntityApiResponseData | undefined = undefined;
+
+    if (newEntityId) {
+      apiResponse = {
+        id: newEntityId,
+      };
+
+      res.status(200);
+      return mapApiToResponse(
+        200,
+        `message.${entity}_successfully_created`,
+        apiResponse,
+      );
+    }
+
+    res.status(404);
+    return mapApiToResponse(404, `message.${entity}_not_found`, apiResponse);
+  };

@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import { getSSNListService, getSSNNumbersService } from 'services/ssnService';
+import { getSSNListService } from 'services/ssnServices/getSSNListService';
+import { getSSNNumbersService } from 'services/ssnServices/getSSNNumbersService';
 
 const ssnNumbers = {
   getSSNList: async (req: Request, res: Response, _next: NextFunction) => {

@@ -36,7 +36,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var executorsService_1 = require("../services/executorsService");
+var getExecutorsListService_1 = require("../services/executorsServices/getExecutorsListService");
+var getExecutorsNamesService_1 = require("../services/executorsServices/getExecutorsNamesService");
 var executors = {
     getExecutorsNames: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
         var _a, _b, error_1;
@@ -45,7 +46,7 @@ var executors = {
                 case 0:
                     _c.trys.push([0, 2, , 3]);
                     _b = (_a = res).json;
-                    return [4 /*yield*/, (0, executorsService_1.getExecutorsNamesService)(req, res)];
+                    return [4 /*yield*/, (0, getExecutorsNamesService_1.getExecutorsNamesService)(req, res)];
                 case 1:
                     _b.apply(_a, [_c.sent()]);
                     return [3 /*break*/, 3];
@@ -65,7 +66,7 @@ var executors = {
                 case 0:
                     _c.trys.push([0, 2, , 3]);
                     _b = (_a = res).json;
-                    return [4 /*yield*/, (0, executorsService_1.getExecutorsListService)(req, res)];
+                    return [4 /*yield*/, (0, getExecutorsListService_1.getExecutorsListService)(req, res)];
                 case 1:
                     _b.apply(_a, [_c.sent()]);
                     return [3 /*break*/, 3];

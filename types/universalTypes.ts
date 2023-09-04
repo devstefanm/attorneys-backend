@@ -16,3 +16,7 @@ export interface ITableMetadata {
 export interface ITableResponseData {
   meta: ITableMetadata;
 }
+
+export interface ICreateEntityApiResponseData {
+  id: number | null;
+}

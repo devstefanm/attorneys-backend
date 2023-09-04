@@ -6,6 +6,7 @@ export enum ETransactionType {
   payment = 'payment',
   fee = 'fee',
   legal_fee = 'legal_fee',
+  withdrawal = 'withdrawal',
 }
 
 export interface ITransaction extends IEntityMetadata {
@@ -20,4 +21,8 @@ export interface ITransactionForList extends ITransaction, ICase, IExcerpt {}
 
 export interface ITransactionsListApiResponseData extends ITableResponseData {
   transactions: ITransactionForList[];
+}
+
+export interface ICreateTransactionApiResponseData {
+  transaction_id: number | null;
 }

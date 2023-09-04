@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import {
-  getEmployersListService,
-  getEmployersNamesService,
-} from 'services/employersService';
+import { getEmployersListService } from 'services/employersServices/getEmployersListService';
+import { getEmployersNamesService } from 'services/employersServices/getEmployersNamesService';
 
 const employers = {
   getEmployersNames: async (

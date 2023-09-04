@@ -14,3 +14,7 @@ export interface ICityForList extends ICity {
 export interface ICitiesListApiResponseData extends ITableResponseData {
   cities: ICityForList[];
 }
+
+export interface ICreateCityApiResponseData {
+  city_id: number | null;
+}

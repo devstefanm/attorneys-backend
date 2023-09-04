@@ -7,6 +7,7 @@ var transactionsController_1 = __importDefault(require("../controllers/transacti
 var express_1 = __importDefault(require("express"));
 var authenticateToken_1 = require("../middlewares/schemas/authenticateToken");
 var router = express_1.default.Router();
-var getTransactionsList = transactionsController_1.default.getTransactionsList;
+var getTransactionsList = transactionsController_1.default.getTransactionsList, createTransactions = transactionsController_1.default.createTransactions;
 router.get('/transactions-list', authenticateToken_1.authenticateToken, getTransactionsList);
+router.post('/transactions', authenticateToken_1.authenticateToken, createTransactions);
 exports.default = router;

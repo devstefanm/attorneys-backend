@@ -6,4 +6,5 @@ var ETransactionType;
     ETransactionType["payment"] = "payment";
     ETransactionType["fee"] = "fee";
     ETransactionType["legal_fee"] = "legal_fee";
+    ETransactionType["withdrawal"] = "withdrawal";
 })(ETransactionType || (exports.ETransactionType = ETransactionType = {}));

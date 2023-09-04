@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateDecimalSearchQuery = exports.generateBigIntSearchQuery = exports.specialCharactersChecker = exports.generateShortNameSearchQuery = exports.generateFullNameSearchQuery = exports.getFullNamesServiceTemplate = exports.getShortNamesServiceTemplate = void 0;
+exports.postShortNameServiceTemplate = exports.generateDecimalSearchQuery = exports.generateBigIntSearchQuery = exports.specialCharactersChecker = exports.generateShortNameSearchQuery = exports.generateFullNameSearchQuery = exports.getFullNamesServiceTemplate = exports.getShortNamesServiceTemplate = void 0;
 var attorneys_db_1 = require("../../attorneys-db");
 var mapApiToResponse_1 = __importDefault(require("../../utils/mapApiToResponse"));
 var specialCharacters_1 = __importDefault(require("../../utils/specialCharacters"));
@@ -145,11 +145,12 @@ var generateFullNameSearchQuery = function (query, searchTerms) {
     return query;
 };
 exports.generateFullNameSearchQuery = generateFullNameSearchQuery;
-var generateShortNameSearchQuery = function (query, searchTerms) {
+var generateShortNameSearchQuery = function (query, searchTerms, name) {
+    if (name === void 0) { name = 'name'; }
     query.where(function () {
         var _loop_2 = function (term) {
             this_2.orWhere(function () {
-                this.whereRaw('LOWER(name) LIKE ?', ["%".concat(term.toLowerCase(), "%")]);
+                this.whereRaw("LOWER(".concat(name, ") LIKE ?"), ["%".concat(term.toLowerCase(), "%")]);
             });
         };
         var this_2 = this;
@@ -200,3 +201,39 @@ var generateDecimalSearchQuery = function (query, searchValue, column) {
     return query;
 };
 exports.generateDecimalSearchQuery = generateDecimalSearchQuery;
+var postShortNameServiceTemplate = function (entity) {
+    return function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+        var name, newEntityId, apiResponse;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    name = req.body.name;
+                    newEntityId = null;
+                    if (!name) return [3 /*break*/, 2];
+                    return [4 /*yield*/, (0, attorneys_db_1.db)(entity)
+                            .insert({
+                            name: name,
+                        })
+                            .returning('id')];
+                case 1:
+                    newEntityId = (_a.sent())[0].id;
+                    return [3 /*break*/, 3];
+                case 2:
+                    res.status(400);
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "message.no_".concat(entity, "_name"))];
+                case 3:
+                    apiResponse = undefined;
+                    if (newEntityId) {
+                        apiResponse = {
+                            id: newEntityId,
+                        };
+                        res.status(200);
+                        return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "message.".concat(entity, "_successfully_created"), apiResponse)];
+                    }
+                    res.status(404);
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "message.".concat(entity, "_not_found"), apiResponse)];
+            }
+        });
+    }); };
+};
+exports.postShortNameServiceTemplate = postShortNameServiceTemplate;

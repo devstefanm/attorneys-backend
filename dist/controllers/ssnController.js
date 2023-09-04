@@ -36,7 +36,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var ssnService_1 = require("../services/ssnService");
+var getSSNListService_1 = require("../services/ssnServices/getSSNListService");
+var getSSNNumbersService_1 = require("../services/ssnServices/getSSNNumbersService");
 var ssnNumbers = {
     getSSNList: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
         var _a, _b, error_1;
@@ -45,7 +46,7 @@ var ssnNumbers = {
                 case 0:
                     _c.trys.push([0, 2, , 3]);
                     _b = (_a = res).json;
-                    return [4 /*yield*/, (0, ssnService_1.getSSNListService)(req, res)];
+                    return [4 /*yield*/, (0, getSSNListService_1.getSSNListService)(req, res)];
                 case 1:
                     _b.apply(_a, [_c.sent()]);
                     return [3 /*break*/, 3];
@@ -65,7 +66,7 @@ var ssnNumbers = {
                 case 0:
                     _c.trys.push([0, 2, , 3]);
                     _b = (_a = res).json;
-                    return [4 /*yield*/, (0, ssnService_1.getSSNNumbersService)(req, res)];
+                    return [4 /*yield*/, (0, getSSNNumbersService_1.getSSNNumbersService)(req, res)];
                 case 1:
                     _b.apply(_a, [_c.sent()]);
                     return [3 /*break*/, 3];

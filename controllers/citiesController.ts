@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import {
-  getCitiesListService,
-  getCitiesNamesService,
-} from 'services/citiesService';
+import { getCitiesListService } from 'services/citiesServices/getCitiesListService';
+import { getCitiesNamesService } from 'services/citiesServices/getCitiesNamesService';
 
 const cities = {
   getCitiesList: async (req: Request, res: Response, _next: NextFunction) => {

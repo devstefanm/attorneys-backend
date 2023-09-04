@@ -36,7 +36,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var casesService_1 = require("../services/casesService");
+var createCaseService_1 = require("../services/casesServices/createCaseService");
+var filterCaseNumbersService_1 = require("../services/casesServices/filterCaseNumbersService");
+var getCasesListService_1 = require("../services/casesServices/getCasesListService");
 var cases = {
     getCasesList: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
         var _a, _b, error_1;
@@ -45,7 +47,7 @@ var cases = {
                 case 0:
                     _c.trys.push([0, 2, , 3]);
                     _b = (_a = res).json;
-                    return [4 /*yield*/, (0, casesService_1.getCasesListService)(req, res)];
+                    return [4 /*yield*/, (0, getCasesListService_1.getCasesListService)(req, res)];
                 case 1:
                     _b.apply(_a, [_c.sent()]);
                     return [3 /*break*/, 3];
@@ -65,7 +67,7 @@ var cases = {
                 case 0:
                     _c.trys.push([0, 2, , 3]);
                     _b = (_a = res).json;
-                    return [4 /*yield*/, (0, casesService_1.createCaseService)(req, res)];
+                    return [4 /*yield*/, (0, createCaseService_1.createCaseService)(req, res)];
                 case 1:
                     _b.apply(_a, [_c.sent()]);
                     return [3 /*break*/, 3];
@@ -73,6 +75,26 @@ var cases = {
                     error_2 = _c.sent();
                     console.error({ error: error_2.message });
                     res.json({ error: error_2.message });
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    }); },
+    getfilteredCaseNumbers: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+        var _a, _b, error_3;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _c.trys.push([0, 2, , 3]);
+                    _b = (_a = res).json;
+                    return [4 /*yield*/, (0, filterCaseNumbersService_1.filterCaseNumbersService)(req, res)];
+                case 1:
+                    _b.apply(_a, [_c.sent()]);
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_3 = _c.sent();
+                    console.error({ error: error_3.message });
+                    res.json({ error: error_3.message });
                     return [3 /*break*/, 3];
                 case 3: return [2 /*return*/];
             }

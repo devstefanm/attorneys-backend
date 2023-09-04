@@ -36,7 +36,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var citiesService_1 = require("../services/citiesService");
+var getCitiesListService_1 = require("../services/citiesServices/getCitiesListService");
+var getCitiesNamesService_1 = require("../services/citiesServices/getCitiesNamesService");
 var cities = {
     getCitiesList: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
         var _a, _b, error_1;
@@ -45,7 +46,7 @@ var cities = {
                 case 0:
                     _c.trys.push([0, 2, , 3]);
                     _b = (_a = res).json;
-                    return [4 /*yield*/, (0, citiesService_1.getCitiesListService)(req, res)];
+                    return [4 /*yield*/, (0, getCitiesListService_1.getCitiesListService)(req, res)];
                 case 1:
                     _b.apply(_a, [_c.sent()]);
                     return [3 /*break*/, 3];
@@ -65,7 +66,7 @@ var cities = {
                 case 0:
                     _c.trys.push([0, 2, , 3]);
                     _b = (_a = res).json;
-                    return [4 /*yield*/, (0, citiesService_1.getCitiesNamesService)(req, res)];
+                    return [4 /*yield*/, (0, getCitiesNamesService_1.getCitiesNamesService)(req, res)];
                 case 1:
                     _b.apply(_a, [_c.sent()]);
                     return [3 /*break*/, 3];

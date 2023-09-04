@@ -29,18 +29,18 @@ var config = {
     development: {
         client: 'postgresql',
         connection: {
-            database: process.env.DATABASE,
-            user: process.env.DB_USER,
-            password: process.env.DB_PASSWORD,
-            host: process.env.DB_HOST,
-            port: Number(process.env.DB_PORT),
+            database: process.env.DATABASE || 'attorneys-db',
+            user: process.env.DB_USER || 'postgres',
+            password: process.env.DB_PASSWORD || 'ASDasd123',
+            host: process.env.DB_HOST || 'localhost',
+            port: Number(process.env.DB_PORT) || 5432,
         },
         pool: {
-            max: Number(process.env.DB_POOL_SIZE),
-            idleTimeoutMillis: Number(process.env.DB_POOL_CLIENT_IDLE_TIMEOUT),
+            max: Number(process.env.DB_POOL_SIZE) || 2,
+            idleTimeoutMillis: Number(process.env.DB_POOL_CLIENT_IDLE_TIMEOUT) || 10000,
         },
         migrations: {
-            directory: './attorneys-db/migrations/initial',
+            directory: './migrations/initial',
             tableName: 'knex_migrations',
         },
     },
