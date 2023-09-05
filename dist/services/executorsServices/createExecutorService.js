@@ -43,14 +43,15 @@ exports.createExecutorService = void 0;
 var catchErrorStack_1 = __importDefault(require("../../utils/catchErrorStack"));
 var mapApiToResponse_1 = __importDefault(require("../../utils/mapApiToResponse"));
 var attorneys_db_1 = require("../../attorneys-db");
+var phoneNumbersHelpers_1 = require("../helpers/phoneNumbersHelpers");
 var createExecutorService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, first_name, last_name, email, address, city_id, newExecutorId, cityId, apiResponse, error_1;
+    var _a, first_name, last_name, email, address, city_id, phone_numbers, newExecutorId_1, cityId, apiResponse, error_1;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
-                _b.trys.push([0, 7, , 8]);
-                _a = req.body, first_name = _a.first_name, last_name = _a.last_name, email = _a.email, address = _a.address, city_id = _a.city_id;
-                newExecutorId = null, cityId = void 0;
+                _b.trys.push([0, 10, , 11]);
+                _a = req.body, first_name = _a.first_name, last_name = _a.last_name, email = _a.email, address = _a.address, city_id = _a.city_id, phone_numbers = _a.phone_numbers;
+                newExecutorId_1 = null, cityId = void 0;
                 if (!city_id) return [3 /*break*/, 2];
                 return [4 /*yield*/, (0, attorneys_db_1.db)('cities').select('id').where('id', city_id).first()];
             case 1:
@@ -74,26 +75,55 @@ var createExecutorService = function (req, res) { return __awaiter(void 0, void 
                     })
                         .returning('id')];
             case 4:
-                newExecutorId = (_b.sent())[0].id;
+                newExecutorId_1 = (_b.sent())[0].id;
                 return [3 /*break*/, 6];
             case 5:
                 res.status(400);
                 return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "message.executors_names")];
             case 6:
                 apiResponse = undefined;
-                if (newExecutorId) {
-                    apiResponse = {
-                        id: newExecutorId,
-                    };
-                    res.status(200);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "message.executor_successfully_created", apiResponse)];
-                }
+                if (!newExecutorId_1) return [3 /*break*/, 9];
+                if (!(phone_numbers && phone_numbers.length > 0)) return [3 /*break*/, 8];
+                return [4 /*yield*/, Promise.all(phone_numbers.map(function (phoneNumber) { return __awaiter(void 0, void 0, void 0, function () {
+                        var displayNumber, existingPhoneNumber;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    displayNumber = (0, phoneNumbersHelpers_1.mapPhoneNumberForDisplay)(phoneNumber);
+                                    return [4 /*yield*/, (0, attorneys_db_1.db)('phone_numbers')
+                                            .where({ display_number: displayNumber })
+                                            .first()];
+                                case 1:
+                                    existingPhoneNumber = _a.sent();
+                                    if (!!existingPhoneNumber) return [3 /*break*/, 3];
+                                    return [4 /*yield*/, (0, attorneys_db_1.db)('phone_numbers').insert({
+                                            number: phoneNumber,
+                                            display_number: displayNumber,
+                                            executor_id: newExecutorId_1,
+                                        })];
+                                case 2:
+                                    _a.sent();
+                                    _a.label = 3;
+                                case 3: return [2 /*return*/];
+                            }
+                        });
+                    }); }))];
+            case 7:
+                _b.sent();
+                _b.label = 8;
+            case 8:
+                apiResponse = {
+                    id: newExecutorId_1,
+                };
+                res.status(200);
+                return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "message.executor_successfully_created", apiResponse)];
+            case 9:
                 res.status(404);
                 return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "message.executor_not_found", apiResponse)];
-            case 7:
+            case 10:
                 error_1 = _b.sent();
                 return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_1)];
-            case 8: return [2 /*return*/];
+            case 11: return [2 /*return*/];
         }
     });
 }); };

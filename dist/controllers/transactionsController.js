@@ -59,7 +59,7 @@ var transactions = {
             }
         });
     }); },
-    createTransactions: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+    createTransaction: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
         var _a, _b, error_2;
         return __generator(this, function (_c) {
             switch (_c.label) {

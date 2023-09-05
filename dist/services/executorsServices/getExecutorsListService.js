@@ -46,13 +46,13 @@ var mapApiToResponse_1 = __importDefault(require("../../utils/mapApiToResponse")
 var attorneys_db_1 = require("../../attorneys-db");
 var executorsHelpers_1 = require("../helpers/executorsHelpers");
 var getExecutorsListService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b, sort, _c, sortBy, _d, size, _e, page, name, offset, upperCaseExecutorsList, totalCountQuery, executorsQuery, nameForSearch, namesArr_1, _f, totalCountResult, executors, totalExecutors, totalPages, apiResponse, error_1;
+    var _a, _b, sort, _c, sortBy, _d, size, _e, page, name, email, offset, upperCaseExecutorsList, totalCountQuery, executorsQuery, nameForSearch, namesArr_1, emailAddress_1, _f, totalCountResult, executors, totalExecutors, totalPages, apiResponse, error_1;
     var _g, _h;
     return __generator(this, function (_j) {
         switch (_j.label) {
             case 0:
                 _j.trys.push([0, 2, , 3]);
-                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'asc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'e.created_at' : _c, _d = _a.size, size = _d === void 0 ? 10 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, name = _a.name;
+                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'desc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'e.created_at' : _c, _d = _a.size, size = _d === void 0 ? 25 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, name = _a.name, email = _a.email;
                 offset = (Number(page) - 1) * Number(size);
                 upperCaseExecutorsList = 'executorsList'.toUpperCase();
                 totalCountQuery = (0, attorneys_db_1.db)('executors as e')
@@ -62,19 +62,22 @@ var getExecutorsListService = function (req, res) { return __awaiter(void 0, voi
                     .leftJoin('phone_numbers as pn', 'e.id', 'pn.lawyer_id')
                     .first();
                 executorsQuery = (0, attorneys_db_1.db)('executors as e')
-                    .select('e.first_name', 'e.last_name', 'ci.name as city', 'pn.number as phone_number', 'pn.display_number as display_phone_number', attorneys_db_1.db.raw('COUNT(ce.case_id) as case_count'))
+                    .select('e.first_name', 'e.last_name', 'e.email', 'ci.name as city', attorneys_db_1.db.raw("string_agg(distinct pn.number, ', ') as phone_numbers"), attorneys_db_1.db.raw("string_agg(distinct pn.display_number, ', ') as display_phone_numbers"), attorneys_db_1.db.raw('COUNT(ce.case_id) as case_count'))
                     .leftJoin('case_executors as ce', 'e.id', 'ce.executor_id')
                     .leftJoin('cities as ci', 'e.city_id', 'ci.id')
-                    .leftJoin('phone_numbers as pn', 'e.id', 'pn.lawyer_id')
+                    .leftJoin('phone_numbers as pn', 'e.id', 'pn.executor_id')
                     .offset(offset)
                     .limit(Number(size))
-                    .groupBy('e.first_name', 'e.last_name', 'e.address', 'e.created_at', 'ci.name', 'pn.number', 'pn.display_number');
+                    .groupBy('e.first_name', 'e.last_name', 'e.email', 'e.address', 'e.created_at', 'ci.name');
                 switch (sortBy) {
                     case 'name':
                         executorsQuery.orderBy('e.first_name', sort);
                         break;
-                    case 'display_phone_number':
-                        executorsQuery.orderBy('pn.display_number', sort);
+                    case 'email':
+                        executorsQuery.orderBy('e.email', sort);
+                        break;
+                    case 'display_phone_numbers':
+                        executorsQuery.orderBy('phone_numbers', sort);
                         break;
                     case 'city':
                         executorsQuery.orderBy('ci.name', sort);
@@ -83,7 +86,7 @@ var getExecutorsListService = function (req, res) { return __awaiter(void 0, voi
                         executorsQuery.orderBy('case_count', sort);
                         break;
                     default:
-                        executorsQuery.orderBy('e.created_at', 'asc');
+                        executorsQuery.orderBy('e.created_at', 'desc');
                         break;
                 }
                 if (name) {
@@ -100,6 +103,19 @@ var getExecutorsListService = function (req, res) { return __awaiter(void 0, voi
                             var term = namesArr_3[_i];
                             (0, executorsHelpers_1.buildExecutorsNameSearchConditions)(this, term);
                         }
+                    });
+                }
+                if (email) {
+                    emailAddress_1 = email;
+                    executorsQuery.where(function () {
+                        this.whereRaw('LOWER(e.email) LIKE ?', [
+                            "%".concat(emailAddress_1.toLowerCase(), "%"),
+                        ]);
+                    });
+                    totalCountQuery.where(function () {
+                        this.whereRaw('LOWER(e.email) LIKE ?', [
+                            "%".concat(emailAddress_1.toLowerCase(), "%"),
+                        ]);
                     });
                 }
                 return [4 /*yield*/, Promise.all([

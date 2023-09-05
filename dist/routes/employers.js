@@ -7,7 +7,8 @@ var employersController_1 = __importDefault(require("../controllers/employersCon
 var express_1 = __importDefault(require("express"));
 var authenticateToken_1 = require("../middlewares/schemas/authenticateToken");
 var router = express_1.default.Router();
-var getEmployersNames = employersController_1.default.getEmployersNames, getEmployersList = employersController_1.default.getEmployersList;
+var getEmployersNames = employersController_1.default.getEmployersNames, getEmployersList = employersController_1.default.getEmployersList, postEmployer = employersController_1.default.postEmployer;
 router.get('/employers-names', authenticateToken_1.authenticateToken, getEmployersNames);
 router.get('/employers-list', authenticateToken_1.authenticateToken, getEmployersList);
+router.post('/employers', authenticateToken_1.authenticateToken, postEmployer);
 exports.default = router;

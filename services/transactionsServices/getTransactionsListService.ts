@@ -17,7 +17,7 @@ export const getTransactionsListService = async (
     const {
       sort = 'desc',
       sortBy = 't.created_at',
-      size = 10,
+      size = 25,
       page = 1,
       debtors_name,
       amount,

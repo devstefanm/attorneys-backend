@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { createCityService } from 'services/citiesServices/createCityService';
 import { getCitiesListService } from 'services/citiesServices/getCitiesListService';
 import { getCitiesNamesService } from 'services/citiesServices/getCitiesNamesService';
 
@@ -14,6 +15,14 @@ const cities = {
   getCitiesNames: async (req: Request, res: Response, _next: NextFunction) => {
     try {
       res.json(await getCitiesNamesService(req, res));
+    } catch (error) {
+      console.error({ error: error.message });
+      res.json({ error: error.message });
+    }
+  },
+  postCity: async (req: Request, res: Response, _next: NextFunction) => {
+    try {
+      res.json(await createCityService(req, res));
     } catch (error) {
       console.error({ error: error.message });
       res.json({ error: error.message });

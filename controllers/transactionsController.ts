@@ -15,7 +15,7 @@ const transactions = {
       res.json({ error: error.message });
     }
   },
-  createTransactions: async (
+  createTransaction: async (
     req: Request,
     res: Response,
     _next: NextFunction,

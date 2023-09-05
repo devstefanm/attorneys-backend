@@ -52,7 +52,7 @@ var getClientsListService = function (req, res) { return __awaiter(void 0, void 
         switch (_j.label) {
             case 0:
                 _j.trys.push([0, 2, , 3]);
-                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'asc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'cl.created_at' : _c, _d = _a.size, size = _d === void 0 ? 10 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, client = _a.client;
+                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'desc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'cl.created_at' : _c, _d = _a.size, size = _d === void 0 ? 25 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, client = _a.client;
                 offset = (Number(page) - 1) * Number(size);
                 upperCaseClientsList = 'clientsList'.toUpperCase();
                 totalCountQuery = (0, attorneys_db_1.db)('clients as cl')
@@ -73,7 +73,7 @@ var getClientsListService = function (req, res) { return __awaiter(void 0, void 
                         clientsQuery.orderBy('case_count', sort);
                         break;
                     default:
-                        clientsQuery.orderBy('cl.created_at', 'asc');
+                        clientsQuery.orderBy('cl.created_at', 'desc');
                         break;
                 }
                 if (client) {

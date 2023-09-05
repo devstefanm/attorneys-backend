@@ -52,7 +52,7 @@ var getPackagesListService = function (req, res) { return __awaiter(void 0, void
         switch (_j.label) {
             case 0:
                 _j.trys.push([0, 2, , 3]);
-                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'asc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'pck.created_at' : _c, _d = _a.size, size = _d === void 0 ? 10 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, package_name = _a.package_name;
+                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'desc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'pck.created_at' : _c, _d = _a.size, size = _d === void 0 ? 25 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, package_name = _a.package_name;
                 offset = (Number(page) - 1) * Number(size);
                 upperCasePackagesList = 'packagesList'.toUpperCase();
                 totalCountQuery = (0, attorneys_db_1.db)('packages as pck')
@@ -73,7 +73,7 @@ var getPackagesListService = function (req, res) { return __awaiter(void 0, void
                         packagesQuery.orderBy('case_count', sort);
                         break;
                     default:
-                        packagesQuery.orderBy('pck.created_at', 'asc');
+                        packagesQuery.orderBy('pck.created_at', 'desc');
                         break;
                 }
                 if (package_name) {

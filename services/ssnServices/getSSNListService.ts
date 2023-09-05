@@ -11,9 +11,9 @@ export const getSSNListService = async (
 ): Promise<IApiResponse<ISSNListApiResponseData | undefined>> => {
   try {
     const {
-      sort = 'asc',
+      sort = 'desc',
       sortBy = 'ssn.created_at',
-      size = 10,
+      size = 25,
       page = 1,
       ssn,
     } = req.query;
@@ -42,7 +42,7 @@ export const getSSNListService = async (
         ssnNumbersQuery.orderBy('case_count', sort as string);
         break;
       default:
-        ssnNumbersQuery.orderBy('ssn.created_at', 'asc');
+        ssnNumbersQuery.orderBy('ssn.created_at', 'desc');
         break;
     }
 

@@ -133,6 +133,9 @@ var getCasesListService = function (req, res) { return __awaiter(void 0, void 0,
                     case 'executors':
                         casesQuery.orderBy('executors', sort);
                         break;
+                    case 'business_numbers':
+                        casesQuery.orderBy('business_numbers', sort);
+                        break;
                     default:
                         casesQuery.orderBy('c.created_at', 'desc');
                         break;

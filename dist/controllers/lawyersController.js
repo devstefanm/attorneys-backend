@@ -36,6 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var createLawyerService_1 = require("../services/lawyersServices/createLawyerService");
 var getLawyersListService_1 = require("../services/lawyersServices/getLawyersListService");
 var getLawyersNamesService_1 = require("../services/lawyersServices/getLawyersNamesService");
 var lawyers = {
@@ -74,6 +75,26 @@ var lawyers = {
                     error_2 = _c.sent();
                     console.error({ error: error_2.message });
                     res.json({ error: error_2.message });
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    }); },
+    postLawyer: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+        var _a, _b, error_3;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _c.trys.push([0, 2, , 3]);
+                    _b = (_a = res).json;
+                    return [4 /*yield*/, (0, createLawyerService_1.createLawyerService)(req, res)];
+                case 1:
+                    _b.apply(_a, [_c.sent()]);
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_3 = _c.sent();
+                    console.error({ error: error_3.message });
+                    res.json({ error: error_3.message });
                     return [3 /*break*/, 3];
                 case 3: return [2 /*return*/];
             }

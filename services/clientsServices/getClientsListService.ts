@@ -12,9 +12,9 @@ export const getClientsListService = async (
 ): Promise<IApiResponse<IClientsListApiResponseData | undefined>> => {
   try {
     const {
-      sort = 'asc',
+      sort = 'desc',
       sortBy = 'cl.created_at',
-      size = 10,
+      size = 25,
       page = 1,
       client,
     } = req.query;
@@ -43,7 +43,7 @@ export const getClientsListService = async (
         clientsQuery.orderBy('case_count', sort as string);
         break;
       default:
-        clientsQuery.orderBy('cl.created_at', 'asc');
+        clientsQuery.orderBy('cl.created_at', 'desc');
         break;
     }
 

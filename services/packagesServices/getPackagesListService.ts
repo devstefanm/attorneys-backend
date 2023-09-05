@@ -12,9 +12,9 @@ export const getPackagesListService = async (
 ): Promise<IApiResponse<IPackagesListApiResponseData | undefined>> => {
   try {
     const {
-      sort = 'asc',
+      sort = 'desc',
       sortBy = 'pck.created_at',
-      size = 10,
+      size = 25,
       page = 1,
       package_name,
     } = req.query;
@@ -43,7 +43,7 @@ export const getPackagesListService = async (
         packagesQuery.orderBy('case_count', sort as string);
         break;
       default:
-        packagesQuery.orderBy('pck.created_at', 'asc');
+        packagesQuery.orderBy('pck.created_at', 'desc');
         break;
     }
 

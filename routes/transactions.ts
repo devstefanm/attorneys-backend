@@ -4,9 +4,9 @@ import { authenticateToken } from 'middlewares/schemas/authenticateToken';
 
 const router = express.Router();
 
-const { getTransactionsList, createTransactions } = transactions;
+const { getTransactionsList, createTransaction } = transactions;
 
 router.get('/transactions-list', authenticateToken, getTransactionsList);
-router.post('/transactions', authenticateToken, createTransactions);
+router.post('/transactions', authenticateToken, createTransaction);
 
 export default router;

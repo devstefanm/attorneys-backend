@@ -12,9 +12,9 @@ export const getCitiesListService = async (
 ): Promise<IApiResponse<ICitiesListApiResponseData | undefined>> => {
   try {
     const {
-      sort = 'asc',
+      sort = 'desc',
       sortBy = 'ci.created_at',
-      size = 10,
+      size = 25,
       page = 1,
       city,
     } = req.query;
@@ -58,7 +58,7 @@ export const getCitiesListService = async (
         citiesQuery.orderBy('lawyer_count', sort as string);
         break;
       default:
-        citiesQuery.orderBy('ci.created_at', 'asc');
+        citiesQuery.orderBy('ci.created_at', 'desc');
         break;
     }
 

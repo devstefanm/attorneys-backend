@@ -12,9 +12,9 @@ export const getEmployersListService = async (
 ): Promise<IApiResponse<IEmployersListApiResponseData | undefined>> => {
   try {
     const {
-      sort = 'asc',
+      sort = 'desc',
       sortBy = 'emp.created_at',
-      size = 10,
+      size = 25,
       page = 1,
       employer,
     } = req.query;
@@ -43,7 +43,7 @@ export const getEmployersListService = async (
         employersQuery.orderBy('employees_count', sort as string);
         break;
       default:
-        employersQuery.orderBy('emp.created_at', 'asc');
+        employersQuery.orderBy('emp.created_at', 'desc');
         break;
     }
 

@@ -12,11 +12,12 @@ export const getExecutorsListService = async (
 ): Promise<IApiResponse<IExecutorsListApiResponseData | undefined>> => {
   try {
     const {
-      sort = 'asc',
+      sort = 'desc',
       sortBy = 'e.created_at',
-      size = 10,
+      size = 25,
       page = 1,
       name,
+      email,
     } = req.query;
 
     const offset = (Number(page) - 1) * Number(size);
@@ -34,32 +35,37 @@ export const getExecutorsListService = async (
       .select(
         'e.first_name',
         'e.last_name',
+        'e.email',
         'ci.name as city',
-        'pn.number as phone_number',
-        'pn.display_number as display_phone_number',
+        db.raw("string_agg(distinct pn.number, ', ') as phone_numbers"),
+        db.raw(
+          "string_agg(distinct pn.display_number, ', ') as display_phone_numbers",
+        ),
         db.raw('COUNT(ce.case_id) as case_count'),
       )
       .leftJoin('case_executors as ce', 'e.id', 'ce.executor_id')
       .leftJoin('cities as ci', 'e.city_id', 'ci.id')
-      .leftJoin('phone_numbers as pn', 'e.id', 'pn.lawyer_id')
+      .leftJoin('phone_numbers as pn', 'e.id', 'pn.executor_id')
       .offset(offset)
       .limit(Number(size))
       .groupBy(
         'e.first_name',
         'e.last_name',
+        'e.email',
         'e.address',
         'e.created_at',
         'ci.name',
-        'pn.number',
-        'pn.display_number',
       );
 
     switch (sortBy) {
       case 'name':
         executorsQuery.orderBy('e.first_name', sort as string);
         break;
-      case 'display_phone_number':
-        executorsQuery.orderBy('pn.display_number', sort as string);
+      case 'email':
+        executorsQuery.orderBy('e.email', sort as string);
+        break;
+      case 'display_phone_numbers':
+        executorsQuery.orderBy('phone_numbers', sort as string);
         break;
       case 'city':
         executorsQuery.orderBy('ci.name', sort as string);
@@ -68,7 +74,7 @@ export const getExecutorsListService = async (
         executorsQuery.orderBy('case_count', sort as string);
         break;
       default:
-        executorsQuery.orderBy('e.created_at', 'asc');
+        executorsQuery.orderBy('e.created_at', 'desc');
         break;
     }
 
@@ -84,6 +90,20 @@ export const getExecutorsListService = async (
         for (const term of namesArr) {
           buildExecutorsNameSearchConditions(this, term);
         }
+      });
+    }
+
+    if (email) {
+      const emailAddress = email as string;
+      executorsQuery.where(function () {
+        this.whereRaw('LOWER(e.email) LIKE ?', [
+          `%${emailAddress.toLowerCase()}%`,
+        ]);
+      });
+      totalCountQuery.where(function () {
+        this.whereRaw('LOWER(e.email) LIKE ?', [
+          `%${emailAddress.toLowerCase()}%`,
+        ]);
       });
     }
 

@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { createSSNService } from 'services/ssnServices/createSSNService';
 import { getSSNListService } from 'services/ssnServices/getSSNListService';
 import { getSSNNumbersService } from 'services/ssnServices/getSSNNumbersService';
 
@@ -14,6 +15,14 @@ const ssnNumbers = {
   getSSNNumbers: async (req: Request, res: Response, _next: NextFunction) => {
     try {
       res.json(await getSSNNumbersService(req, res));
+    } catch (error) {
+      console.error({ error: error.message });
+      res.json({ error: error.message });
+    }
+  },
+  postSSNNumber: async (req: Request, res: Response, _next: NextFunction) => {
+    try {
+      res.json(await createSSNService(req, res));
     } catch (error) {
       console.error({ error: error.message });
       res.json({ error: error.message });

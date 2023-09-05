@@ -52,7 +52,7 @@ var getCitiesListService = function (req, res) { return __awaiter(void 0, void 0
         switch (_j.label) {
             case 0:
                 _j.trys.push([0, 2, , 3]);
-                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'asc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'ci.created_at' : _c, _d = _a.size, size = _d === void 0 ? 10 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, city = _a.city;
+                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'desc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'ci.created_at' : _c, _d = _a.size, size = _d === void 0 ? 25 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, city = _a.city;
                 offset = (Number(page) - 1) * Number(size);
                 upperCaseCitiesList = 'citiesList'.toUpperCase();
                 totalCountQuery = (0, attorneys_db_1.db)('cities as ci')
@@ -83,7 +83,7 @@ var getCitiesListService = function (req, res) { return __awaiter(void 0, void 0
                         citiesQuery.orderBy('lawyer_count', sort);
                         break;
                     default:
-                        citiesQuery.orderBy('ci.created_at', 'asc');
+                        citiesQuery.orderBy('ci.created_at', 'desc');
                         break;
                 }
                 if (city) {

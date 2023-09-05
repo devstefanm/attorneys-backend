@@ -15,9 +15,9 @@ export const getLawyersListService = async (
 ): Promise<IApiResponse<ILawyersListApiResponseData | undefined>> => {
   try {
     const {
-      sort = 'asc',
+      sort = 'desc',
       sortBy = 'l.created_at',
-      size = 10,
+      size = 25,
       page = 1,
       office_name,
       name,
@@ -43,8 +43,10 @@ export const getLawyersListService = async (
         'l.email',
         'l.address',
         'ci.name as city',
-        'pn.number as phone_number',
-        'pn.display_number as display_phone_number',
+        db.raw("string_agg(distinct pn.number, ', ') as phone_numbers"),
+        db.raw(
+          "string_agg(distinct pn.display_number, ', ') as display_phone_numbers",
+        ),
         db.raw('COUNT(c.id) as case_count'),
       )
       .leftJoin('cases as c', 'l.id', 'c.lawyer_id')
@@ -60,8 +62,6 @@ export const getLawyersListService = async (
         'l.address',
         'l.created_at',
         'ci.name',
-        'pn.number',
-        'pn.display_number',
       );
 
     switch (sortBy) {
@@ -80,14 +80,14 @@ export const getLawyersListService = async (
       case 'city':
         lawyersQuery.orderBy('ci.name', sort as string);
         break;
-      case 'display_phone_number':
-        lawyersQuery.orderBy('pn.display_number', sort as string);
+      case 'display_phone_numbers':
+        lawyersQuery.orderBy('phone_numbers', sort as string);
         break;
       case 'number_of_cases':
         lawyersQuery.orderBy('case_count', sort as string);
         break;
       default:
-        lawyersQuery.orderBy('l.created_at', 'asc');
+        lawyersQuery.orderBy('l.created_at', 'desc');
         break;
     }
 

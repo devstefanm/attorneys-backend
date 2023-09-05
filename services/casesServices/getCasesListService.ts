@@ -167,6 +167,9 @@ export const getCasesListService = async (
       case 'executors':
         casesQuery.orderBy('executors', sort as string);
         break;
+      case 'business_numbers':
+        casesQuery.orderBy('business_numbers', sort as string);
+        break;
       default:
         casesQuery.orderBy('c.created_at', 'desc');
         break;

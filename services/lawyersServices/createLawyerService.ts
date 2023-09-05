@@ -3,16 +3,24 @@ import catchErrorStack from 'utils/catchErrorStack';
 import mapApiToResponse, { IApiResponse } from 'utils/mapApiToResponse';
 import { ICreateEntityApiResponseData } from 'types/universalTypes';
 import { db } from 'attorneys-db';
+import { mapPhoneNumberForDisplay } from 'services/helpers/phoneNumbersHelpers';
 
 export const createLawyerService = async (
   req: Request,
   res: Response,
 ): Promise<IApiResponse<ICreateEntityApiResponseData | undefined>> => {
   try {
-    const { office_name, first_name, last_name, email, address, city_id } =
-      req.body;
+    const {
+      office_name,
+      first_name,
+      last_name,
+      email,
+      address,
+      city_id,
+      phone_numbers,
+    } = req.body;
 
-    let newLawyerId = null,
+    let newLawyerId: number | null = null,
       cityId: number | undefined;
 
     if (city_id) {
@@ -46,6 +54,25 @@ export const createLawyerService = async (
     let apiResponse: ICreateEntityApiResponseData | undefined = undefined;
 
     if (newLawyerId) {
+      if (phone_numbers && phone_numbers.length > 0) {
+        await Promise.all(
+          phone_numbers.map(async (phoneNumber: string) => {
+            const displayNumber = mapPhoneNumberForDisplay(phoneNumber);
+            const existingPhoneNumber = await db('phone_numbers')
+              .where({ display_number: displayNumber })
+              .first();
+
+            if (!existingPhoneNumber) {
+              await db('phone_numbers').insert({
+                number: phoneNumber,
+                display_number: displayNumber,
+                lawyer_id: newLawyerId,
+              });
+            }
+          }),
+        );
+      }
+
       apiResponse = {
         id: newLawyerId,
       };

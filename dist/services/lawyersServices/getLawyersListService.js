@@ -52,7 +52,7 @@ var getLawyersListService = function (req, res) { return __awaiter(void 0, void 
         switch (_j.label) {
             case 0:
                 _j.trys.push([0, 2, , 3]);
-                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'asc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'l.created_at' : _c, _d = _a.size, size = _d === void 0 ? 10 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, office_name = _a.office_name, name = _a.name, email = _a.email;
+                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'desc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'l.created_at' : _c, _d = _a.size, size = _d === void 0 ? 25 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, office_name = _a.office_name, name = _a.name, email = _a.email;
                 offset = (Number(page) - 1) * Number(size);
                 upperCaseLawyersList = 'lawyersList'.toUpperCase();
                 totalCountQuery = (0, attorneys_db_1.db)('lawyers as l')
@@ -62,13 +62,13 @@ var getLawyersListService = function (req, res) { return __awaiter(void 0, void 
                     .leftJoin('phone_numbers as pn', 'l.id', 'pn.lawyer_id')
                     .first();
                 lawyersQuery = (0, attorneys_db_1.db)('lawyers as l')
-                    .select('l.first_name', 'l.last_name', 'l.office_name', 'l.email', 'l.address', 'ci.name as city', 'pn.number as phone_number', 'pn.display_number as display_phone_number', attorneys_db_1.db.raw('COUNT(c.id) as case_count'))
+                    .select('l.first_name', 'l.last_name', 'l.office_name', 'l.email', 'l.address', 'ci.name as city', attorneys_db_1.db.raw("string_agg(distinct pn.number, ', ') as phone_numbers"), attorneys_db_1.db.raw("string_agg(distinct pn.display_number, ', ') as display_phone_numbers"), attorneys_db_1.db.raw('COUNT(c.id) as case_count'))
                     .leftJoin('cases as c', 'l.id', 'c.lawyer_id')
                     .leftJoin('cities as ci', 'l.city_id', 'ci.id')
                     .leftJoin('phone_numbers as pn', 'l.id', 'pn.lawyer_id')
                     .offset(offset)
                     .limit(Number(size))
-                    .groupBy('l.first_name', 'l.last_name', 'l.office_name', 'l.email', 'l.address', 'l.created_at', 'ci.name', 'pn.number', 'pn.display_number');
+                    .groupBy('l.first_name', 'l.last_name', 'l.office_name', 'l.email', 'l.address', 'l.created_at', 'ci.name');
                 switch (sortBy) {
                     case 'name':
                         lawyersQuery.orderBy('l.first_name', sort);
@@ -85,14 +85,14 @@ var getLawyersListService = function (req, res) { return __awaiter(void 0, void 
                     case 'city':
                         lawyersQuery.orderBy('ci.name', sort);
                         break;
-                    case 'display_phone_number':
-                        lawyersQuery.orderBy('pn.display_number', sort);
+                    case 'display_phone_numbers':
+                        lawyersQuery.orderBy('phone_numbers', sort);
                         break;
                     case 'number_of_cases':
                         lawyersQuery.orderBy('case_count', sort);
                         break;
                     default:
-                        lawyersQuery.orderBy('l.created_at', 'asc');
+                        lawyersQuery.orderBy('l.created_at', 'desc');
                         break;
                 }
                 if (name) {

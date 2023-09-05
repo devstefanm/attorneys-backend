@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { createExecutorService } from 'services/executorsServices/createExecutorService';
 import { getExecutorsListService } from 'services/executorsServices/getExecutorsListService';
 import { getExecutorsNamesService } from 'services/executorsServices/getExecutorsNamesService';
 
@@ -22,6 +23,14 @@ const executors = {
   ) => {
     try {
       res.json(await getExecutorsListService(req, res));
+    } catch (error) {
+      console.error({ error: error.message });
+      res.json({ error: error.message });
+    }
+  },
+  postExecutor: async (req: Request, res: Response, _next: NextFunction) => {
+    try {
+      res.json(await createExecutorService(req, res));
     } catch (error) {
       console.error({ error: error.message });
       res.json({ error: error.message });

@@ -52,7 +52,7 @@ var getCourtsListService = function (req, res) { return __awaiter(void 0, void 0
         switch (_j.label) {
             case 0:
                 _j.trys.push([0, 2, , 3]);
-                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'asc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'co.created_at' : _c, _d = _a.size, size = _d === void 0 ? 10 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, court = _a.court;
+                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'desc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'co.created_at' : _c, _d = _a.size, size = _d === void 0 ? 25 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, court = _a.court;
                 offset = (Number(page) - 1) * Number(size);
                 upperCaseCourtsList = 'courtsList'.toUpperCase();
                 totalCountQuery = (0, attorneys_db_1.db)('courts as co')
@@ -73,7 +73,7 @@ var getCourtsListService = function (req, res) { return __awaiter(void 0, void 0
                         courtsQuery.orderBy('case_count', sort);
                         break;
                     default:
-                        courtsQuery.orderBy('co.created_at', 'asc');
+                        courtsQuery.orderBy('co.created_at', 'desc');
                         break;
                 }
                 if (court) {

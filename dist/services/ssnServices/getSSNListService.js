@@ -51,7 +51,7 @@ var getSSNListService = function (req, res) { return __awaiter(void 0, void 0, v
         switch (_j.label) {
             case 0:
                 _j.trys.push([0, 2, , 3]);
-                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'asc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'ssn.created_at' : _c, _d = _a.size, size = _d === void 0 ? 10 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, ssn = _a.ssn;
+                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'desc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'ssn.created_at' : _c, _d = _a.size, size = _d === void 0 ? 25 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, ssn = _a.ssn;
                 offset = (Number(page) - 1) * Number(size);
                 upperCaseSSNList = 'ssnList'.toUpperCase();
                 totalCountQuery = (0, attorneys_db_1.db)('ssn_numbers as ssn')
@@ -72,7 +72,7 @@ var getSSNListService = function (req, res) { return __awaiter(void 0, void 0, v
                         ssnNumbersQuery.orderBy('case_count', sort);
                         break;
                     default:
-                        ssnNumbersQuery.orderBy('ssn.created_at', 'asc');
+                        ssnNumbersQuery.orderBy('ssn.created_at', 'desc');
                         break;
                 }
                 if (ssn) {

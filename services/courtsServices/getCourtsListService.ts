@@ -12,9 +12,9 @@ export const getCourtsListService = async (
 ): Promise<IApiResponse<ICourtsListApiResponseData | undefined>> => {
   try {
     const {
-      sort = 'asc',
+      sort = 'desc',
       sortBy = 'co.created_at',
-      size = 10,
+      size = 25,
       page = 1,
       court,
     } = req.query;
@@ -43,7 +43,7 @@ export const getCourtsListService = async (
         courtsQuery.orderBy('case_count', sort as string);
         break;
       default:
-        courtsQuery.orderBy('co.created_at', 'asc');
+        courtsQuery.orderBy('co.created_at', 'desc');
         break;
     }
 
