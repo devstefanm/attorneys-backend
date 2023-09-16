@@ -35,6 +35,7 @@ export const getCasesListService = async (
       package: package_name,
       business_numbers,
       filter = 'active',
+      clientsFilter = '',
     } = req.query;
 
     const offset = (Number(page) - 1) * Number(size);
@@ -84,7 +85,7 @@ export const getCasesListService = async (
         'pck.package_name as package',
         'st.name as status',
         db.raw(
-          "string_agg(e.first_name || ' ' || e.last_name, ', ') as executors",
+          "string_agg(distinct e.first_name || ' ' || e.last_name, ', ') as executors",
         ),
         db.raw("string_agg(distinct bn.number, ', ') as business_numbers"),
       )
@@ -128,6 +129,11 @@ export const getCasesListService = async (
     if (filter) {
       casesQuery.where('c.state', filter);
       totalCountQuery.where('c.state', filter);
+    }
+
+    if (clientsFilter) {
+      casesQuery.where('c.client_id', clientsFilter);
+      totalCountQuery.where('c.client_id', clientsFilter);
     }
 
     switch (sortBy) {

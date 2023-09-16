@@ -6,20 +6,12 @@ import mapApiToResponse, { IApiResponse } from 'utils/mapApiToResponse';
 import { IPeople } from 'types/peopleTypes';
 import { IOrganization } from 'types/organizationsTypes';
 import { mapPhoneNumberForDisplay } from '../helpers/phoneNumbersHelpers';
-import { casesSchema } from 'middlewares/schemas/casesSchemas';
 
 export const createCaseService = async (
   req: Request,
   res: Response,
 ): Promise<IApiResponse<ICreateCaseApiResponseData | undefined>> => {
   try {
-    // const { error } = casesSchema.validate(req.body);
-
-    // if (error) {
-    //   res.status(400);
-    //   return catchErrorStack(res, error.details[0].message);
-    // }
-
     const {
       first_name,
       last_name,
@@ -47,6 +39,14 @@ export const createCaseService = async (
       principal,
       interest,
     } = req.body;
+
+    if (business_numbers?.concat(phone_numbers, executor_ids).includes(null)) {
+      res.status(500);
+      catchErrorStack(
+        res,
+        'Phone numbers, beiliffs nor business numbers cannot include null',
+      );
+    }
 
     let debtorId: number | undefined;
 
@@ -112,7 +112,7 @@ export const createCaseService = async (
 
         if (existingOrganization) {
           if (
-            existingOrganization.name.toLowerCase() !==
+            existingOrganization.name?.toLowerCase() !==
             organizationName.toLowerCase()
           ) {
             await db('organizations')
@@ -248,36 +248,33 @@ export const createCaseService = async (
         .returning('id')
     )[0].id;
 
-    if (business_numbers.concat(phone_numbers, executor_ids).includes(null)) {
-      res.status(500);
-      catchErrorStack(
-        res,
-        'Phone numbers, beiliffs nor business numbers cannot include null',
-      );
-    }
-
     if (business_numbers && business_numbers.length > 0) {
       await Promise.all(
         business_numbers.map(async (businessNumber: string) => {
           // Check if the business number already exists
-          const existingBusinessNumber = await db('business_numbers')
-            .where({ number: businessNumber })
-            .first();
+          const existingBusinessNumber = (
+            await db('business_numbers')
+              .select('id')
+              .where({ number: businessNumber })
+              .first()
+          ).id;
+
+          let businessNumberId: number = existingBusinessNumber;
 
           if (!existingBusinessNumber) {
-            const businessNumberId = (
+            businessNumberId = (
               await db('business_numbers')
                 .insert({
                   number: businessNumber,
                 })
                 .returning('id')
             )[0].id;
-
-            await db('case_business_numbers').insert({
-              business_number_id: businessNumberId,
-              case_id: newCaseId,
-            });
           }
+
+          await db('case_business_numbers').insert({
+            business_number_id: businessNumberId,
+            case_id: newCaseId,
+          });
         }),
       );
     }

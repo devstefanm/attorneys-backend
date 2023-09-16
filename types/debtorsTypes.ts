@@ -7,10 +7,13 @@ export enum EDebtorType {
 
 export interface IDebtor extends IEntityMetadata {
   id?: number;
-  type: EDebtorType;
-  id_legal: boolean;
-  cession: boolean;
-  address: string;
-  email: string;
-  zip_code: string;
+  type?: EDebtorType;
+  id_legal?: boolean;
+  cession?: boolean;
+  address?: string;
+  email?: string;
+  zip_code?: string;
+  city_id?: number;
+  person_id?: number;
+  organization_id?: number;
 }
