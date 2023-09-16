@@ -17,7 +17,7 @@ export interface ITransaction extends IEntityMetadata {
   payment_date: string;
 }
 
-export interface ITransactionForList extends ITransaction, ICase, IExcerpt {}
+export interface ITransactionForList extends ITransaction, IExcerpt {}
 
 export interface ITransactionsListApiResponseData extends ITableResponseData {
   transactions: ITransactionForList[];
