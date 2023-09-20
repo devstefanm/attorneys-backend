@@ -2,6 +2,7 @@ import { editCaseService } from './../services/casesServices/editCaseService';
 import { NextFunction, Request, Response } from 'express';
 import { createCaseService } from 'services/casesServices/createCaseService';
 import { deleteCaseService } from 'services/casesServices/deleteCaseService';
+import { exportCasesListService } from 'services/casesServices/exportCasesListService';
 import { filterCaseNumbersService } from 'services/casesServices/filterCaseNumbersService';
 import { getCaseService } from 'services/casesServices/getCaseService';
 import { getCasesListService } from 'services/casesServices/getCasesListService';
@@ -54,6 +55,14 @@ const cases = {
   deleteCase: async (req: Request, res: Response, _next: NextFunction) => {
     try {
       res.json(await deleteCaseService(req, res));
+    } catch (error) {
+      console.error({ error: error.message });
+      res.json({ error: error.message });
+    }
+  },
+  exportCasesList: async (req: Request, res: Response, _next: NextFunction) => {
+    try {
+      res.json(await exportCasesListService(req, res));
     } catch (error) {
       console.error({ error: error.message });
       res.json({ error: error.message });

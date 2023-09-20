@@ -11,6 +11,7 @@ const {
   patchCase,
   deleteCase,
   getCase,
+  exportCasesList,
 } = cases;
 
 router.get('/cases-list', authenticateToken, getCasesList);
@@ -18,6 +19,7 @@ router.get('/case/:caseId', authenticateToken, getCase);
 router.get('/filter-case-numbers', authenticateToken, getfilteredCaseNumbers);
 
 router.post('/cases', authenticateToken, postCase);
+router.post('/export-cases-list', authenticateToken, exportCasesList);
 
 router.patch('/case/:caseId', authenticateToken, patchCase);
 

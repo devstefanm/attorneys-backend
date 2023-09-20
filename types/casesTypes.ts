@@ -19,7 +19,7 @@ export interface ICase extends IEntityMetadata, IDebtor {
   contract_number?: number;
   state?: EState;
   closing_date?: string;
-  business_number?: number;
+  business_numbers?: string[];
   principal?: number;
   interest?: number;
   lawyer_id?: number;
@@ -28,6 +28,8 @@ export interface ICase extends IEntityMetadata, IDebtor {
   ssn_number_id?: number;
   package_id?: number;
   debtor_id?: number;
+  phone_numbers?: string[];
+  executors?: string[];
 }
 
 export interface ICaseForList
@@ -123,4 +125,8 @@ export interface ICaseApiResponseData {
     number: string;
   }[];
   phone_numbers: string[];
+}
+
+export interface ICaseForExport {
+  [key: string]: string | null | string[];
 }
