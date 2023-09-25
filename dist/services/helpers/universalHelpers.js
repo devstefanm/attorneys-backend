@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -39,7 +50,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postShortNameServiceTemplate = exports.generateDecimalSearchQuery = exports.generateBigIntSearchQuery = exports.specialCharactersChecker = exports.generateShortNameSearchQuery = exports.generateFullNameSearchQuery = exports.getFullNamesServiceTemplate = exports.getShortNamesServiceTemplate = void 0;
+exports.debtorNameGenerator = exports.jmbgAndPibGenerator = exports.findRecordByNameOrCreateNew = exports.postShortNameServiceTemplate = exports.generateDecimalSearchQuery = exports.generateBigIntSearchQuery = exports.specialCharactersChecker = exports.generateShortNameSearchQuery = exports.generateFullNameSearchQuery = exports.getFullNamesServiceTemplate = exports.getShortNamesServiceTemplate = void 0;
 var attorneys_db_1 = require("../../attorneys-db");
 var mapApiToResponse_1 = __importDefault(require("../../utils/mapApiToResponse"));
 var specialCharacters_1 = __importDefault(require("../../utils/specialCharacters"));
@@ -237,3 +248,50 @@ var postShortNameServiceTemplate = function (entity) {
     }); };
 };
 exports.postShortNameServiceTemplate = postShortNameServiceTemplate;
+var findRecordByNameOrCreateNew = function (name, entity, nameField) { return __awaiter(void 0, void 0, void 0, function () {
+    var existingId;
+    var _a;
+    var _b, _c;
+    return __generator(this, function (_d) {
+        switch (_d.label) {
+            case 0: return [4 /*yield*/, (0, attorneys_db_1.db)(entity).select('id').where(nameField, name).first()];
+            case 1:
+                existingId = (_b = (_d.sent())) === null || _b === void 0 ? void 0 : _b.id;
+                if (!!existingId) return [3 /*break*/, 3];
+                return [4 /*yield*/, (0, attorneys_db_1.db)(entity)
+                        .insert((_a = {},
+                        _a[nameField] = name,
+                        _a))
+                        .returning('id')];
+            case 2: return [2 /*return*/, (_c = (_d.sent())[0]) === null || _c === void 0 ? void 0 : _c.id];
+            case 3: return [2 /*return*/, existingId];
+        }
+    });
+}); };
+exports.findRecordByNameOrCreateNew = findRecordByNameOrCreateNew;
+var jmbgAndPibGenerator = function (singleCase) {
+    var transformedCase = {};
+    if (singleCase.is_legal) {
+        transformedCase = __assign(__assign({}, singleCase), { pib: singleCase.jmbg_pib });
+    }
+    else {
+        transformedCase = __assign(__assign({}, singleCase), { jmbg: singleCase.jmbg_pib });
+    }
+    delete transformedCase.jmbg_pib;
+    return transformedCase;
+};
+exports.jmbgAndPibGenerator = jmbgAndPibGenerator;
+var debtorNameGenerator = function (singleCase) {
+    var transformedCase = {};
+    var name = singleCase.name;
+    if (!singleCase.is_legal) {
+        var words = name.split(' ');
+        var firstName = words.shift();
+        var lastName = words.join(' ');
+        transformedCase = __assign(__assign({}, singleCase), { first_name: firstName, last_name: lastName });
+        delete transformedCase.name;
+        return transformedCase;
+    }
+    return singleCase;
+};
+exports.debtorNameGenerator = debtorNameGenerator;

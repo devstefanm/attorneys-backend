@@ -36,9 +36,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var editCaseService_1 = require("../services/casesServices/editCaseService");
 var createCaseService_1 = require("../services/casesServices/createCaseService");
+var deleteCaseService_1 = require("../services/casesServices/deleteCaseService");
+var exportCasesListService_1 = require("../services/casesServices/exportCasesListService");
 var filterCaseNumbersService_1 = require("../services/casesServices/filterCaseNumbersService");
+var getCaseService_1 = require("../services/casesServices/getCaseService");
 var getCasesListService_1 = require("../services/casesServices/getCasesListService");
+var importCasesListService_1 = require("../services/casesServices/importCasesListService");
 var cases = {
     getCasesList: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
         var _a, _b, error_1;
@@ -60,14 +65,14 @@ var cases = {
             }
         });
     }); },
-    postCase: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+    getCase: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
         var _a, _b, error_2;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
                     _c.trys.push([0, 2, , 3]);
                     _b = (_a = res).json;
-                    return [4 /*yield*/, (0, createCaseService_1.createCaseService)(req, res)];
+                    return [4 /*yield*/, (0, getCaseService_1.getCaseService)(req, res)];
                 case 1:
                     _b.apply(_a, [_c.sent()]);
                     return [3 /*break*/, 3];
@@ -95,6 +100,106 @@ var cases = {
                     error_3 = _c.sent();
                     console.error({ error: error_3.message });
                     res.json({ error: error_3.message });
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    }); },
+    postCase: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+        var _a, _b, error_4;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _c.trys.push([0, 2, , 3]);
+                    _b = (_a = res).json;
+                    return [4 /*yield*/, (0, createCaseService_1.createCaseService)(req, res)];
+                case 1:
+                    _b.apply(_a, [_c.sent()]);
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_4 = _c.sent();
+                    console.error({ error: error_4.message });
+                    res.json({ error: error_4.message });
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    }); },
+    patchCase: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+        var _a, _b, error_5;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _c.trys.push([0, 2, , 3]);
+                    _b = (_a = res).json;
+                    return [4 /*yield*/, (0, editCaseService_1.editCaseService)(req, res)];
+                case 1:
+                    _b.apply(_a, [_c.sent()]);
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_5 = _c.sent();
+                    console.error({ error: error_5.message });
+                    res.json({ error: error_5.message });
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    }); },
+    deleteCase: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+        var _a, _b, error_6;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _c.trys.push([0, 2, , 3]);
+                    _b = (_a = res).json;
+                    return [4 /*yield*/, (0, deleteCaseService_1.deleteCaseService)(req, res)];
+                case 1:
+                    _b.apply(_a, [_c.sent()]);
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_6 = _c.sent();
+                    console.error({ error: error_6.message });
+                    res.json({ error: error_6.message });
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    }); },
+    exportCasesList: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+        var _a, _b, error_7;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _c.trys.push([0, 2, , 3]);
+                    _b = (_a = res).json;
+                    return [4 /*yield*/, (0, exportCasesListService_1.exportCasesListService)(req, res)];
+                case 1:
+                    _b.apply(_a, [_c.sent()]);
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_7 = _c.sent();
+                    console.error({ error: error_7.message });
+                    res.json({ error: error_7.message });
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    }); },
+    importCasesList: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+        var _a, _b, error_8;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _c.trys.push([0, 2, , 3]);
+                    _b = (_a = res).json;
+                    return [4 /*yield*/, (0, importCasesListService_1.importCasesListService)(req, res)];
+                case 1:
+                    _b.apply(_a, [_c.sent()]);
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_8 = _c.sent();
+                    console.error({ error: error_8.message });
+                    res.json({ error: error_8.message });
                     return [3 /*break*/, 3];
                 case 3: return [2 /*return*/];
             }

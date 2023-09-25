@@ -40,9 +40,28 @@ export const editCaseService = async (
       package_id,
       principal,
       interest,
+      state,
+      status,
+      old_payment,
+      our_taxes,
+      warning_price,
+      entering_date,
+      lawyer_hand_over_date,
+      comment,
+      limitation_objection,
     } = req.body;
 
     const updatedCaseFields: ICase = {};
+
+    if (case_number === '' || contract_number === '') {
+      res.status(400);
+      return mapApiToResponse(400, `message.no_case_or_contract_number`);
+    }
+
+    if (client_id === null) {
+      res.status(400);
+      return mapApiToResponse(400, `message.no_client`);
+    }
 
     // Fetch the existing case details
     const existingCase: ICase = await db('cases as c')
@@ -57,7 +76,16 @@ export const editCaseService = async (
         'c.package_id',
         'c.principal',
         'c.interest',
+        'c.status_id',
+        'c.old_payment',
+        'c.our_taxes',
+        'c.warning_price',
+        'c.entering_date',
+        'c.lawyer_hand_over_date',
+        'c.comment',
+        'c.limitation_objection',
         'c.debtor_id',
+        'c.state',
         'd.person_id',
         'd.organization_id',
       )
@@ -334,6 +362,24 @@ export const editCaseService = async (
       );
     }
 
+    let statusId: number | undefined;
+
+    if (status) {
+      statusId = (
+        await db('statuses').select('id').where('name', status).first()
+      )?.id;
+
+      if (!statusId) {
+        statusId = (
+          await db('statuses').insert({ name: status }).returning('id')
+        )[0].id;
+      }
+
+      if (statusId !== undefined && existingCase.status_id !== statusId) {
+        updatedCaseFields.status_id = statusId;
+      }
+    }
+
     if (case_number !== undefined && existingCase.case_number !== case_number) {
       updatedCaseFields.case_number = case_number;
     }
@@ -385,6 +431,44 @@ export const editCaseService = async (
 
     if (debtorId && existingCase.debtor_id !== debtorId) {
       updatedCaseFields.debtor_id = debtorId;
+    }
+
+    if (old_payment && existingCase.old_payment !== old_payment) {
+      updatedCaseFields.old_payment = old_payment;
+    }
+
+    if (our_taxes && existingCase.our_taxes !== our_taxes) {
+      updatedCaseFields.our_taxes = our_taxes;
+    }
+
+    if (warning_price && existingCase.warning_price !== warning_price) {
+      updatedCaseFields.warning_price = warning_price;
+    }
+
+    if (entering_date && existingCase.entering_date !== entering_date) {
+      updatedCaseFields.entering_date = entering_date;
+    }
+
+    if (
+      lawyer_hand_over_date &&
+      existingCase.lawyer_hand_over_date !== lawyer_hand_over_date
+    ) {
+      updatedCaseFields.lawyer_hand_over_date = lawyer_hand_over_date;
+    }
+
+    if (comment && existingCase.comment !== comment) {
+      updatedCaseFields.comment = comment;
+    }
+
+    if (
+      limitation_objection &&
+      existingCase.limitation_objection !== limitation_objection
+    ) {
+      updatedCaseFields.limitation_objection = limitation_objection;
+    }
+
+    if (state && existingCase.state !== state) {
+      updatedCaseFields.state = state;
     }
 
     if (Object.keys(updatedCaseFields).length > 0) {

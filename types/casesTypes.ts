@@ -1,3 +1,4 @@
+import { CellValue } from 'exceljs';
 import { ICaseClientData } from './clientsTypes';
 import { ICaseCourtData } from './courtsTypes';
 import { IDebtor } from './debtorsTypes';
@@ -15,11 +16,11 @@ export enum EState {
 
 export interface ICase extends IEntityMetadata, IDebtor {
   id?: number;
-  case_number?: number;
-  contract_number?: number;
+  case_number?: string;
+  contract_number?: string;
   state?: EState;
   closing_date?: string;
-  business_numbers?: string[];
+  business_numbers?: string[] | null[];
   principal?: number;
   interest?: number;
   lawyer_id?: number;
@@ -30,17 +31,31 @@ export interface ICase extends IEntityMetadata, IDebtor {
   debtor_id?: number;
   phone_numbers?: string[];
   executors?: string[];
+  client?: string;
+  court?: string;
+  ssn_number?: string;
+  executor_ids?: number[];
+  jmbg_pib?: string;
+  old_payment?: number;
+  our_taxes?: number;
+  warning_price?: number;
+  entering_date?: string;
+  lawyer_hand_over_date?: string;
+  comment?: string;
+  limitation_objection?: boolean;
+  status_id?: number;
+  status?: string;
 }
 
 export interface ICaseForList
   extends ICase,
     IPeople,
     IOrganization,
-    ICaseLawyerData,
-    ICaseClientData,
-    ICaseCourtData,
-    ICaseSSNData,
-    ICasePackageData {}
+    Partial<ICaseLawyerData>,
+    Partial<ICaseClientData>,
+    Partial<ICaseCourtData>,
+    Partial<ICaseSSNData>,
+    Partial<ICasePackageData> {}
 
 export interface ICasesListApiResponseData extends ITableResponseData {
   cases: ICaseForList[];
@@ -129,4 +144,8 @@ export interface ICaseApiResponseData {
 
 export interface ICaseForExport {
   [key: string]: string | null | string[];
+}
+
+export interface ICaseForImport {
+  [key: string]: string | string[] | undefined | null | CellValue;
 }

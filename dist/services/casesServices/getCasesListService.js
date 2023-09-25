@@ -46,13 +46,13 @@ var mapApiToResponse_1 = __importDefault(require("../../utils/mapApiToResponse")
 var universalHelpers_1 = require("../helpers/universalHelpers");
 var casesHelpers_1 = require("../helpers/casesHelpers");
 var getCasesListService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b, sort, _c, sortBy, _d, size, _e, page, name, jmbg_pib, case_number, contract_number, lawyer, executors, ssn, package_name, business_numbers, _f, filter, offset, upperCaseCasesList, totalCountQuery, casesQuery, nameForSearch, namesArr_1, jmbgPibNumber, caseNumber, contractNumber, lawyerForSearch, lawyersArr_1, ssnNumber, packageName, packageNamesArr, businesNumberForSearch, businesNumbersArr, conditions, executorForSearch, executorsArr, conditions, _g, totalCountResult, cases, totalCases, totalPages, apiResponse, error_1;
-    var _h, _j;
-    return __generator(this, function (_k) {
-        switch (_k.label) {
+    var _a, _b, sort, _c, sortBy, _d, size, _e, page, name, jmbg_pib, case_number, contract_number, lawyer, executors, ssn, package_name, business_numbers, _f, filter, _g, clientsFilter, offset, upperCaseCasesList, totalCountQuery, casesQuery, nameForSearch, namesArr_1, jmbgPibNumber, caseNumber, contractNumber, lawyerForSearch, lawyersArr_1, ssnNumber, packageName, packageNamesArr, businesNumberForSearch, businesNumbersArr, conditions, executorForSearch, executorsArr, conditions, _h, totalCountResult, cases, totalCases, totalPages, apiResponse, error_1;
+    var _j, _k;
+    return __generator(this, function (_l) {
+        switch (_l.label) {
             case 0:
-                _k.trys.push([0, 2, , 3]);
-                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'desc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'c.created_at' : _c, _d = _a.size, size = _d === void 0 ? 25 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, name = _a.name, jmbg_pib = _a.jmbg_pib, case_number = _a.case_number, contract_number = _a.contract_number, lawyer = _a.lawyer, executors = _a.executors, ssn = _a.ssn, package_name = _a.package, business_numbers = _a.business_numbers, _f = _a.filter, filter = _f === void 0 ? 'active' : _f;
+                _l.trys.push([0, 2, , 3]);
+                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'desc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'c.created_at' : _c, _d = _a.size, size = _d === void 0 ? 25 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, name = _a.name, jmbg_pib = _a.jmbg_pib, case_number = _a.case_number, contract_number = _a.contract_number, lawyer = _a.lawyer, executors = _a.executors, ssn = _a.ssn, package_name = _a.package, business_numbers = _a.business_numbers, _f = _a.filter, filter = _f === void 0 ? 'active' : _f, _g = _a.clientsFilter, clientsFilter = _g === void 0 ? '' : _g;
                 offset = (Number(page) - 1) * Number(size);
                 upperCaseCasesList = 'casesList'.toUpperCase();
                 totalCountQuery = (0, attorneys_db_1.db)('cases as c');
@@ -75,7 +75,7 @@ var getCasesListService = function (req, res) { return __awaiter(void 0, void 0,
                         .first();
                 }
                 casesQuery = (0, attorneys_db_1.db)('cases as c')
-                    .select('c.id', 'c.case_number', 'c.contract_number', 'c.state', 'c.principal', 'c.interest', 'd.is_legal', 'd.cession', 'p.first_name', 'p.last_name', 'p.jmbg', 'o.name', 'o.pib', 'l.office_name as lawyer_office_name', 'l.first_name as lawyer_first_name', 'l.last_name as lawyer_last_name', 's.ssn as ssn', 'pck.package_name as package', 'st.name as status', attorneys_db_1.db.raw("string_agg(e.first_name || ' ' || e.last_name, ', ') as executors"), attorneys_db_1.db.raw("string_agg(distinct bn.number, ', ') as business_numbers"))
+                    .select('c.id', 'c.case_number', 'c.contract_number', 'c.state', 'c.principal', 'c.interest', 'd.is_legal', 'd.cession', 'p.first_name', 'p.last_name', 'p.jmbg', 'o.name', 'o.pib', 'l.office_name as lawyer_office_name', 'l.first_name as lawyer_first_name', 'l.last_name as lawyer_last_name', 's.ssn as ssn', 'pck.package_name as package', 'st.name as status', attorneys_db_1.db.raw("string_agg(distinct e.first_name || ' ' || e.last_name, ', ') as executors"), attorneys_db_1.db.raw("string_agg(distinct bn.number, ', ') as business_numbers"))
                     .leftJoin('debtors as d', 'c.debtor_id', 'd.id')
                     .leftJoin('people as p', 'd.person_id', 'p.id')
                     .leftJoin('organizations as o', 'd.organization_id', 'o.id')
@@ -95,6 +95,10 @@ var getCasesListService = function (req, res) { return __awaiter(void 0, void 0,
                 if (filter) {
                     casesQuery.where('c.state', filter);
                     totalCountQuery.where('c.state', filter);
+                }
+                if (clientsFilter) {
+                    casesQuery.where('c.client_id', clientsFilter);
+                    totalCountQuery.where('c.client_id', clientsFilter);
                 }
                 switch (sortBy) {
                     case 'name':
@@ -221,7 +225,7 @@ var getCasesListService = function (req, res) { return __awaiter(void 0, void 0,
                         casesQuery,
                     ])];
             case 1:
-                _g = _k.sent(), totalCountResult = _g[0], cases = _g[1];
+                _h = _l.sent(), totalCountResult = _h[0], cases = _h[1];
                 if (cases.length === 0 || !totalCountResult) {
                     res.status(404);
                     return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "".concat(upperCaseCasesList, ".NOT_FOUND"))];
@@ -233,8 +237,8 @@ var getCasesListService = function (req, res) { return __awaiter(void 0, void 0,
                 apiResponse = {
                     cases: cases,
                     meta: {
-                        sort: (_h = sort) !== null && _h !== void 0 ? _h : 'asc',
-                        sortBy: (_j = sortBy) !== null && _j !== void 0 ? _j : 'created_at',
+                        sort: (_j = sort) !== null && _j !== void 0 ? _j : 'asc',
+                        sortBy: (_k = sortBy) !== null && _k !== void 0 ? _k : 'created_at',
                         total_number: totalCases,
                         total_pages: totalPages,
                         page: page,
@@ -243,7 +247,7 @@ var getCasesListService = function (req, res) { return __awaiter(void 0, void 0,
                 res.status(200);
                 return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "".concat(upperCaseCasesList, ".SUCCESSFULY_RETRIEVED_NAMES"), apiResponse)];
             case 2:
-                error_1 = _k.sent();
+                error_1 = _l.sent();
                 return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_1)];
             case 3: return [2 /*return*/];
         }

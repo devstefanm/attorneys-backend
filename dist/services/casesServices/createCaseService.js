@@ -45,36 +45,60 @@ var catchErrorStack_1 = __importDefault(require("../../utils/catchErrorStack"));
 var mapApiToResponse_1 = __importDefault(require("../../utils/mapApiToResponse"));
 var phoneNumbersHelpers_1 = require("../helpers/phoneNumbersHelpers");
 var createCaseService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, first_name, last_name, jmbg, employed, employer_id, executor_ids, name, pib, cession, address, email, zip_code, city_id, case_number, contract_number, closing_date, business_numbers, phone_numbers, lawyer_id, client_id, court_id, ssn_number_id, package_id, principal, interest, debtorId_1, jmbgNumber, existingPerson, newPersonId, organizationName, organizationPib, existingOrganization, existingOrganizations, newOrganizationId, newOrganizationId, newOrganizationId, newCaseId_1, _i, executor_ids_1, executor_id, apiResponse, error_1;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
+    var _a, first_name, last_name, jmbg, employed, employer_id, executor_ids, name, pib, cession, address, email, zip_code, city_id, case_number, contract_number, closing_date, business_numbers, phone_numbers, lawyer_id, client_id, court_id, ssn_number_id, package_id, principal, interest, status, old_payment, our_taxes, warning_price, entering_date, lawyer_hand_over_date, comment, limitation_objection, debtorId_1, statusId, jmbgNumber, existingPerson, newPersonId, organizationName, organizationPib, existingOrganization, existingOrganizations, newOrganizationId, newOrganizationId, newOrganizationId, newCaseId_1, _i, executor_ids_1, executor_id, apiResponse, error_1;
+    var _b, _c, _d, _e, _f;
+    return __generator(this, function (_g) {
+        switch (_g.label) {
             case 0:
-                _b.trys.push([0, 39, , 40]);
-                _a = req.body, first_name = _a.first_name, last_name = _a.last_name, jmbg = _a.jmbg, employed = _a.employed, employer_id = _a.employer_id, executor_ids = _a.executor_ids, name = _a.name, pib = _a.pib, cession = _a.cession, address = _a.address, email = _a.email, zip_code = _a.zip_code, city_id = _a.city_id, case_number = _a.case_number, contract_number = _a.contract_number, closing_date = _a.closing_date, business_numbers = _a.business_numbers, phone_numbers = _a.phone_numbers, lawyer_id = _a.lawyer_id, client_id = _a.client_id, court_id = _a.court_id, ssn_number_id = _a.ssn_number_id, package_id = _a.package_id, principal = _a.principal, interest = _a.interest;
-                if (!jmbg) return [3 /*break*/, 8];
+                _g.trys.push([0, 42, , 43]);
+                _a = req.body, first_name = _a.first_name, last_name = _a.last_name, jmbg = _a.jmbg, employed = _a.employed, employer_id = _a.employer_id, executor_ids = _a.executor_ids, name = _a.name, pib = _a.pib, cession = _a.cession, address = _a.address, email = _a.email, zip_code = _a.zip_code, city_id = _a.city_id, case_number = _a.case_number, contract_number = _a.contract_number, closing_date = _a.closing_date, business_numbers = _a.business_numbers, phone_numbers = _a.phone_numbers, lawyer_id = _a.lawyer_id, client_id = _a.client_id, court_id = _a.court_id, ssn_number_id = _a.ssn_number_id, package_id = _a.package_id, principal = _a.principal, interest = _a.interest, status = _a.status, old_payment = _a.old_payment, our_taxes = _a.our_taxes, warning_price = _a.warning_price, entering_date = _a.entering_date, lawyer_hand_over_date = _a.lawyer_hand_over_date, comment = _a.comment, limitation_objection = _a.limitation_objection;
+                if (business_numbers === null || business_numbers === void 0 ? void 0 : business_numbers.concat(phone_numbers, executor_ids).includes(null)) {
+                    res.status(500);
+                    (0, catchErrorStack_1.default)(res, 'Phone numbers, beiliffs nor business numbers cannot include null');
+                }
+                if (!contract_number || !case_number) {
+                    res.status(400);
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "message.no_case_or_contract_number")];
+                }
+                if (client_id) {
+                    res.status(400);
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "message.no_client")];
+                }
+                statusId = void 0;
+                if (!status) return [3 /*break*/, 3];
+                return [4 /*yield*/, (0, attorneys_db_1.db)('statuses').select('id').where('name', status).first()];
+            case 1:
+                statusId = (_b = (_g.sent())) === null || _b === void 0 ? void 0 : _b.id;
+                if (!!statusId) return [3 /*break*/, 3];
+                return [4 /*yield*/, (0, attorneys_db_1.db)('statuses').insert({ name: status }).returning('id')];
+            case 2:
+                statusId = (_g.sent())[0].id;
+                _g.label = 3;
+            case 3:
+                if (!jmbg) return [3 /*break*/, 11];
                 jmbgNumber = jmbg;
                 return [4 /*yield*/, (0, attorneys_db_1.db)('people')
                         .where('jmbg', jmbgNumber)
                         .first()];
-            case 1:
-                existingPerson = _b.sent();
-                if (!existingPerson) return [3 /*break*/, 4];
+            case 4:
+                existingPerson = _g.sent();
+                if (!(existingPerson === null || existingPerson === void 0 ? void 0 : existingPerson.id)) return [3 /*break*/, 7];
                 return [4 /*yield*/, (0, attorneys_db_1.db)('people').where('id', existingPerson.id).update({
                         first_name: first_name,
                         last_name: last_name,
                         employed: employed,
                         employer_id: employer_id,
                     })];
-            case 2:
-                _b.sent();
+            case 5:
+                _g.sent();
                 return [4 /*yield*/, (0, attorneys_db_1.db)('debtors')
                         .select('id')
                         .where('person_id', existingPerson.id)
                         .first()];
-            case 3:
-                debtorId_1 = (_b.sent()).id;
-                return [3 /*break*/, 7];
-            case 4: return [4 /*yield*/, (0, attorneys_db_1.db)('people')
+            case 6:
+                debtorId_1 = (_c = (_g.sent())) === null || _c === void 0 ? void 0 : _c.id;
+                return [3 /*break*/, 10];
+            case 7: return [4 /*yield*/, (0, attorneys_db_1.db)('people')
                     .insert({
                     jmbg: jmbg,
                     first_name: first_name,
@@ -83,8 +107,8 @@ var createCaseService = function (req, res) { return __awaiter(void 0, void 0, v
                     employer_id: employer_id,
                 })
                     .returning('id')];
-            case 5:
-                newPersonId = (_b.sent())[0].id;
+            case 8:
+                newPersonId = (_g.sent())[0].id;
                 return [4 /*yield*/, (0, attorneys_db_1.db)('debtors')
                         .insert({
                         type: 'person',
@@ -95,123 +119,96 @@ var createCaseService = function (req, res) { return __awaiter(void 0, void 0, v
                         email: email,
                         zip_code: zip_code,
                         city_id: city_id,
-                        entity_id: 1,
                     })
                         .returning('id')];
-            case 6:
-                debtorId_1 = (_b.sent())[0].id;
-                _b.label = 7;
-            case 7: return [3 /*break*/, 29];
-            case 8:
-                if (!(name || pib)) return [3 /*break*/, 29];
+            case 9:
+                debtorId_1 = (_g.sent())[0].id;
+                _g.label = 10;
+            case 10: return [3 /*break*/, 32];
+            case 11:
+                if (!(name || pib)) return [3 /*break*/, 32];
                 organizationName = name;
                 organizationPib = pib;
                 existingOrganization = void 0;
-                if (!organizationPib) return [3 /*break*/, 13];
+                if (!organizationPib) return [3 /*break*/, 16];
                 return [4 /*yield*/, (0, attorneys_db_1.db)('organizations')
                         .where('pib', organizationPib)
                         .first()];
-            case 9:
-                existingOrganization = _b.sent();
-                if (!existingOrganization) return [3 /*break*/, 13];
-                if (!(existingOrganization.name.toLowerCase() !==
-                    organizationName.toLowerCase())) return [3 /*break*/, 11];
+            case 12:
+                existingOrganization = _g.sent();
+                if (!(existingOrganization === null || existingOrganization === void 0 ? void 0 : existingOrganization.id)) return [3 /*break*/, 16];
+                if (!(((_d = existingOrganization.name) === null || _d === void 0 ? void 0 : _d.toLowerCase()) !==
+                    organizationName.toLowerCase())) return [3 /*break*/, 14];
                 return [4 /*yield*/, (0, attorneys_db_1.db)('organizations')
                         .where('id', existingOrganization.id)
                         .update({ name: organizationName })];
-            case 10:
-                _b.sent();
-                _b.label = 11;
-            case 11: return [4 /*yield*/, (0, attorneys_db_1.db)('debtors')
+            case 13:
+                _g.sent();
+                _g.label = 14;
+            case 14: return [4 /*yield*/, (0, attorneys_db_1.db)('debtors')
                     .select('id')
                     .where('organization_id', existingOrganization.id)
                     .first()];
-            case 12:
-                debtorId_1 = (_b.sent()).id;
-                _b.label = 13;
-            case 13:
-                if (!!existingOrganization) return [3 /*break*/, 29];
+            case 15:
+                debtorId_1 = (_e = (_g.sent())) === null || _e === void 0 ? void 0 : _e.id;
+                _g.label = 16;
+            case 16:
+                if (!!(existingOrganization === null || existingOrganization === void 0 ? void 0 : existingOrganization.id)) return [3 /*break*/, 32];
                 return [4 /*yield*/, (0, attorneys_db_1.db)('organizations')
                         .select('id', 'name', 'pib')
                         .where('name', organizationName)];
-            case 14:
-                existingOrganizations = _b.sent();
-                if (!(existingOrganizations.length !== 0)) return [3 /*break*/, 26];
-                if (!(existingOrganizations.length === 1)) return [3 /*break*/, 22];
+            case 17:
+                existingOrganizations = _g.sent();
+                if (!(existingOrganizations.length !== 0)) return [3 /*break*/, 29];
+                if (!(existingOrganizations.length === 1)) return [3 /*break*/, 25];
                 existingOrganization = existingOrganizations[0];
-                if (!!existingOrganization.pib) return [3 /*break*/, 18];
-                if (!organizationPib) return [3 /*break*/, 16];
+                if (!!existingOrganization.pib) return [3 /*break*/, 21];
+                if (!organizationPib) return [3 /*break*/, 19];
                 return [4 /*yield*/, (0, attorneys_db_1.db)('organizations')
                         .where('id', existingOrganization.id)
                         .update({ pib: organizationPib })];
-            case 15:
-                _b.sent();
-                _b.label = 16;
-            case 16: return [4 /*yield*/, (0, attorneys_db_1.db)('debtors')
+            case 18:
+                _g.sent();
+                _g.label = 19;
+            case 19: return [4 /*yield*/, (0, attorneys_db_1.db)('debtors')
                     .select('id')
                     .where('organization_id', existingOrganization.id)
                     .first()];
-            case 17:
-                debtorId_1 = (_b.sent()).id;
-                return [3 /*break*/, 21];
-            case 18: return [4 /*yield*/, (0, attorneys_db_1.db)('organizations')
-                    .insert({
-                    name: organizationName,
-                    pib: organizationPib,
-                })
-                    .returning('id')];
-            case 19:
-                newOrganizationId = (_b.sent())[0].id;
-                return [4 /*yield*/, (0, attorneys_db_1.db)('debtors')
-                        .insert({
-                        type: 'organization',
-                        is_legal: true,
-                        organization_id: newOrganizationId,
-                        cession: cession,
-                        address: address,
-                        email: email,
-                        zip_code: zip_code,
-                        city_id: city_id,
-                        entity_id: 1,
-                    })
-                        .returning('id')];
             case 20:
-                debtorId_1 = (_b.sent())[0].id;
-                _b.label = 21;
-            case 21: return [3 /*break*/, 25];
-            case 22: return [4 /*yield*/, (0, attorneys_db_1.db)('organizations')
+                debtorId_1 = (_f = (_g.sent())) === null || _f === void 0 ? void 0 : _f.id;
+                return [3 /*break*/, 24];
+            case 21: return [4 /*yield*/, (0, attorneys_db_1.db)('organizations')
                     .insert({
                     name: organizationName,
                     pib: organizationPib,
                 })
                     .returning('id')];
+            case 22:
+                newOrganizationId = (_g.sent())[0].id;
+                return [4 /*yield*/, (0, attorneys_db_1.db)('debtors')
+                        .insert({
+                        type: 'organization',
+                        is_legal: true,
+                        organization_id: newOrganizationId,
+                        cession: cession,
+                        address: address,
+                        email: email,
+                        zip_code: zip_code,
+                        city_id: city_id,
+                    })
+                        .returning('id')];
             case 23:
-                newOrganizationId = (_b.sent())[0].id;
-                return [4 /*yield*/, (0, attorneys_db_1.db)('debtors')
-                        .insert({
-                        type: 'organization',
-                        is_legal: true,
-                        organization_id: newOrganizationId,
-                        cession: cession,
-                        address: address,
-                        email: email,
-                        zip_code: zip_code,
-                        city_id: city_id,
-                        entity_id: 1,
-                    })
-                        .returning('id')];
-            case 24:
-                debtorId_1 = (_b.sent())[0].id;
-                _b.label = 25;
-            case 25: return [3 /*break*/, 29];
-            case 26: return [4 /*yield*/, (0, attorneys_db_1.db)('organizations')
+                debtorId_1 = (_g.sent())[0].id;
+                _g.label = 24;
+            case 24: return [3 /*break*/, 28];
+            case 25: return [4 /*yield*/, (0, attorneys_db_1.db)('organizations')
                     .insert({
                     name: organizationName,
                     pib: organizationPib,
                 })
                     .returning('id')];
-            case 27:
-                newOrganizationId = (_b.sent())[0].id;
+            case 26:
+                newOrganizationId = (_g.sent())[0].id;
                 return [4 /*yield*/, (0, attorneys_db_1.db)('debtors')
                         .insert({
                         type: 'organization',
@@ -222,13 +219,36 @@ var createCaseService = function (req, res) { return __awaiter(void 0, void 0, v
                         email: email,
                         zip_code: zip_code,
                         city_id: city_id,
-                        entity_id: 1,
                     })
                         .returning('id')];
-            case 28:
-                debtorId_1 = (_b.sent())[0].id;
-                _b.label = 29;
-            case 29: return [4 /*yield*/, (0, attorneys_db_1.db)('cases')
+            case 27:
+                debtorId_1 = (_g.sent())[0].id;
+                _g.label = 28;
+            case 28: return [3 /*break*/, 32];
+            case 29: return [4 /*yield*/, (0, attorneys_db_1.db)('organizations')
+                    .insert({
+                    name: organizationName,
+                    pib: organizationPib,
+                })
+                    .returning('id')];
+            case 30:
+                newOrganizationId = (_g.sent())[0].id;
+                return [4 /*yield*/, (0, attorneys_db_1.db)('debtors')
+                        .insert({
+                        type: 'organization',
+                        is_legal: true,
+                        organization_id: newOrganizationId,
+                        cession: cession,
+                        address: address,
+                        email: email,
+                        zip_code: zip_code,
+                        city_id: city_id,
+                    })
+                        .returning('id')];
+            case 31:
+                debtorId_1 = (_g.sent())[0].id;
+                _g.label = 32;
+            case 32: return [4 /*yield*/, (0, attorneys_db_1.db)('cases')
                     .insert({
                     debtor_id: debtorId_1,
                     case_number: case_number,
@@ -241,48 +261,55 @@ var createCaseService = function (req, res) { return __awaiter(void 0, void 0, v
                     package_id: package_id,
                     principal: principal,
                     interest: interest,
+                    status_id: statusId,
+                    old_payment: old_payment,
+                    our_taxes: our_taxes,
+                    warning_price: warning_price,
+                    entering_date: entering_date,
+                    lawyer_hand_over_date: lawyer_hand_over_date,
+                    comment: comment,
+                    limitation_objection: limitation_objection,
                 })
                     .returning('id')];
-            case 30:
-                newCaseId_1 = (_b.sent())[0].id;
-                if (business_numbers.concat(phone_numbers, executor_ids).includes(null)) {
-                    res.status(500);
-                    (0, catchErrorStack_1.default)(res, 'Phone numbers, beiliffs nor business numbers cannot include null');
-                }
-                if (!(business_numbers && business_numbers.length > 0)) return [3 /*break*/, 32];
+            case 33:
+                newCaseId_1 = (_g.sent())[0].id;
+                if (!(business_numbers && business_numbers.length > 0)) return [3 /*break*/, 35];
                 return [4 /*yield*/, Promise.all(business_numbers.map(function (businessNumber) { return __awaiter(void 0, void 0, void 0, function () {
                         var existingBusinessNumber, businessNumberId;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
+                        var _a;
+                        return __generator(this, function (_b) {
+                            switch (_b.label) {
                                 case 0: return [4 /*yield*/, (0, attorneys_db_1.db)('business_numbers')
+                                        .select('id')
                                         .where({ number: businessNumber })
                                         .first()];
                                 case 1:
-                                    existingBusinessNumber = _a.sent();
-                                    if (!!existingBusinessNumber) return [3 /*break*/, 4];
+                                    existingBusinessNumber = (_a = (_b.sent())) === null || _a === void 0 ? void 0 : _a.id;
+                                    businessNumberId = existingBusinessNumber;
+                                    if (!!existingBusinessNumber) return [3 /*break*/, 3];
                                     return [4 /*yield*/, (0, attorneys_db_1.db)('business_numbers')
                                             .insert({
                                             number: businessNumber,
                                         })
                                             .returning('id')];
                                 case 2:
-                                    businessNumberId = (_a.sent())[0].id;
-                                    return [4 /*yield*/, (0, attorneys_db_1.db)('case_business_numbers').insert({
-                                            business_number_id: businessNumberId,
-                                            case_id: newCaseId_1,
-                                        })];
-                                case 3:
-                                    _a.sent();
-                                    _a.label = 4;
-                                case 4: return [2 /*return*/];
+                                    businessNumberId = (_b.sent())[0].id;
+                                    _b.label = 3;
+                                case 3: return [4 /*yield*/, (0, attorneys_db_1.db)('case_business_numbers').insert({
+                                        business_number_id: businessNumberId,
+                                        case_id: newCaseId_1,
+                                    })];
+                                case 4:
+                                    _b.sent();
+                                    return [2 /*return*/];
                             }
                         });
                     }); }))];
-            case 31:
-                _b.sent();
-                _b.label = 32;
-            case 32:
-                if (!(phone_numbers && phone_numbers.length > 0)) return [3 /*break*/, 34];
+            case 34:
+                _g.sent();
+                _g.label = 35;
+            case 35:
+                if (!(phone_numbers && phone_numbers.length > 0)) return [3 /*break*/, 37];
                 return [4 /*yield*/, Promise.all(phone_numbers.map(function (phoneNumber) { return __awaiter(void 0, void 0, void 0, function () {
                         var displayNumber, existingPhoneNumber;
                         return __generator(this, function (_a) {
@@ -307,27 +334,27 @@ var createCaseService = function (req, res) { return __awaiter(void 0, void 0, v
                             }
                         });
                     }); }))];
-            case 33:
-                _b.sent();
-                _b.label = 34;
-            case 34:
-                if (!(executor_ids && executor_ids.length > 0)) return [3 /*break*/, 38];
+            case 36:
+                _g.sent();
+                _g.label = 37;
+            case 37:
+                if (!(executor_ids && executor_ids.length > 0)) return [3 /*break*/, 41];
                 _i = 0, executor_ids_1 = executor_ids;
-                _b.label = 35;
-            case 35:
-                if (!(_i < executor_ids_1.length)) return [3 /*break*/, 38];
+                _g.label = 38;
+            case 38:
+                if (!(_i < executor_ids_1.length)) return [3 /*break*/, 41];
                 executor_id = executor_ids_1[_i];
                 return [4 /*yield*/, (0, attorneys_db_1.db)('case_executors').insert({
                         executor_id: executor_id,
                         case_id: newCaseId_1,
                     })];
-            case 36:
-                _b.sent();
-                _b.label = 37;
-            case 37:
+            case 39:
+                _g.sent();
+                _g.label = 40;
+            case 40:
                 _i++;
-                return [3 /*break*/, 35];
-            case 38:
+                return [3 /*break*/, 38];
+            case 41:
                 apiResponse = undefined;
                 if (newCaseId_1) {
                     apiResponse = {
@@ -338,10 +365,10 @@ var createCaseService = function (req, res) { return __awaiter(void 0, void 0, v
                 }
                 res.status(404);
                 return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "message.case_not_found", apiResponse)];
-            case 39:
-                error_1 = _b.sent();
+            case 42:
+                error_1 = _g.sent();
                 return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_1)];
-            case 40: return [2 /*return*/];
+            case 43: return [2 /*return*/];
         }
     });
 }); };

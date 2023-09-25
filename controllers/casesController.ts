@@ -6,6 +6,7 @@ import { exportCasesListService } from 'services/casesServices/exportCasesListSe
 import { filterCaseNumbersService } from 'services/casesServices/filterCaseNumbersService';
 import { getCaseService } from 'services/casesServices/getCaseService';
 import { getCasesListService } from 'services/casesServices/getCasesListService';
+import { importCasesListService } from 'services/casesServices/importCasesListService';
 
 const cases = {
   getCasesList: async (req: Request, res: Response, _next: NextFunction) => {
@@ -63,6 +64,14 @@ const cases = {
   exportCasesList: async (req: Request, res: Response, _next: NextFunction) => {
     try {
       res.json(await exportCasesListService(req, res));
+    } catch (error) {
+      console.error({ error: error.message });
+      res.json({ error: error.message });
+    }
+  },
+  importCasesList: async (req: Request, res: Response, _next: NextFunction) => {
+    try {
+      res.json(await importCasesListService(req, res));
     } catch (error) {
       console.error({ error: error.message });
       res.json({ error: error.message });

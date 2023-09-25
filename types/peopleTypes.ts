@@ -5,6 +5,7 @@ export interface IPeople extends IEntityMetadata {
   first_name?: string;
   last_name?: string;
   jmbg?: string;
-  employed?: boolean;
+  employed?: boolean | '';
   employer_id?: number | null;
+  employer?: string;
 }

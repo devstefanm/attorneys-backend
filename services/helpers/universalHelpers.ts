@@ -8,6 +8,7 @@ import mapApiToResponse, { IApiResponse } from 'utils/mapApiToResponse';
 import { Knex } from 'knex';
 import specialCharacters from 'utils/specialCharacters';
 import { ICreateEntityApiResponseData } from 'types/universalTypes';
+import { ICaseForImport, ICaseForList } from 'types/casesTypes';
 
 type QueryBuilder = Knex.QueryBuilder<any, any>;
 
@@ -248,3 +249,62 @@ export const postShortNameServiceTemplate =
     res.status(404);
     return mapApiToResponse(404, `message.${entity}_not_found`, apiResponse);
   };
+
+export const findRecordByNameOrCreateNew = async (
+  name: string,
+  entity: string,
+  nameField: string,
+): Promise<number> => {
+  const existingId: number = (
+    await db(entity).select('id').where(nameField, name).first()
+  )?.id;
+
+  if (!existingId) {
+    return (
+      await db(entity)
+        .insert({
+          [nameField]: name,
+        })
+        .returning('id')
+    )[0]?.id;
+  }
+
+  return existingId;
+};
+
+export const jmbgAndPibGenerator = (
+  singleCase: ICaseForImport,
+): ICaseForImport => {
+  let transformedCase: ICaseForImport = {};
+  if (singleCase.is_legal) {
+    transformedCase = { ...singleCase, pib: singleCase.jmbg_pib };
+  } else {
+    transformedCase = { ...singleCase, jmbg: singleCase.jmbg_pib };
+  }
+  delete transformedCase.jmbg_pib;
+  return transformedCase;
+};
+
+export const debtorNameGenerator = (
+  singleCase: ICaseForImport,
+): ICaseForImport => {
+  let transformedCase: ICaseForImport = {};
+
+  const { name } = singleCase;
+
+  if (!singleCase.is_legal) {
+    const words = (name as string).split(' ');
+    const firstName = words.shift();
+    const lastName = words.join(' ');
+
+    transformedCase = {
+      ...singleCase,
+      first_name: firstName,
+      last_name: lastName,
+    };
+    delete transformedCase.name;
+    return transformedCase;
+  }
+
+  return singleCase;
+};

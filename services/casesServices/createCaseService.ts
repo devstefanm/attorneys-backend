@@ -38,6 +38,14 @@ export const createCaseService = async (
       package_id,
       principal,
       interest,
+      status,
+      old_payment,
+      our_taxes,
+      warning_price,
+      entering_date,
+      lawyer_hand_over_date,
+      comment,
+      limitation_objection,
     } = req.body;
 
     if (business_numbers?.concat(phone_numbers, executor_ids).includes(null)) {
@@ -48,7 +56,31 @@ export const createCaseService = async (
       );
     }
 
+    if (!contract_number || !case_number) {
+      res.status(400);
+      return mapApiToResponse(400, `message.no_case_or_contract_number`);
+    }
+
+    if (client_id) {
+      res.status(400);
+      return mapApiToResponse(400, `message.no_client`);
+    }
+
     let debtorId: number | undefined;
+
+    let statusId: number | undefined;
+
+    if (status) {
+      statusId = (
+        await db('statuses').select('id').where('name', status).first()
+      )?.id;
+
+      if (!statusId) {
+        statusId = (
+          await db('statuses').insert({ name: status }).returning('id')
+        )[0].id;
+      }
+    }
 
     if (jmbg) {
       const jmbgNumber = jmbg as string;
@@ -57,7 +89,7 @@ export const createCaseService = async (
         .where('jmbg', jmbgNumber)
         .first();
 
-      if (existingPerson) {
+      if (existingPerson?.id) {
         await db('people').where('id', existingPerson.id).update({
           first_name,
           last_name,
@@ -70,7 +102,7 @@ export const createCaseService = async (
             .select('id')
             .where('person_id', existingPerson.id)
             .first()
-        ).id;
+        )?.id;
       } else {
         const newPersonId: number = (
           await db('people')
@@ -95,7 +127,6 @@ export const createCaseService = async (
               email,
               zip_code,
               city_id,
-              entity_id: 1,
             })
             .returning('id')
         )[0].id;
@@ -110,7 +141,7 @@ export const createCaseService = async (
           .where('pib', organizationPib)
           .first();
 
-        if (existingOrganization) {
+        if (existingOrganization?.id) {
           if (
             existingOrganization.name?.toLowerCase() !==
             organizationName.toLowerCase()
@@ -124,11 +155,11 @@ export const createCaseService = async (
               .select('id')
               .where('organization_id', existingOrganization.id)
               .first()
-          ).id;
+          )?.id;
         }
       }
 
-      if (!existingOrganization) {
+      if (!existingOrganization?.id) {
         const existingOrganizations: IOrganization[] = await db('organizations')
           .select('id', 'name', 'pib')
           .where('name', organizationName);
@@ -148,7 +179,7 @@ export const createCaseService = async (
                   .select('id')
                   .where('organization_id', existingOrganization.id)
                   .first()
-              ).id;
+              )?.id;
             } else {
               const newOrganizationId = (
                 await db('organizations')
@@ -170,7 +201,6 @@ export const createCaseService = async (
                     email,
                     zip_code,
                     city_id,
-                    entity_id: 1,
                   })
                   .returning('id')
               )[0].id;
@@ -196,7 +226,6 @@ export const createCaseService = async (
                   email,
                   zip_code,
                   city_id,
-                  entity_id: 1,
                 })
                 .returning('id')
             )[0].id;
@@ -222,7 +251,6 @@ export const createCaseService = async (
                 email,
                 zip_code,
                 city_id,
-                entity_id: 1,
               })
               .returning('id')
           )[0].id;
@@ -244,6 +272,14 @@ export const createCaseService = async (
           package_id,
           principal,
           interest,
+          status_id: statusId,
+          old_payment,
+          our_taxes,
+          warning_price,
+          entering_date,
+          lawyer_hand_over_date,
+          comment,
+          limitation_objection,
         })
         .returning('id')
     )[0].id;
@@ -257,7 +293,7 @@ export const createCaseService = async (
               .select('id')
               .where({ number: businessNumber })
               .first()
-          ).id;
+          )?.id;
 
           let businessNumberId: number = existingBusinessNumber;
 

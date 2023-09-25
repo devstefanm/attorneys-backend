@@ -11,6 +11,7 @@ import {
   buildCasesNameSearchConditions,
   generateJmbgAndPibSearchQuery,
   transformCasesArraysToIndexedFields,
+  generateQueryColumns,
 } from '../helpers/casesHelpers';
 import { generateCSVFile, generateExcelFile } from 'utils/fileGenerationUtil';
 import { HeadersRecord } from './casesServicesData';
@@ -35,47 +36,21 @@ export const exportCasesListService = async (
       filter = 'active',
       clientsFilter = '',
       fileType = 'excel', // 'excel' or 'csv'
+      checkedProps,
     } = req.body;
 
+    const queryColumns = generateQueryColumns(checkedProps);
+
+    if (checkedProps.length === 0 || queryColumns.groupByColumns.length === 0) {
+      res.status(400);
+      return mapApiToResponse(
+        400,
+        `message.no_checked_props_or_not_valid_props`,
+      );
+    }
+
     const casesQuery = db('cases as c')
-      .select(
-        'c.case_number',
-        'c.contract_number',
-        'c.principal',
-        'c.interest',
-        'd.address',
-        'd.email',
-        'd.zip_code',
-        's.ssn as ssn',
-        'pck.package_name as package',
-        'st.name as status',
-        db.raw(
-          "CASE WHEN d.is_legal = true THEN 'DA' ELSE 'NE' END AS is_legal",
-        ),
-        db.raw("CASE WHEN d.cession = true THEN 'DA' ELSE 'NE' END AS cession"),
-        db.raw("CASE WHEN c.state = 'active' THEN 'DA' ELSE 'NE' END AS state"),
-        db.raw(
-          "CASE WHEN p.employed = true THEN 'DA' ELSE 'NE' END AS employed",
-        ),
-        db.raw(
-          'CASE WHEN d.is_legal = false OR p.jmbg IS NOT NULL THEN p.jmbg ELSE o.pib END AS jmbg_pib',
-        ),
-        db.raw(
-          "CASE WHEN d.is_legal = false OR (p.first_name IS NOT NULL AND p.last_name IS NOT NULL) THEN CONCAT(p.first_name, ' ', p.last_name) ELSE o.name END AS name",
-        ),
-        db.raw(
-          "CASE WHEN l.first_name IS NOT NULL AND l.last_name IS NOT NULL THEN CONCAT(l.first_name, ' ', l.last_name, ' (', l.office_name, ')') ELSE NULL END AS lawyer",
-        ),
-        db.raw(
-          'CASE WHEN COUNT(emp.id) = 0 THEN null ELSE emp.name END as employer',
-        ),
-        db.raw('CASE WHEN COUNT(ci.id) = 0 THEN null ELSE ci.name END as city'),
-        db.raw(
-          "array_agg(distinct e.first_name || ' ' || e.last_name) as executors",
-        ),
-        db.raw('array_agg(distinct bn.number) as business_numbers'),
-        db.raw('array_agg(distinct pn.number) as phone_numbers'),
-      )
+      .select(...queryColumns.selectColumns)
       .leftJoin('debtors as d', 'c.debtor_id', 'd.id')
       .leftJoin('people as p', 'd.person_id', 'p.id')
       .leftJoin('organizations as o', 'd.organization_id', 'o.id')
@@ -92,34 +67,7 @@ export const exportCasesListService = async (
       .leftJoin('cities as ci', 'd.city_id', 'ci.id')
       .leftJoin('employers as emp', 'p.employer_id', 'emp.id')
       .leftJoin('phone_numbers as pn', 'd.id', 'pn.debtor_id')
-      .groupBy(
-        'c.case_number',
-        'c.contract_number',
-        'c.principal',
-        'c.interest',
-        'c.state',
-        'd.is_legal',
-        'd.cession',
-        'd.address',
-        'd.email',
-        'd.zip_code',
-        'p.employed',
-        's.ssn',
-        'pck.package_name',
-        'st.name',
-        'p.jmbg',
-        'o.pib',
-        'p.first_name',
-        'p.last_name',
-        'o.name',
-        'l.first_name',
-        'l.last_name',
-        'l.office_name',
-        'emp.id',
-        'emp.name',
-        'ci.id',
-        'ci.name',
-      );
+      .groupBy(...(queryColumns.groupByColumns as string[]));
 
     if (filter) {
       casesQuery.where('c.state', filter);
