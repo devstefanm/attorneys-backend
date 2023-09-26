@@ -9,6 +9,8 @@ import { Knex } from 'knex';
 import specialCharacters from 'utils/specialCharacters';
 import { ICreateEntityApiResponseData } from 'types/universalTypes';
 import { ICaseForImport, ICaseForList } from 'types/casesTypes';
+import { uppercaseFirstLetter } from 'utils/transformData';
+import catchErrorStack from 'utils/catchErrorStack';
 
 type QueryBuilder = Knex.QueryBuilder<any, any>;
 
@@ -218,6 +220,8 @@ export const postShortNameServiceTemplate =
 
     let newEntityId = null;
 
+    const uppercasedEntity = uppercaseFirstLetter(entity);
+
     if (name) {
       newEntityId = (
         await db(entity)
@@ -228,7 +232,7 @@ export const postShortNameServiceTemplate =
       )[0].id;
     } else {
       res.status(400);
-      return mapApiToResponse(400, `message.no_${entity}_name`);
+      return mapApiToResponse(400, `errors.noName`);
     }
 
     let apiResponse: ICreateEntityApiResponseData | undefined = undefined;
@@ -241,13 +245,13 @@ export const postShortNameServiceTemplate =
       res.status(200);
       return mapApiToResponse(
         200,
-        `message.${entity}_successfully_created`,
+        `messages.create${uppercasedEntity}Success`,
         apiResponse,
       );
     }
 
     res.status(404);
-    return mapApiToResponse(404, `message.${entity}_not_found`, apiResponse);
+    return mapApiToResponse(404, `errors.notFound`, apiResponse);
   };
 
 export const findRecordByNameOrCreateNew = async (
@@ -308,3 +312,42 @@ export const debtorNameGenerator = (
 
   return singleCase;
 };
+
+export const editShortNameServiceTemplate =
+  (entity: string, id: number) =>
+  async (
+    req: Request,
+    res: Response,
+  ): Promise<IApiResponse<ICreateEntityApiResponseData | undefined>> => {
+    const { name } = req.body;
+
+    if (name === null || name === '') {
+      res.status(400);
+      return mapApiToResponse(400, `errors.noName`);
+    }
+
+    if (name === undefined) {
+      res.status(400);
+      return mapApiToResponse(400, `errors.nothingChanged`);
+    }
+
+    const existingRecord = await db(entity)
+      .select('name')
+      .where('id', id)
+      .first();
+
+    if (!existingRecord) {
+      res.status(404);
+      return mapApiToResponse(404, `errors.notFound`);
+    }
+
+    if (name && existingRecord.name !== name) {
+      const apiResponse: ICreateEntityApiResponseData = (
+        await db('cities').where('id', id).update({ name }).returning('id')
+      )[0];
+      res.status(200);
+      return mapApiToResponse(200, `messages.editCitiesSuccess`, apiResponse);
+    }
+
+    return catchErrorStack(res, `errors.serverError`);
+  };

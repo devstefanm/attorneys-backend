@@ -14,19 +14,17 @@ export const authenticateToken = (
   const accessToken = req.headers['authorization'];
 
   if (!accessToken) {
-    return res.status(401).json({ error: 'No access token provided' });
+    return res.status(401).json({ message: 'errors.noAccessToken' });
   }
 
   const token = accessToken.split(' ')[1]; // Remove the 'Bearer ' prefix
 
   if (!token) {
-    return res.status(401).json({ error: 'Invalid access token' });
+    return res.status(401).json({ message: 'errors.invalidAccessToken' });
   }
 
   if (!process.env.ACCESS_TOKEN_SECRET) {
-    return res
-      .status(500)
-      .json({ error: 'Access token secret not configured' });
+    return res.status(500).json({ message: 'errors.accessTokenNotConfigured' });
   }
 
   jwt.verify(
@@ -34,7 +32,7 @@ export const authenticateToken = (
     process.env.ACCESS_TOKEN_SECRET as string,
     (err, decoded) => {
       if (err) {
-        return res.status(401).json({ error: 'Invalid access token' });
+        return res.status(401).json({ message: 'errors.invalidAccessToken' });
       }
 
       // If the token is valid, you can access the decoded payload

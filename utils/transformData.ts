@@ -42,3 +42,6 @@ export const formatDateToISO = (inputDate: string): string | null => {
   }
   return null; // Invalid input
 };
+
+export const uppercaseFirstLetter = (str: string) =>
+  str.charAt(0).toUpperCase() + str.slice(1);

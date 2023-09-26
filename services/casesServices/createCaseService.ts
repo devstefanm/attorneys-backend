@@ -50,20 +50,32 @@ export const createCaseService = async (
 
     if (business_numbers?.concat(phone_numbers, executor_ids).includes(null)) {
       res.status(500);
-      catchErrorStack(
-        res,
-        'Phone numbers, beiliffs nor business numbers cannot include null',
-      );
+      catchErrorStack(res, 'errors.phoneNumberNull');
     }
 
-    if (!contract_number || !case_number) {
+    if ((!first_name || !last_name) && !name) {
       res.status(400);
-      return mapApiToResponse(400, `message.no_case_or_contract_number`);
+      return mapApiToResponse(400, `errors.noName`);
     }
 
-    if (client_id) {
+    if (first_name && last_name && !jmbg) {
       res.status(400);
-      return mapApiToResponse(400, `message.no_client`);
+      return mapApiToResponse(400, `errors.noJMBG`);
+    }
+
+    if (!case_number) {
+      res.status(400);
+      return mapApiToResponse(400, `errors.noCaseNumber`);
+    }
+
+    if (!contract_number) {
+      res.status(400);
+      return mapApiToResponse(400, `errors.noContractNumber`);
+    }
+
+    if (!client_id) {
+      res.status(400);
+      return mapApiToResponse(400, `errors.noClient`);
     }
 
     let debtorId: number | undefined;
@@ -264,7 +276,6 @@ export const createCaseService = async (
           debtor_id: debtorId,
           case_number,
           contract_number,
-          closing_date,
           lawyer_id,
           client_id,
           court_id,
@@ -280,6 +291,8 @@ export const createCaseService = async (
           lawyer_hand_over_date,
           comment,
           limitation_objection,
+          closing_date,
+          ...(closing_date ? { state: 'closed' } : { state: 'active' }),
         })
         .returning('id')
     )[0].id;
@@ -351,15 +364,11 @@ export const createCaseService = async (
       };
 
       res.status(200);
-      return mapApiToResponse(
-        200,
-        `message.case_successfully_created`,
-        apiResponse,
-      );
+      return mapApiToResponse(200, `messages.createCaseSuccess`, apiResponse);
     }
 
     res.status(404);
-    return mapApiToResponse(404, `message.case_not_found`, apiResponse);
+    return mapApiToResponse(404, `errors.caseNotFound`, apiResponse);
   } catch (error) {
     return catchErrorStack(res, error);
   }

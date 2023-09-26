@@ -11,10 +11,11 @@ export enum ETransactionType {
 
 export interface ITransaction extends IEntityMetadata {
   id?: number;
-  type: ETransactionType;
-  amount: number;
-  posting_method: string;
-  payment_date: string;
+  type?: ETransactionType;
+  amount?: number;
+  posting_method?: string;
+  payment_date?: string;
+  case_id?: number | null;
 }
 
 export interface ITransactionForList extends ITransaction, IExcerpt {}

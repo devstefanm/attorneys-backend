@@ -43,10 +43,7 @@ export const exportCasesListService = async (
 
     if (checkedProps.length === 0 || queryColumns.groupByColumns.length === 0) {
       res.status(400);
-      return mapApiToResponse(
-        400,
-        `message.no_checked_props_or_not_valid_props`,
-      );
+      return mapApiToResponse(400, `errors.noValidExportFieldsChecked`);
     }
 
     const casesQuery = db('cases as c')
@@ -165,7 +162,7 @@ export const exportCasesListService = async (
       res.status(404);
       return mapApiToResponse(
         404,
-        `message.not_found`,
+        `errors.notFound`,
         String(transformedCases.length),
       );
     }
@@ -193,14 +190,10 @@ export const exportCasesListService = async (
       res.setHeader('Content-Disposition', 'attachment; filename="cases.csv"');
     } else {
       res.status(400);
-      return mapApiToResponse(400, `message.invalid_file_type`, fileData);
+      return mapApiToResponse(400, `errors.invalidFileType`, fileData);
     }
 
-    return mapApiToResponse(
-      200,
-      `message.file_exported_successfully`,
-      fileData,
-    );
+    return mapApiToResponse(200, `messages.fileExportSuccess`, fileData);
   } catch (error) {
     res.status(500);
     return catchErrorStack(res, error);

@@ -1,7 +1,7 @@
 import { db } from 'attorneys-db';
 import { Request, Response } from 'express';
 import { mapPhoneNumberForDisplay } from 'services/helpers/phoneNumbersHelpers';
-import { ICase, ICreateCaseApiResponseData } from 'types/casesTypes';
+import { EState, ICase, ICreateCaseApiResponseData } from 'types/casesTypes';
 import { IDebtor } from 'types/debtorsTypes';
 import { IOrganization } from 'types/organizationsTypes';
 import { IPeople } from 'types/peopleTypes';
@@ -40,7 +40,6 @@ export const editCaseService = async (
       package_id,
       principal,
       interest,
-      state,
       status,
       old_payment,
       our_taxes,
@@ -53,14 +52,34 @@ export const editCaseService = async (
 
     const updatedCaseFields: ICase = {};
 
-    if (case_number === '' || contract_number === '') {
+    if ((first_name === null || last_name === null) && !name) {
       res.status(400);
-      return mapApiToResponse(400, `message.no_case_or_contract_number`);
+      return mapApiToResponse(400, `errors.noName`);
+    }
+
+    if ((!first_name || !last_name) && name === null) {
+      res.status(400);
+      return mapApiToResponse(400, `errors.noName`);
+    }
+
+    if (jmbg === null) {
+      res.status(400);
+      return mapApiToResponse(400, `errors.noJMBG`);
+    }
+
+    if (case_number === null) {
+      res.status(400);
+      return mapApiToResponse(400, `errors.noCaseNumber`);
+    }
+
+    if (contract_number === null) {
+      res.status(400);
+      return mapApiToResponse(400, `errors.noContractNumber`);
     }
 
     if (client_id === null) {
       res.status(400);
-      return mapApiToResponse(400, `message.no_client`);
+      return mapApiToResponse(400, `errors.noClient`);
     }
 
     // Fetch the existing case details
@@ -95,15 +114,12 @@ export const editCaseService = async (
 
     if (!existingCase) {
       res.status(404);
-      return mapApiToResponse(404, `message.case_not_found`, existingCase);
+      return mapApiToResponse(404, `errors.caseNotFound`, existingCase);
     }
 
     if (business_numbers?.concat(phone_numbers, executor_ids).includes(null)) {
       res.status(500);
-      catchErrorStack(
-        res,
-        'Phone numbers, beiliffs nor business numbers cannot include null',
-      );
+      return catchErrorStack(res, 'errors.phoneNumberNull');
     }
 
     let debtorId = existingCase.debtor_id as number;
@@ -123,11 +139,7 @@ export const editCaseService = async (
 
       if (!existingPerson) {
         res.status(404);
-        return mapApiToResponse(
-          404,
-          `message.person_not_found`,
-          existingPerson,
-        );
+        return mapApiToResponse(404, `errors.personNotFound`, existingPerson);
       }
 
       const updatePersonFields: IPeople = {};
@@ -205,7 +217,7 @@ export const editCaseService = async (
         res.status(404);
         return mapApiToResponse(
           404,
-          `message.organization_not_found`,
+          `errors.organizationNotFound`,
           existingOrganization,
         );
       }
@@ -357,7 +369,7 @@ export const editCaseService = async (
       res.status(404);
       return mapApiToResponse(
         404,
-        `message.organization_not_found`,
+        `errors.organizationNotFound`,
         existingDebtor,
       );
     }
@@ -396,6 +408,11 @@ export const editCaseService = async (
       existingCase.closing_date !== closing_date
     ) {
       updatedCaseFields.closing_date = closing_date;
+      if (closing_date === null || closing_date === '') {
+        updatedCaseFields.state = EState.active;
+      } else {
+        updatedCaseFields.state = EState.closed;
+      }
     }
 
     if (lawyer_id !== undefined && existingCase.lawyer_id !== lawyer_id) {
@@ -467,10 +484,6 @@ export const editCaseService = async (
       updatedCaseFields.limitation_objection = limitation_objection;
     }
 
-    if (state && existingCase.state !== state) {
-      updatedCaseFields.state = state;
-    }
-
     if (Object.keys(updatedCaseFields).length > 0) {
       // Update the case with the new data
       await db('cases').where('id', caseId).update(updatedCaseFields);
@@ -485,11 +498,7 @@ export const editCaseService = async (
     };
 
     res.status(200);
-    return mapApiToResponse(
-      200,
-      `message.case_successfully_updated`,
-      apiResponse,
-    );
+    return mapApiToResponse(200, `messages.editCaseSuccess`, apiResponse);
   } catch (error) {
     return catchErrorStack(res, error);
   }

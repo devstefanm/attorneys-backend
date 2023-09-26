@@ -5,10 +5,11 @@ import { IEntityMetadata, ITableResponseData } from './universalTypes';
 export interface ILawyer extends IEntityMetadata {
   id?: number;
   office_name?: string | null;
-  first_name: string;
-  last_name: string;
+  first_name?: string;
+  last_name?: string;
   email?: string | null;
   address?: string | null;
+  city_id?: number | null;
 }
 
 export interface ILawyerForList extends ILawyer, ICity, IPhoneNumber {

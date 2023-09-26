@@ -21,7 +21,7 @@ export const createExecutorService = async (
         .id;
     } else {
       res.status(404);
-      return mapApiToResponse(404, 'error.not_found.wrong_city_id', {
+      return mapApiToResponse(404, 'errors.notFound', {
         id: null,
       });
     }
@@ -40,7 +40,7 @@ export const createExecutorService = async (
       )[0].id;
     } else {
       res.status(400);
-      return mapApiToResponse(400, `message.executors_names`);
+      return mapApiToResponse(400, `errors.noName`);
     }
 
     let apiResponse: ICreateEntityApiResponseData | undefined = undefined;
@@ -72,13 +72,13 @@ export const createExecutorService = async (
       res.status(200);
       return mapApiToResponse(
         200,
-        `message.executor_successfully_created`,
+        `messages.createExecutorSuccess`,
         apiResponse,
       );
     }
 
     res.status(404);
-    return mapApiToResponse(404, `message.executor_not_found`, apiResponse);
+    return mapApiToResponse(404, `errors.notFound`, apiResponse);
   } catch (error) {
     return catchErrorStack(res, error);
   }

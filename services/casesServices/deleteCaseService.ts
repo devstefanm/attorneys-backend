@@ -19,7 +19,7 @@ export const deleteCaseService = async (
 
     if (!existingCase) {
       res.status(404);
-      return mapApiToResponse(404, 'message.case_not_found', existingCase);
+      return mapApiToResponse(404, 'errors.caseNotFound', existingCase);
     }
 
     await db('case_executors').where('case_id', caseId).del();
@@ -28,8 +28,8 @@ export const deleteCaseService = async (
     // Delete the case with the specified caseId
     await db('cases').where('id', caseId).del();
 
-    res.status(204); // 204 No Content status for successful deletion
-    return mapApiToResponse(204, 'message.case_deleted', undefined);
+    res.status(200); // 200 instead of 204 No Content status for successful deletion because message was not showing
+    return mapApiToResponse(200, 'messages.caseDeleted', existingCase.id);
   } catch (error) {
     return catchErrorStack(res, error);
   }

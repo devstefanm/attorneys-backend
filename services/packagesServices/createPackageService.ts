@@ -23,7 +23,7 @@ export const createPackageService = async (
       )[0].id;
     } else {
       res.status(400);
-      return mapApiToResponse(400, `message.no_package_name`);
+      return mapApiToResponse(400, `errors.noName`);
     }
 
     let apiResponse: ICreateEntityApiResponseData | undefined = undefined;
@@ -36,13 +36,13 @@ export const createPackageService = async (
       res.status(200);
       return mapApiToResponse(
         200,
-        `message.package_successfully_created`,
+        `messages.createPackageSuccess`,
         apiResponse,
       );
     }
 
     res.status(404);
-    return mapApiToResponse(404, `message.package_not_found`, apiResponse);
+    return mapApiToResponse(404, `errors.notFound`, apiResponse);
   } catch (error) {
     return catchErrorStack(res, error);
   }

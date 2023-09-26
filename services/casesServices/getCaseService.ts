@@ -136,17 +136,13 @@ export const getCaseService = async (
 
     if (!chosenCase) {
       res.status(404);
-      return mapApiToResponse(404, `message.case_not_found`);
+      return mapApiToResponse(404, `errors.caseNotFound`);
     }
 
     const apiResponse: ICaseApiResponseData = { ...chosenCase };
 
     res.status(200);
-    return mapApiToResponse(
-      200,
-      `message.case_successfully_retrieved`,
-      apiResponse,
-    );
+    return mapApiToResponse(200, `messages.retrieveCaseSuccess`, apiResponse);
   } catch (error) {
     return catchErrorStack(res, error);
   }

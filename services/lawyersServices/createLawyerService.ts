@@ -28,7 +28,7 @@ export const createLawyerService = async (
         .id;
     } else {
       res.status(404);
-      return mapApiToResponse(404, 'error.not_found.wrong_city_id', {
+      return mapApiToResponse(404, 'errors.notFound', {
         id: null,
       });
     }
@@ -48,7 +48,7 @@ export const createLawyerService = async (
       )[0].id;
     } else {
       res.status(400);
-      return mapApiToResponse(400, `message.lawyers_names`);
+      return mapApiToResponse(400, `errors.noName`);
     }
 
     let apiResponse: ICreateEntityApiResponseData | undefined = undefined;
@@ -78,15 +78,11 @@ export const createLawyerService = async (
       };
 
       res.status(200);
-      return mapApiToResponse(
-        200,
-        `message.lawyer_successfully_created`,
-        apiResponse,
-      );
+      return mapApiToResponse(200, `messages.createLawyerSuccess`, apiResponse);
     }
 
     res.status(404);
-    return mapApiToResponse(404, `message.lawyer_not_found`, apiResponse);
+    return mapApiToResponse(404, `errors.notFound`, apiResponse);
   } catch (error) {
     return catchErrorStack(res, error);
   }

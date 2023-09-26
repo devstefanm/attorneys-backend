@@ -22,7 +22,7 @@ export const importCasesListService = async (
   try {
     if (!req.file) {
       res.status(400);
-      return mapApiToResponse(400, `message.no_file`);
+      return mapApiToResponse(400, `errors.noFile`);
     }
 
     const uploadedFile = req.file;
@@ -149,37 +149,42 @@ export const importCasesListService = async (
         limitation_objection,
       } = caseData;
 
-      if ((!first_name || !last_name || !jmbg) && !name) {
+      if ((!first_name || !last_name) && !name) {
         res.status(400);
-        return mapApiToResponse(400, `message.insufficient_personal_info`);
+        return mapApiToResponse(400, `errors.noName`);
       }
 
-      if (
-        employed === undefined ||
-        employed === null ||
-        employed === '' ||
-        (employed && !employer)
-      ) {
+      if (first_name && last_name && !jmbg) {
         res.status(400);
-        return mapApiToResponse(400, `message.no_employment_info`);
+        return mapApiToResponse(400, `errors.noJMBG`);
       }
 
-      if (
-        cession === undefined ||
-        cession === null ||
-        cession === '' ||
-        is_legal === undefined ||
-        is_legal === null ||
-        is_legal === ''
-      ) {
+      if (!case_number) {
         res.status(400);
-        return mapApiToResponse(400, `message.no_debtor_info`);
+        return mapApiToResponse(400, `errors.noCaseNumber`);
       }
 
-      if (!contract_number || !case_number) {
+      if (!contract_number) {
         res.status(400);
-        return mapApiToResponse(400, `message.no_case_or_contract_number`);
-      } else {
+        return mapApiToResponse(400, `errors.noContractNumber`);
+      }
+
+      if (!client) {
+        res.status(400);
+        return mapApiToResponse(400, `errors.noClient`);
+      }
+
+      if (cession === undefined || cession === null || cession === '') {
+        res.status(400);
+        return mapApiToResponse(400, `errors.noCession`);
+      }
+
+      if (is_legal === undefined || is_legal === null || is_legal === '') {
+        res.status(400);
+        return mapApiToResponse(400, `errors.noIsLegal`);
+      }
+
+      if (case_number && contract_number) {
         const existingCase = await db('cases')
           .select('id', 'case_number', 'contract_number')
           .where('case_number', case_number)
@@ -190,7 +195,7 @@ export const importCasesListService = async (
           res.status(400);
           return mapApiToResponse(
             400,
-            `message.case_with_similar_case_or_contract_number_exists`,
+            `errors.caseOrContractNumberDuplicate`,
             `${existingCase.case_number}, ${existingCase.contract_number}`,
           );
         }
@@ -228,7 +233,7 @@ export const importCasesListService = async (
         );
       } else {
         res.status(400);
-        return mapApiToResponse(400, `message.missing_client`);
+        return mapApiToResponse(400, `errors.noClient`);
       }
 
       if (court) {
@@ -574,7 +579,7 @@ export const importCasesListService = async (
     res.status(200);
     return mapApiToResponse(
       200,
-      `message.file_successfully_read_and_cases_imported`,
+      `messages.fileImportSuccess`,
       newCaseIds.length,
     );
   } catch (error) {

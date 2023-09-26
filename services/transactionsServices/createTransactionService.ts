@@ -20,7 +20,7 @@ export const createTransactionService = async (
       ).id;
     } else {
       res.status(404);
-      return mapApiToResponse(404, 'error.not_found.wrong_case_number', {
+      return mapApiToResponse(404, 'errors.notFound', {
         transaction_id: null,
       });
     }
@@ -47,13 +47,13 @@ export const createTransactionService = async (
       res.status(200);
       return mapApiToResponse(
         200,
-        `message.transaction_successfully_created`,
+        `messages.createTransactionSuccess`,
         apiResponse,
       );
     }
 
     res.status(404);
-    return mapApiToResponse(404, `message.transaction_not_found`, apiResponse);
+    return mapApiToResponse(404, `errors.notFound`, apiResponse);
   } catch (error) {
     return catchErrorStack(res, error);
   }

@@ -23,7 +23,7 @@ export const createSSNService = async (
       )[0].id;
     } else {
       res.status(400);
-      return mapApiToResponse(400, `message.no_ssn`);
+      return mapApiToResponse(400, `errors.noSSN`);
     }
 
     let apiResponse: ICreateEntityApiResponseData | undefined = undefined;
@@ -34,15 +34,11 @@ export const createSSNService = async (
       };
 
       res.status(200);
-      return mapApiToResponse(
-        200,
-        `message.ssn_successfully_created`,
-        apiResponse,
-      );
+      return mapApiToResponse(200, `messages.createSSNSuccess`, apiResponse);
     }
 
     res.status(404);
-    return mapApiToResponse(404, `message.ssn_not_found`, apiResponse);
+    return mapApiToResponse(404, `errors.notFound`, apiResponse);
   } catch (error) {
     return catchErrorStack(res, error);
   }
