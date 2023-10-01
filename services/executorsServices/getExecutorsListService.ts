@@ -33,6 +33,7 @@ export const getExecutorsListService = async (
 
     const executorsQuery = db('executors as e')
       .select(
+        'e.id',
         'e.first_name',
         'e.last_name',
         'e.email',
@@ -49,6 +50,7 @@ export const getExecutorsListService = async (
       .offset(offset)
       .limit(Number(size))
       .groupBy(
+        'e.id',
         'e.first_name',
         'e.last_name',
         'e.email',

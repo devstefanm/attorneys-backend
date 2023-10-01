@@ -3,7 +3,6 @@ import catchErrorStack from 'utils/catchErrorStack';
 import mapApiToResponse, { IApiResponse } from 'utils/mapApiToResponse';
 import ExcelJS from 'exceljs';
 import {
-  generateRandomString,
   reverseHeaderMapping,
   transformParsedDataToCase,
 } from 'services/helpers/casesHelpers';
@@ -300,7 +299,6 @@ export const importCasesListService = async (
                 .insert({
                   first_name: firstName,
                   last_name: lastName,
-                  email: generateRandomString(10),
                 })
                 .returning('id')
             )[0]?.id;

@@ -37,6 +37,7 @@ export const getLawyersListService = async (
 
     const lawyersQuery = db('lawyers as l')
       .select(
+        'l.id',
         'l.first_name',
         'l.last_name',
         'l.office_name',
@@ -55,6 +56,7 @@ export const getLawyersListService = async (
       .offset(offset)
       .limit(Number(size))
       .groupBy(
+        'l.id',
         'l.first_name',
         'l.last_name',
         'l.office_name',

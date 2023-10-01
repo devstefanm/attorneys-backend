@@ -16,3 +16,8 @@ export interface IPackagesListApiResponseData extends ITableResponseData {
 export interface ICasePackageData {
   package: string;
 }
+
+export interface IPackageApiResponseData {
+  id: number;
+  package_name: string;
+}

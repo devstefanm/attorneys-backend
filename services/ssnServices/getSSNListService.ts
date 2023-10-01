@@ -28,11 +28,11 @@ export const getSSNListService = async (
       .first();
 
     const ssnNumbersQuery = db('ssn_numbers as ssn')
-      .select('ssn.ssn', db.raw('COUNT(c.id) as case_count'))
+      .select('ssn.id', 'ssn.ssn', db.raw('COUNT(c.id) as case_count'))
       .leftJoin('cases as c', 'ssn.id', 'c.ssn_number_id')
       .offset(offset)
       .limit(Number(size))
-      .groupBy('ssn.ssn', 'ssn.created_at');
+      .groupBy('ssn.id', 'ssn.ssn', 'ssn.created_at');
 
     switch (sortBy) {
       case 'ssn':

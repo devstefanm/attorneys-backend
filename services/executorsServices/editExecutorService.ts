@@ -1,5 +1,6 @@
 import { db } from 'attorneys-db';
 import { Request, Response } from 'express';
+import { mapPhoneNumberForDisplay } from 'services/helpers/phoneNumbersHelpers';
 import { IExecutor } from 'types/executorsTypes';
 import { ICreateEntityApiResponseData } from 'types/universalTypes';
 import catchErrorStack from 'utils/catchErrorStack';
@@ -11,7 +12,8 @@ export const editExecutorService = async (
 ): Promise<IApiResponse<ICreateEntityApiResponseData | undefined>> => {
   try {
     const { executorId } = req.params;
-    const { first_name, last_name, email, address, city_id } = req.body;
+    const { first_name, last_name, email, address, city_id, phone_numbers } =
+      req.body;
 
     if (
       first_name === null ||
@@ -21,6 +23,11 @@ export const editExecutorService = async (
     ) {
       res.status(400);
       return mapApiToResponse(400, `errors.noName`);
+    }
+
+    if (phone_numbers?.includes(null)) {
+      res.status(500);
+      return catchErrorStack(res, 'errors.phoneNumberNull');
     }
 
     const existingExecutor: IExecutor = await db('executors')
@@ -58,15 +65,44 @@ export const editExecutorService = async (
       updateExecutorFields.city_id = city_id;
     }
 
-    if (Object.keys(updateExecutorFields).length === 0) {
+    if (phone_numbers !== undefined) {
+      await db('phone_numbers').where('executor_id', executorId).del();
+      if (phone_numbers.length > 0) {
+        await Promise.all(
+          phone_numbers.map(async (phoneNumber: string) => {
+            const displayNumber = mapPhoneNumberForDisplay(phoneNumber);
+            const existingPhoneNumber = await db('phone_numbers')
+              .where({ display_number: displayNumber })
+              .first();
+
+            if (!existingPhoneNumber) {
+              await db('phone_numbers').insert({
+                number: phoneNumber,
+                display_number: displayNumber,
+                executor_id: executorId,
+              });
+            }
+          }),
+        );
+      }
+    }
+
+    let updatedExecutor: any[] = [];
+
+    if (
+      Object.keys(updateExecutorFields).length === 0 &&
+      phone_numbers.length === 0
+    ) {
       res.status(400);
       return mapApiToResponse(400, `errors.nothingChanged`);
     }
 
-    const updatedExecutor = await db('executors')
-      .where('id', executorId)
-      .update(updateExecutorFields)
-      .returning('id');
+    if (Object.keys(updateExecutorFields).length > 0) {
+      updatedExecutor = await db('executors')
+        .where('id', executorId)
+        .update(updateExecutorFields)
+        .returning('id');
+    }
 
     const apiResponse: ICreateEntityApiResponseData = updatedExecutor[0];
 

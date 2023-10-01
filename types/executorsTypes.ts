@@ -18,3 +18,16 @@ export interface IExecutorForList extends IExecutor, ICity, IPhoneNumber {
 export interface IExecutorsListApiResponseData extends ITableResponseData {
   executors: IExecutorForList[];
 }
+
+export interface IExecutorApiResponseData {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string | null;
+  address: string | null;
+  city: {
+    id: number;
+    name: string;
+  };
+  phone_numbers: string[];
+}

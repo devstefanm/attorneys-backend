@@ -9,7 +9,7 @@ const jwtGenerator = (jwtPayload: IJwtPayload): ILoginApiResponseData => {
     accessToken = jwt.sign(
       jwtPayload,
       process?.env?.ACCESS_TOKEN_SECRET?.toString(),
-      { expiresIn: '60m' },
+      { expiresIn: '480m' },
     );
   }
 
@@ -17,7 +17,7 @@ const jwtGenerator = (jwtPayload: IJwtPayload): ILoginApiResponseData => {
     refreshToken = jwt.sign(
       jwtPayload,
       process?.env?.REFRESH_TOKEN_SECRET?.toString(),
-      { expiresIn: '120m' },
+      { expiresIn: '960m' },
     );
   }
 

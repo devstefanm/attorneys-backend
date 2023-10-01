@@ -1,6 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import { getTransactionsListService } from 'services/transactionsServices/getTransactionsListService';
 import { createTransactionService } from 'services/transactionsServices/createTransactionService';
+import { editTransactionService } from 'services/transactionsServices/editTransactionService';
+import { deleteTransactionService } from 'services/transactionsServices/deleteTransactionService';
+import { getTransactionService } from 'services/transactionsServices/getTransactionService';
 
 const transactions = {
   getTransactionsList: async (
@@ -15,13 +18,41 @@ const transactions = {
       res.json({ error: error.message });
     }
   },
-  createTransaction: async (
+  getTransaction: async (req: Request, res: Response, _next: NextFunction) => {
+    try {
+      res.json(await getTransactionService(req, res));
+    } catch (error) {
+      console.error({ error: error.message });
+      res.json({ error: error.message });
+    }
+  },
+  postTransaction: async (req: Request, res: Response, _next: NextFunction) => {
+    try {
+      res.json(await createTransactionService(req, res));
+    } catch (error) {
+      console.error({ error: error.message });
+      res.json({ error: error.message });
+    }
+  },
+  patchTransaction: async (
     req: Request,
     res: Response,
     _next: NextFunction,
   ) => {
     try {
-      res.json(await createTransactionService(req, res));
+      res.json(await editTransactionService(req, res));
+    } catch (error) {
+      console.error({ error: error.message });
+      res.json({ error: error.message });
+    }
+  },
+  deleteTransaction: async (
+    req: Request,
+    res: Response,
+    _next: NextFunction,
+  ) => {
+    try {
+      res.json(await deleteTransactionService(req, res));
     } catch (error) {
       console.error({ error: error.message });
       res.json({ error: error.message });

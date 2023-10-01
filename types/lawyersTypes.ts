@@ -25,3 +25,17 @@ export interface ICaseLawyerData {
   lawyer_first_name: string;
   lawyer_last_name: string;
 }
+
+export interface ILawyerApiResponseData {
+  id: number;
+  office_name: string;
+  first_name: string;
+  last_name: string;
+  email: string | null;
+  address: string | null;
+  city: {
+    id: number;
+    name: string;
+  };
+  phone_numbers: string[];
+}

@@ -16,3 +16,8 @@ export interface ICourtsListApiResponseData extends ITableResponseData {
 export interface ICaseCourtData {
   court_name: string;
 }
+
+export interface ICourtApiResponseData {
+  id: number;
+  name: string;
+}

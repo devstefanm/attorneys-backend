@@ -12,3 +12,8 @@ export interface IEmployerForList extends IEmployer {
 export interface IEmployersListApiResponseData extends ITableResponseData {
   employers: IEmployerForList[];
 }
+
+export interface IEmployerApiResponseData {
+  id: number;
+  name: string;
+}

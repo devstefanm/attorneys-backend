@@ -27,3 +27,18 @@ export interface ITransactionsListApiResponseData extends ITableResponseData {
 export interface ICreateTransactionApiResponseData {
   transaction_id: number | null;
 }
+
+export interface ITransactionApiResponseData {
+  id: number;
+  type: ETransactionType;
+  amount: number;
+  posting_method: string;
+  payment_date: string;
+  case: {
+    id: number;
+    name: string | null;
+    first_name: string | null;
+    last_name: string | null;
+    case_number: string;
+  };
+}

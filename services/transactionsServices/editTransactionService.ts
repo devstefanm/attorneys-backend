@@ -28,8 +28,13 @@ export const editTransactionService = async (
       return mapApiToResponse(400, `errors.noCaseNumber`);
     }
 
+    if (payment_date === null || payment_date === '') {
+      res.status(400);
+      return mapApiToResponse(400, `errors.noPaymentDate`);
+    }
+
     const existingTransaction: ITransaction = await db('transactions')
-      .select('package_name')
+      .select('posting_method')
       .where('id', transactionId)
       .first();
 

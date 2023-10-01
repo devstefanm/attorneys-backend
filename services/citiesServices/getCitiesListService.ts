@@ -32,6 +32,7 @@ export const getCitiesListService = async (
 
     const citiesQuery = db('cities as ci')
       .select(
+        'ci.id',
         'ci.name as city',
         db.raw('COUNT(DISTINCT d.id) as debtor_count'),
         db.raw('COUNT(DISTINCT e.id) as executor_count'),
@@ -42,7 +43,7 @@ export const getCitiesListService = async (
       .leftJoin('lawyers as l', 'ci.id', 'l.city_id')
       .offset(offset)
       .limit(Number(size))
-      .groupBy('ci.name', 'ci.created_at');
+      .groupBy('ci.id', 'ci.name', 'ci.created_at');
 
     switch (sortBy) {
       case 'city':

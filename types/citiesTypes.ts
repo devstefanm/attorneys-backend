@@ -18,3 +18,8 @@ export interface ICitiesListApiResponseData extends ITableResponseData {
 export interface ICreateCityApiResponseData {
   city_id: number | null;
 }
+
+export interface ICityApiResponseData {
+  id: number;
+  name: string;
+}

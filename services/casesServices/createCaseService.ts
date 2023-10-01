@@ -50,7 +50,7 @@ export const createCaseService = async (
 
     if (business_numbers?.concat(phone_numbers, executor_ids).includes(null)) {
       res.status(500);
-      catchErrorStack(res, 'errors.phoneNumberNull');
+      return catchErrorStack(res, 'errors.phoneNumberNull');
     }
 
     if ((!first_name || !last_name) && !name) {
@@ -76,6 +76,11 @@ export const createCaseService = async (
     if (!client_id) {
       res.status(400);
       return mapApiToResponse(400, `errors.noClient`);
+    }
+
+    if (closing_date !== undefined && new Date(closing_date) > new Date()) {
+      res.status(400);
+      return mapApiToResponse(400, `errors.closingDateLate`);
     }
 
     let debtorId: number | undefined;

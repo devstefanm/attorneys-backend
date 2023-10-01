@@ -1,5 +1,6 @@
 import { db } from 'attorneys-db';
 import { Request, Response } from 'express';
+import { mapPhoneNumberForDisplay } from 'services/helpers/phoneNumbersHelpers';
 import { ILawyer } from 'types/lawyersTypes';
 import { ICreateEntityApiResponseData } from 'types/universalTypes';
 import catchErrorStack from 'utils/catchErrorStack';
@@ -11,8 +12,15 @@ export const editLawyerService = async (
 ): Promise<IApiResponse<ICreateEntityApiResponseData | undefined>> => {
   try {
     const { lawyerId } = req.params;
-    const { first_name, last_name, email, address, city_id, office_name } =
-      req.body;
+    const {
+      first_name,
+      last_name,
+      email,
+      address,
+      city_id,
+      office_name,
+      phone_numbers,
+    } = req.body;
 
     if (
       first_name === null ||
@@ -22,6 +30,11 @@ export const editLawyerService = async (
     ) {
       res.status(400);
       return mapApiToResponse(400, `errors.noName`);
+    }
+
+    if (phone_numbers?.includes(null)) {
+      res.status(500);
+      return catchErrorStack(res, 'errors.phoneNumberNull');
     }
 
     const existingLawyer: ILawyer = await db('lawyers')
@@ -70,15 +83,44 @@ export const editLawyerService = async (
       updateLawyerFields.city_id = city_id;
     }
 
-    if (Object.keys(updateLawyerFields).length === 0) {
+    if (phone_numbers !== undefined) {
+      await db('phone_numbers').where('lawyer_id', lawyerId).del();
+      if (phone_numbers.length > 0) {
+        await Promise.all(
+          phone_numbers.map(async (phoneNumber: string) => {
+            const displayNumber = mapPhoneNumberForDisplay(phoneNumber);
+            const existingPhoneNumber = await db('phone_numbers')
+              .where({ display_number: displayNumber })
+              .first();
+
+            if (!existingPhoneNumber) {
+              await db('phone_numbers').insert({
+                number: phoneNumber,
+                display_number: displayNumber,
+                lawyer_id: lawyerId,
+              });
+            }
+          }),
+        );
+      }
+    }
+
+    let updatedLawyer: any[] = [];
+
+    if (
+      Object.keys(updateLawyerFields).length === 0 &&
+      phone_numbers.length === 0
+    ) {
       res.status(400);
       return mapApiToResponse(400, `errors.nothingChanged`);
     }
 
-    const updatedLawyer = await db('lawyers')
-      .where('id', lawyerId)
-      .update(updateLawyerFields)
-      .returning('id');
+    if (Object.keys(updateLawyerFields).length > 0) {
+      updatedLawyer = await db('lawyers')
+        .where('id', lawyerId)
+        .update(updateLawyerFields)
+        .returning('id');
+    }
 
     const apiResponse: ICreateEntityApiResponseData = updatedLawyer[0];
 

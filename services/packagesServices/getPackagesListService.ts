@@ -29,11 +29,11 @@ export const getPackagesListService = async (
       .first();
 
     const packagesQuery = db('packages as pck')
-      .select('pck.package_name', db.raw('COUNT(c.id) as case_count'))
+      .select('pck.id', 'pck.package_name', db.raw('COUNT(c.id) as case_count'))
       .leftJoin('cases as c', 'pck.id', 'c.package_id')
       .offset(offset)
       .limit(Number(size))
-      .groupBy('pck.package_name', 'pck.created_at');
+      .groupBy('pck.id', 'pck.package_name', 'pck.created_at');
 
     switch (sortBy) {
       case 'package_name':

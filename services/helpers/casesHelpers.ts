@@ -391,7 +391,6 @@ export const generateQueryColumns = (
       'entering_date',
       'lawyer_hand_over_date',
       'comment',
-      'limitation_objection',
     ];
     const debtorProps = ['address', 'email', 'zip_code'];
 
@@ -437,6 +436,15 @@ export const generateQueryColumns = (
     if (checkedProps.includes('status')) {
       selectColumns.push('st.name as status');
       groupByColumns.push('st.name');
+    }
+
+    if (checkedProps.includes('limitation_objection')) {
+      selectColumns.push(
+        db.raw(
+          "CASE WHEN c.limitation_objection = true THEN 'DA' ELSE 'NE' END AS limitation_objection",
+        ),
+      );
+      groupByColumns.push('c.limitation_objection');
     }
 
     if (checkedProps.includes('is_legal')) {

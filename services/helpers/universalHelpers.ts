@@ -7,7 +7,10 @@ import { ILawyer } from 'types/lawyersTypes';
 import mapApiToResponse, { IApiResponse } from 'utils/mapApiToResponse';
 import { Knex } from 'knex';
 import specialCharacters from 'utils/specialCharacters';
-import { ICreateEntityApiResponseData } from 'types/universalTypes';
+import {
+  ICreateEntityApiResponseData,
+  IGetEntityApiResponseData,
+} from 'types/universalTypes';
 import { ICaseForImport, ICaseForList } from 'types/casesTypes';
 import { uppercaseFirstLetter } from 'utils/transformData';
 import catchErrorStack from 'utils/catchErrorStack';
@@ -321,6 +324,8 @@ export const editShortNameServiceTemplate =
   ): Promise<IApiResponse<ICreateEntityApiResponseData | undefined>> => {
     const { name } = req.body;
 
+    const uppercasedEntity = uppercaseFirstLetter(entity);
+
     if (name === null || name === '') {
       res.status(400);
       return mapApiToResponse(400, `errors.noName`);
@@ -343,11 +348,40 @@ export const editShortNameServiceTemplate =
 
     if (name && existingRecord.name !== name) {
       const apiResponse: ICreateEntityApiResponseData = (
-        await db('cities').where('id', id).update({ name }).returning('id')
+        await db(entity).where('id', id).update({ name }).returning('id')
       )[0];
       res.status(200);
-      return mapApiToResponse(200, `messages.editCitiesSuccess`, apiResponse);
+      return mapApiToResponse(
+        200,
+        `messages.edit${uppercasedEntity}Success`,
+        apiResponse,
+      );
     }
 
     return catchErrorStack(res, `errors.serverError`);
+  };
+
+export const getShortNameServiceTemplate =
+  (entity: string, id: number) =>
+  async (
+    res: Response,
+  ): Promise<IApiResponse<IGetEntityApiResponseData | undefined>> => {
+    const uppercasedEntity = uppercaseFirstLetter(entity);
+
+    const chosenEntity: IGetEntityApiResponseData = await db(entity)
+      .select('id', 'name')
+      .where('id', id)
+      .first();
+
+    if (!chosenEntity) {
+      res.status(404);
+      return mapApiToResponse(404, `errors.notFound`);
+    }
+
+    res.status(200);
+    return mapApiToResponse(
+      200,
+      `messages.retrieve${uppercasedEntity}Success`,
+      chosenEntity,
+    );
   };

@@ -29,11 +29,15 @@ export const getEmployersListService = async (
       .first();
 
     const employersQuery = db('employers as emp')
-      .select('emp.name as employer', db.raw('COUNT(p.id) as employees_count'))
+      .select(
+        'emp.id',
+        'emp.name as employer',
+        db.raw('COUNT(p.id) as employees_count'),
+      )
       .leftJoin('people as p', 'emp.id', 'p.employer_id')
       .offset(offset)
       .limit(Number(size))
-      .groupBy('emp.name', 'emp.created_at');
+      .groupBy('emp.id', 'emp.name', 'emp.created_at');
 
     switch (sortBy) {
       case 'employer':

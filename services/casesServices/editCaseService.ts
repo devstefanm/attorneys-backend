@@ -82,6 +82,11 @@ export const editCaseService = async (
       return mapApiToResponse(400, `errors.noClient`);
     }
 
+    if (closing_date !== undefined && new Date(closing_date) > new Date()) {
+      res.status(400);
+      return mapApiToResponse(400, `errors.closingDateLate`);
+    }
+
     // Fetch the existing case details
     const existingCase: ICase = await db('cases as c')
       .select(

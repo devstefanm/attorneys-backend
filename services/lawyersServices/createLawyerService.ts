@@ -20,18 +20,7 @@ export const createLawyerService = async (
       phone_numbers,
     } = req.body;
 
-    let newLawyerId: number | null = null,
-      cityId: number | undefined;
-
-    if (city_id) {
-      cityId = (await db('cities').select('id').where('id', city_id).first())
-        .id;
-    } else {
-      res.status(404);
-      return mapApiToResponse(404, 'errors.notFound', {
-        id: null,
-      });
-    }
+    let newLawyerId: number | null = null;
 
     if (first_name && last_name) {
       newLawyerId = (

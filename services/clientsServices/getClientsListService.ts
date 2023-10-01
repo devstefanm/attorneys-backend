@@ -29,11 +29,11 @@ export const getClientsListService = async (
       .first();
 
     const clientsQuery = db('clients as cl')
-      .select('cl.name as client', db.raw('COUNT(c.id) as case_count'))
+      .select('cl.id', 'cl.name as client', db.raw('COUNT(c.id) as case_count'))
       .leftJoin('cases as c', 'cl.id', 'c.client_id')
       .offset(offset)
       .limit(Number(size))
-      .groupBy('cl.name', 'cl.created_at');
+      .groupBy('cl.id', 'cl.name', 'cl.created_at');
 
     switch (sortBy) {
       case 'client':

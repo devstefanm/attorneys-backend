@@ -29,11 +29,11 @@ export const getCourtsListService = async (
       .first();
 
     const courtsQuery = db('courts as co')
-      .select('co.name as court', db.raw('COUNT(c.id) as case_count'))
+      .select('co.id', 'co.name as court', db.raw('COUNT(c.id) as case_count'))
       .leftJoin('cases as c', 'co.id', 'c.court_id')
       .offset(offset)
       .limit(Number(size))
-      .groupBy('co.name', 'co.created_at');
+      .groupBy('co.id', 'co.name', 'co.created_at');
 
     switch (sortBy) {
       case 'court':

@@ -16,3 +16,8 @@ export interface IClientsListApiResponseData extends ITableResponseData {
 export interface ICaseClientData {
   client_name: string;
 }
+
+export interface IClientApiResponseData {
+  id: number;
+  name: string;
+}

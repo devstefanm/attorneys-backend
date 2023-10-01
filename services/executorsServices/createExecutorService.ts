@@ -13,18 +13,7 @@ export const createExecutorService = async (
     const { first_name, last_name, email, address, city_id, phone_numbers } =
       req.body;
 
-    let newExecutorId: number | null = null,
-      cityId: number | undefined;
-
-    if (city_id) {
-      cityId = (await db('cities').select('id').where('id', city_id).first())
-        .id;
-    } else {
-      res.status(404);
-      return mapApiToResponse(404, 'errors.notFound', {
-        id: null,
-      });
-    }
+    let newExecutorId: number | null = null;
 
     if (first_name && last_name) {
       newExecutorId = (

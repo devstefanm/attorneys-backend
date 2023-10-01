@@ -16,3 +16,8 @@ export interface ISSNListApiResponseData extends ITableResponseData {
 export interface ICaseSSNData {
   ssn: string;
 }
+
+export interface ISSNNumberApiResponseData {
+  id: number;
+  ssn: string;
+}

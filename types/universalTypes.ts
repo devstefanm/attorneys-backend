@@ -20,3 +20,8 @@ export interface ITableResponseData {
 export interface ICreateEntityApiResponseData {
   id: number | null;
 }
+
+export interface IGetEntityApiResponseData {
+  id: number;
+  name: string;
+}
