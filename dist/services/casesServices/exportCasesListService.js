@@ -58,7 +58,7 @@ var exportCasesListService = function (req, res) { return __awaiter(void 0, void
                 queryColumns = (0, casesHelpers_1.generateQueryColumns)(checkedProps);
                 if (checkedProps.length === 0 || queryColumns.groupByColumns.length === 0) {
                     res.status(400);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "message.no_checked_props_or_not_valid_props")];
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.noValidExportFieldsChecked")];
                 }
                 casesQuery = (_e = (_f = (0, attorneys_db_1.db)('cases as c'))
                     .select.apply(_f, queryColumns.selectColumns).leftJoin('debtors as d', 'c.debtor_id', 'd.id')
@@ -149,7 +149,7 @@ var exportCasesListService = function (req, res) { return __awaiter(void 0, void
                 transformedCases = (0, casesHelpers_1.transformCasesArraysToIndexedFields)(cases);
                 if (transformedCases.length === 0) {
                     res.status(404);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "message.not_found", String(transformedCases.length))];
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "errors.notFound", String(transformedCases.length))];
                 }
                 fileData = '';
                 if (!(fileType === 'excel')) return [3 /*break*/, 3];
@@ -172,8 +172,8 @@ var exportCasesListService = function (req, res) { return __awaiter(void 0, void
                 return [3 /*break*/, 6];
             case 5:
                 res.status(400);
-                return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "message.invalid_file_type", fileData)];
-            case 6: return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "message.file_exported_successfully", fileData)];
+                return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.invalidFileType", fileData)];
+            case 6: return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "messages.fileExportSuccess", fileData)];
             case 7:
                 error_1 = _g.sent();
                 res.status(500);

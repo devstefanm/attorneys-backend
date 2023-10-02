@@ -37,6 +37,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var createPackageService_1 = require("../services/packagesServices/createPackageService");
+var deletePackageService_1 = require("../services/packagesServices/deletePackageService");
+var editPackageService_1 = require("../services/packagesServices/editPackageService");
+var getPackageService_1 = require("../services/packagesServices/getPackageService");
 var getPackagesListService_1 = require("../services/packagesServices/getPackagesListService");
 var getPackagesNamesService_1 = require("../services/packagesServices/getPackagesNamesService");
 var packages = {
@@ -80,8 +83,28 @@ var packages = {
             }
         });
     }); },
-    postPackage: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+    getPackage: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
         var _a, _b, error_3;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _c.trys.push([0, 2, , 3]);
+                    _b = (_a = res).json;
+                    return [4 /*yield*/, (0, getPackageService_1.getPackageService)(req, res)];
+                case 1:
+                    _b.apply(_a, [_c.sent()]);
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_3 = _c.sent();
+                    console.error({ error: error_3.message });
+                    res.json({ error: error_3.message });
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    }); },
+    postPackage: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+        var _a, _b, error_4;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
@@ -92,9 +115,49 @@ var packages = {
                     _b.apply(_a, [_c.sent()]);
                     return [3 /*break*/, 3];
                 case 2:
-                    error_3 = _c.sent();
-                    console.error({ error: error_3.message });
-                    res.json({ error: error_3.message });
+                    error_4 = _c.sent();
+                    console.error({ error: error_4.message });
+                    res.json({ error: error_4.message });
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    }); },
+    patchPackage: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+        var _a, _b, error_5;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _c.trys.push([0, 2, , 3]);
+                    _b = (_a = res).json;
+                    return [4 /*yield*/, (0, editPackageService_1.editPackageService)(req, res)];
+                case 1:
+                    _b.apply(_a, [_c.sent()]);
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_5 = _c.sent();
+                    console.error({ error: error_5.message });
+                    res.json({ error: error_5.message });
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    }); },
+    deletePackage: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+        var _a, _b, error_6;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _c.trys.push([0, 2, , 3]);
+                    _b = (_a = res).json;
+                    return [4 /*yield*/, (0, deletePackageService_1.deletePackageService)(req, res)];
+                case 1:
+                    _b.apply(_a, [_c.sent()]);
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_6 = _c.sent();
+                    console.error({ error: error_6.message });
+                    res.json({ error: error_6.message });
                     return [3 /*break*/, 3];
                 case 3: return [2 /*return*/];
             }

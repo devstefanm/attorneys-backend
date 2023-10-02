@@ -57,9 +57,7 @@ export const getTransactionsListService = async (
       .leftJoin('excerpts as e', 't.excerpt_id', 'e.id')
       .leftJoin('debtors as d', 'c.debtor_id', 'd.id')
       .leftJoin('people as p', 'd.person_id', 'p.id')
-      .leftJoin('organizations as o', 'd.organization_id', 'o.id')
-      .offset(offset)
-      .limit(Number(size));
+      .leftJoin('organizations as o', 'd.organization_id', 'o.id');
 
     if (filter) {
       transactionsQuery.where('t.type', filter);
@@ -150,6 +148,18 @@ export const getTransactionsListService = async (
       );
     }
 
+    let totalAmount: number | null = null;
+
+    if (filter) {
+      const transactionAmounts = await transactionsQuery;
+      totalAmount = transactionAmounts.reduce((accumulator, currentValue) => {
+        return accumulator + parseFloat(currentValue.amount);
+      }, 0);
+    }
+
+    transactionsQuery.offset(offset);
+    transactionsQuery.limit(Number(size));
+
     const [totalCountResult, transactions] = await Promise.all([
       totalCountQuery,
       transactionsQuery,
@@ -165,6 +175,7 @@ export const getTransactionsListService = async (
 
     const apiResponse: ITransactionsListApiResponseData = {
       transactions,
+      total_amount: totalAmount?.toFixed(2),
       meta: {
         sort: (sort as string) ?? 'asc',
         sortBy: (sortBy as string) ?? 'created_at',

@@ -59,11 +59,11 @@ var getSSNListService = function (req, res) { return __awaiter(void 0, void 0, v
                     .leftJoin('cases as c', 'ssn.id', 'c.ssn_number_id')
                     .first();
                 ssnNumbersQuery = (0, attorneys_db_1.db)('ssn_numbers as ssn')
-                    .select('ssn.ssn', attorneys_db_1.db.raw('COUNT(c.id) as case_count'))
+                    .select('ssn.id', 'ssn.ssn', attorneys_db_1.db.raw('COUNT(c.id) as case_count'))
                     .leftJoin('cases as c', 'ssn.id', 'c.ssn_number_id')
                     .offset(offset)
                     .limit(Number(size))
-                    .groupBy('ssn.ssn', 'ssn.created_at');
+                    .groupBy('ssn.id', 'ssn.ssn', 'ssn.created_at');
                 switch (sortBy) {
                     case 'ssn':
                         ssnNumbersQuery.orderBy('ssn.ssn', sort);

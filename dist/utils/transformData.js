@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.formatDateToISO = exports.formatDateToDDMMYYYY = exports.capitalizeEveryWord = void 0;
+exports.uppercaseFirstLetter = exports.formatDateToISO = exports.formatDateToDDMMYYYY = exports.capitalizeEveryWord = void 0;
 var capitalizeEveryWord = function (sentence) {
     // Split the sentence into words
     var words = sentence.split(' ');
@@ -27,7 +27,6 @@ var formatDateToDDMMYYYY = function (inputDate) {
 exports.formatDateToDDMMYYYY = formatDateToDDMMYYYY;
 // Function to convert "DD.MM.YYYY" to "YYYY-MM-DDTHH:mm:ss.sssZ"
 var formatDateToISO = function (inputDate) {
-    console.log('inputDate', inputDate);
     var dateParts = inputDate.split('.');
     if (dateParts.length === 3) {
         var day = parseInt(dateParts[0], 10);
@@ -43,3 +42,7 @@ var formatDateToISO = function (inputDate) {
     return null; // Invalid input
 };
 exports.formatDateToISO = formatDateToISO;
+var uppercaseFirstLetter = function (str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+};
+exports.uppercaseFirstLetter = uppercaseFirstLetter;

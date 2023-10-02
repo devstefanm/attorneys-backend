@@ -4,6 +4,7 @@ import { createTransactionService } from 'services/transactionsServices/createTr
 import { editTransactionService } from 'services/transactionsServices/editTransactionService';
 import { deleteTransactionService } from 'services/transactionsServices/deleteTransactionService';
 import { getTransactionService } from 'services/transactionsServices/getTransactionService';
+import { importTransactionsListService } from 'services/transactionsServices/importTransactionsListService';
 
 const transactions = {
   getTransactionsList: async (
@@ -53,6 +54,18 @@ const transactions = {
   ) => {
     try {
       res.json(await deleteTransactionService(req, res));
+    } catch (error) {
+      console.error({ error: error.message });
+      res.json({ error: error.message });
+    }
+  },
+  importTransactionsList: async (
+    req: Request,
+    res: Response,
+    _next: NextFunction,
+  ) => {
+    try {
+      res.json(await importTransactionsListService(req, res));
     } catch (error) {
       console.error({ error: error.message });
       res.json({ error: error.message });

@@ -4,7 +4,8 @@ import { HeadersRecord } from 'services/casesServices/casesServicesData';
 import { ICase, ICaseForExport, ICaseForImport } from 'types/casesTypes';
 import { debtorNameGenerator, jmbgAndPibGenerator } from './universalHelpers';
 import { db } from 'attorneys-db';
-import { formatDateToDDMMYYYY, formatDateToISO } from 'utils/transformData';
+import { formatDateToDDMMYYYY } from 'utils/transformData';
+import { ICaseTransaction } from 'types/transactionsTypes';
 
 type QueryBuilder = Knex.QueryBuilder<any, any>;
 
@@ -554,4 +555,31 @@ export const generateQueryColumns = (
     selectColumns,
     groupByColumns,
   };
+};
+
+export const calculateTypeSums = (
+  transactions: ICaseTransaction[],
+): Record<string, number> => {
+  const typeSums: Record<string, number> = {};
+
+  for (const transaction of transactions) {
+    const { amount, type } = transaction;
+    const amountValue = parseFloat(amount);
+
+    if (!isNaN(amountValue)) {
+      if (typeSums[type]) {
+        typeSums[type] += amountValue;
+      } else {
+        typeSums[type] = amountValue;
+      }
+    }
+  }
+
+  for (const type in typeSums) {
+    if (typeSums.hasOwnProperty(type)) {
+      typeSums[type] = parseFloat(typeSums[type].toFixed(2));
+    }
+  }
+
+  return typeSums;
 };

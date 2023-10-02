@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateQueryColumns = exports.generateRandomString = exports.transformParsedDataToCase = exports.splitLawyerName = exports.transformIndexedFieldsToCasesArrays = exports.reverseHeaderMapping = exports.transformCasesArraysToIndexedFields = exports.buildPeopleNameSearchConditions = exports.identifySearchedString = exports.generateJmbgAndPibSearchQuery = exports.buildLawyerNameSearchConditions = exports.buildCasesNameSearchConditions = void 0;
+exports.calculateTypeSums = exports.generateQueryColumns = exports.generateRandomString = exports.transformParsedDataToCase = exports.splitLawyerName = exports.transformIndexedFieldsToCasesArrays = exports.reverseHeaderMapping = exports.transformCasesArraysToIndexedFields = exports.buildPeopleNameSearchConditions = exports.identifySearchedString = exports.generateJmbgAndPibSearchQuery = exports.buildLawyerNameSearchConditions = exports.buildCasesNameSearchConditions = void 0;
 var casesServicesData_1 = require("../casesServices/casesServicesData");
 var universalHelpers_1 = require("./universalHelpers");
 var attorneys_db_1 = require("../../attorneys-db");
@@ -303,7 +303,6 @@ var generateQueryColumns = function (checkedProps) {
             'entering_date',
             'lawyer_hand_over_date',
             'comment',
-            'limitation_objection',
         ];
         var debtorProps = ['address', 'email', 'zip_code'];
         for (var _i = 0, caseProps_1 = caseProps; _i < caseProps_1.length; _i++) {
@@ -343,6 +342,10 @@ var generateQueryColumns = function (checkedProps) {
         if (checkedProps.includes('status')) {
             selectColumns.push('st.name as status');
             groupByColumns.push('st.name');
+        }
+        if (checkedProps.includes('limitation_objection')) {
+            selectColumns.push(attorneys_db_1.db.raw("CASE WHEN c.limitation_objection = true THEN 'DA' ELSE 'NE' END AS limitation_objection"));
+            groupByColumns.push('c.limitation_objection');
         }
         if (checkedProps.includes('is_legal')) {
             selectColumns.push(attorneys_db_1.db.raw("CASE WHEN d.is_legal = true THEN 'DA' ELSE 'NE' END AS is_legal"));
@@ -400,3 +403,26 @@ var generateQueryColumns = function (checkedProps) {
     };
 };
 exports.generateQueryColumns = generateQueryColumns;
+var calculateTypeSums = function (transactions) {
+    var typeSums = {};
+    for (var _i = 0, transactions_1 = transactions; _i < transactions_1.length; _i++) {
+        var transaction = transactions_1[_i];
+        var amount = transaction.amount, type = transaction.type;
+        var amountValue = parseFloat(amount);
+        if (!isNaN(amountValue)) {
+            if (typeSums[type]) {
+                typeSums[type] += amountValue;
+            }
+            else {
+                typeSums[type] = amountValue;
+            }
+        }
+    }
+    for (var type in typeSums) {
+        if (typeSums.hasOwnProperty(type)) {
+            typeSums[type] = parseFloat(typeSums[type].toFixed(2));
+        }
+    }
+    return typeSums;
+};
+exports.calculateTypeSums = calculateTypeSums;

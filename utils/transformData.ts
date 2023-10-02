@@ -27,7 +27,6 @@ export const formatDateToDDMMYYYY = (inputDate: string): string => {
 
 // Function to convert "DD.MM.YYYY" to "YYYY-MM-DDTHH:mm:ss.sssZ"
 export const formatDateToISO = (inputDate: string): string | null => {
-  console.log('inputDate', inputDate);
   const dateParts = inputDate.split('.');
   if (dateParts.length === 3) {
     const day = parseInt(dateParts[0], 10);

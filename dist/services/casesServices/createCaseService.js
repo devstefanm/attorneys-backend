@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -54,15 +65,31 @@ var createCaseService = function (req, res) { return __awaiter(void 0, void 0, v
                 _a = req.body, first_name = _a.first_name, last_name = _a.last_name, jmbg = _a.jmbg, employed = _a.employed, employer_id = _a.employer_id, executor_ids = _a.executor_ids, name = _a.name, pib = _a.pib, cession = _a.cession, address = _a.address, email = _a.email, zip_code = _a.zip_code, city_id = _a.city_id, case_number = _a.case_number, contract_number = _a.contract_number, closing_date = _a.closing_date, business_numbers = _a.business_numbers, phone_numbers = _a.phone_numbers, lawyer_id = _a.lawyer_id, client_id = _a.client_id, court_id = _a.court_id, ssn_number_id = _a.ssn_number_id, package_id = _a.package_id, principal = _a.principal, interest = _a.interest, status = _a.status, old_payment = _a.old_payment, our_taxes = _a.our_taxes, warning_price = _a.warning_price, entering_date = _a.entering_date, lawyer_hand_over_date = _a.lawyer_hand_over_date, comment = _a.comment, limitation_objection = _a.limitation_objection;
                 if (business_numbers === null || business_numbers === void 0 ? void 0 : business_numbers.concat(phone_numbers, executor_ids).includes(null)) {
                     res.status(500);
-                    (0, catchErrorStack_1.default)(res, 'Phone numbers, beiliffs nor business numbers cannot include null');
+                    return [2 /*return*/, (0, catchErrorStack_1.default)(res, 'errors.phoneNumberNull')];
                 }
-                if (!contract_number || !case_number) {
+                if ((!first_name || !last_name) && !name) {
                     res.status(400);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "message.no_case_or_contract_number")];
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.noName")];
                 }
-                if (client_id) {
+                if (first_name && last_name && !jmbg) {
                     res.status(400);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "message.no_client")];
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.noJMBG")];
+                }
+                if (!case_number) {
+                    res.status(400);
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.noCaseNumber")];
+                }
+                if (!contract_number) {
+                    res.status(400);
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.noContractNumber")];
+                }
+                if (!client_id) {
+                    res.status(400);
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.noClient")];
+                }
+                if (closing_date !== undefined && new Date(closing_date) > new Date()) {
+                    res.status(400);
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.closingDateLate")];
                 }
                 statusId = void 0;
                 if (!status) return [3 /*break*/, 3];
@@ -249,27 +276,7 @@ var createCaseService = function (req, res) { return __awaiter(void 0, void 0, v
                 debtorId_1 = (_g.sent())[0].id;
                 _g.label = 32;
             case 32: return [4 /*yield*/, (0, attorneys_db_1.db)('cases')
-                    .insert({
-                    debtor_id: debtorId_1,
-                    case_number: case_number,
-                    contract_number: contract_number,
-                    closing_date: closing_date,
-                    lawyer_id: lawyer_id,
-                    client_id: client_id,
-                    court_id: court_id,
-                    ssn_number_id: ssn_number_id,
-                    package_id: package_id,
-                    principal: principal,
-                    interest: interest,
-                    status_id: statusId,
-                    old_payment: old_payment,
-                    our_taxes: our_taxes,
-                    warning_price: warning_price,
-                    entering_date: entering_date,
-                    lawyer_hand_over_date: lawyer_hand_over_date,
-                    comment: comment,
-                    limitation_objection: limitation_objection,
-                })
+                    .insert(__assign({ debtor_id: debtorId_1, case_number: case_number, contract_number: contract_number, lawyer_id: lawyer_id, client_id: client_id, court_id: court_id, ssn_number_id: ssn_number_id, package_id: package_id, principal: principal, interest: interest, status_id: statusId, old_payment: old_payment, our_taxes: our_taxes, warning_price: warning_price, entering_date: entering_date, lawyer_hand_over_date: lawyer_hand_over_date, comment: comment, limitation_objection: limitation_objection, closing_date: closing_date }, (closing_date ? { state: 'closed' } : { state: 'active' })))
                     .returning('id')];
             case 33:
                 newCaseId_1 = (_g.sent())[0].id;
@@ -361,10 +368,10 @@ var createCaseService = function (req, res) { return __awaiter(void 0, void 0, v
                         case_id: newCaseId_1,
                     };
                     res.status(200);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "message.case_successfully_created", apiResponse)];
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "messages.createCaseSuccess", apiResponse)];
                 }
                 res.status(404);
-                return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "message.case_not_found", apiResponse)];
+                return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "errors.caseNotFound", apiResponse)];
             case 42:
                 error_1 = _g.sent();
                 return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_1)];

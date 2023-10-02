@@ -62,13 +62,13 @@ var getExecutorsListService = function (req, res) { return __awaiter(void 0, voi
                     .leftJoin('phone_numbers as pn', 'e.id', 'pn.lawyer_id')
                     .first();
                 executorsQuery = (0, attorneys_db_1.db)('executors as e')
-                    .select('e.first_name', 'e.last_name', 'e.email', 'ci.name as city', attorneys_db_1.db.raw("string_agg(distinct pn.number, ', ') as phone_numbers"), attorneys_db_1.db.raw("string_agg(distinct pn.display_number, ', ') as display_phone_numbers"), attorneys_db_1.db.raw('COUNT(ce.case_id) as case_count'))
+                    .select('e.id', 'e.first_name', 'e.last_name', 'e.email', 'ci.name as city', attorneys_db_1.db.raw("string_agg(distinct pn.number, ', ') as phone_numbers"), attorneys_db_1.db.raw("string_agg(distinct pn.display_number, ', ') as display_phone_numbers"), attorneys_db_1.db.raw('COUNT(ce.case_id) as case_count'))
                     .leftJoin('case_executors as ce', 'e.id', 'ce.executor_id')
                     .leftJoin('cities as ci', 'e.city_id', 'ci.id')
                     .leftJoin('phone_numbers as pn', 'e.id', 'pn.executor_id')
                     .offset(offset)
                     .limit(Number(size))
-                    .groupBy('e.first_name', 'e.last_name', 'e.email', 'e.address', 'e.created_at', 'ci.name');
+                    .groupBy('e.id', 'e.first_name', 'e.last_name', 'e.email', 'e.address', 'e.created_at', 'ci.name');
                 switch (sortBy) {
                     case 'name':
                         executorsQuery.orderBy('e.first_name', sort);

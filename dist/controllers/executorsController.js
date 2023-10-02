@@ -37,6 +37,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var createExecutorService_1 = require("../services/executorsServices/createExecutorService");
+var deleteExecutorService_1 = require("../services/executorsServices/deleteExecutorService");
+var editExecutorService_1 = require("../services/executorsServices/editExecutorService");
+var getExecutorService_1 = require("../services/executorsServices/getExecutorService");
 var getExecutorsListService_1 = require("../services/executorsServices/getExecutorsListService");
 var getExecutorsNamesService_1 = require("../services/executorsServices/getExecutorsNamesService");
 var executors = {
@@ -80,8 +83,28 @@ var executors = {
             }
         });
     }); },
-    postExecutor: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+    getExecutor: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
         var _a, _b, error_3;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _c.trys.push([0, 2, , 3]);
+                    _b = (_a = res).json;
+                    return [4 /*yield*/, (0, getExecutorService_1.getExecutorService)(req, res)];
+                case 1:
+                    _b.apply(_a, [_c.sent()]);
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_3 = _c.sent();
+                    console.error({ error: error_3.message });
+                    res.json({ error: error_3.message });
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    }); },
+    postExecutor: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+        var _a, _b, error_4;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
@@ -92,9 +115,49 @@ var executors = {
                     _b.apply(_a, [_c.sent()]);
                     return [3 /*break*/, 3];
                 case 2:
-                    error_3 = _c.sent();
-                    console.error({ error: error_3.message });
-                    res.json({ error: error_3.message });
+                    error_4 = _c.sent();
+                    console.error({ error: error_4.message });
+                    res.json({ error: error_4.message });
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    }); },
+    patchExecutor: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+        var _a, _b, error_5;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _c.trys.push([0, 2, , 3]);
+                    _b = (_a = res).json;
+                    return [4 /*yield*/, (0, editExecutorService_1.editExecutorService)(req, res)];
+                case 1:
+                    _b.apply(_a, [_c.sent()]);
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_5 = _c.sent();
+                    console.error({ error: error_5.message });
+                    res.json({ error: error_5.message });
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    }); },
+    deleteExecutor: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+        var _a, _b, error_6;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _c.trys.push([0, 2, , 3]);
+                    _b = (_a = res).json;
+                    return [4 /*yield*/, (0, deleteExecutorService_1.deleteExecutorService)(req, res)];
+                case 1:
+                    _b.apply(_a, [_c.sent()]);
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_6 = _c.sent();
+                    console.error({ error: error_6.message });
+                    res.json({ error: error_6.message });
                     return [3 /*break*/, 3];
                 case 3: return [2 /*return*/];
             }

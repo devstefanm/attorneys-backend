@@ -14,6 +14,26 @@ export const createTransactionService = async (
 
     let caseId: number | undefined;
 
+    if (type === null || type === '') {
+      res.status(400);
+      return mapApiToResponse(400, `errors.noType`);
+    }
+
+    if (amount === null || amount === '') {
+      res.status(400);
+      return mapApiToResponse(400, `errors.noAmount`);
+    }
+
+    if (case_number === null || case_number === '') {
+      res.status(400);
+      return mapApiToResponse(400, `errors.noCaseNumber`);
+    }
+
+    if (payment_date === null || payment_date === '') {
+      res.status(400);
+      return mapApiToResponse(400, `errors.noPaymentDate`);
+    }
+
     if (case_number) {
       caseId = (
         await db('cases').select('id').where('case_number', case_number).first()

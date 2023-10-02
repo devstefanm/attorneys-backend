@@ -37,8 +37,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var createSSNService_1 = require("../services/ssnServices/createSSNService");
+var deleteSSNService_1 = require("../services/ssnServices/deleteSSNService");
+var editSSNService_1 = require("../services/ssnServices/editSSNService");
 var getSSNListService_1 = require("../services/ssnServices/getSSNListService");
 var getSSNNumbersService_1 = require("../services/ssnServices/getSSNNumbersService");
+var getSSNService_1 = require("../services/ssnServices/getSSNService");
 var ssnNumbers = {
     getSSNList: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
         var _a, _b, error_1;
@@ -80,8 +83,28 @@ var ssnNumbers = {
             }
         });
     }); },
-    postSSNNumber: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+    getSSNNumber: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
         var _a, _b, error_3;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _c.trys.push([0, 2, , 3]);
+                    _b = (_a = res).json;
+                    return [4 /*yield*/, (0, getSSNService_1.getSSNService)(req, res)];
+                case 1:
+                    _b.apply(_a, [_c.sent()]);
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_3 = _c.sent();
+                    console.error({ error: error_3.message });
+                    res.json({ error: error_3.message });
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    }); },
+    postSSNNumber: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+        var _a, _b, error_4;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
@@ -92,9 +115,49 @@ var ssnNumbers = {
                     _b.apply(_a, [_c.sent()]);
                     return [3 /*break*/, 3];
                 case 2:
-                    error_3 = _c.sent();
-                    console.error({ error: error_3.message });
-                    res.json({ error: error_3.message });
+                    error_4 = _c.sent();
+                    console.error({ error: error_4.message });
+                    res.json({ error: error_4.message });
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    }); },
+    patchSSNNumber: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+        var _a, _b, error_5;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _c.trys.push([0, 2, , 3]);
+                    _b = (_a = res).json;
+                    return [4 /*yield*/, (0, editSSNService_1.editSSNNumberService)(req, res)];
+                case 1:
+                    _b.apply(_a, [_c.sent()]);
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_5 = _c.sent();
+                    console.error({ error: error_5.message });
+                    res.json({ error: error_5.message });
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    }); },
+    deleteSSNNumber: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+        var _a, _b, error_6;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _c.trys.push([0, 2, , 3]);
+                    _b = (_a = res).json;
+                    return [4 /*yield*/, (0, deleteSSNService_1.deleteSSNService)(req, res)];
+                case 1:
+                    _b.apply(_a, [_c.sent()]);
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_6 = _c.sent();
+                    console.error({ error: error_6.message });
+                    res.json({ error: error_6.message });
                     return [3 /*break*/, 3];
                 case 3: return [2 /*return*/];
             }

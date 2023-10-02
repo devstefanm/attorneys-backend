@@ -51,6 +51,22 @@ var createTransactionService = function (req, res) { return __awaiter(void 0, vo
                 _b.trys.push([0, 5, , 6]);
                 _a = req.body, case_number = _a.case_number, type = _a.type, amount = _a.amount, posting_method = _a.posting_method, payment_date = _a.payment_date;
                 caseId = void 0;
+                if (type === null || type === '') {
+                    res.status(400);
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.noType")];
+                }
+                if (amount === null || amount === '') {
+                    res.status(400);
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.noAmount")];
+                }
+                if (case_number === null || case_number === '') {
+                    res.status(400);
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.noCaseNumber")];
+                }
+                if (payment_date === null || payment_date === '') {
+                    res.status(400);
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.noPaymentDate")];
+                }
                 if (!case_number) return [3 /*break*/, 2];
                 return [4 /*yield*/, (0, attorneys_db_1.db)('cases').select('id').where('case_number', case_number).first()];
             case 1:
@@ -58,7 +74,7 @@ var createTransactionService = function (req, res) { return __awaiter(void 0, vo
                 return [3 /*break*/, 3];
             case 2:
                 res.status(404);
-                return [2 /*return*/, (0, mapApiToResponse_1.default)(404, 'error.not_found.wrong_case_number', {
+                return [2 /*return*/, (0, mapApiToResponse_1.default)(404, 'errors.notFound', {
                         transaction_id: null,
                     })];
             case 3: return [4 /*yield*/, (0, attorneys_db_1.db)('transactions')
@@ -78,10 +94,10 @@ var createTransactionService = function (req, res) { return __awaiter(void 0, vo
                         transaction_id: newTransactionId,
                     };
                     res.status(200);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "message.transaction_successfully_created", apiResponse)];
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "messages.createTransactionSuccess", apiResponse)];
                 }
                 res.status(404);
-                return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "message.transaction_not_found", apiResponse)];
+                return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "errors.notFound", apiResponse)];
             case 5:
                 error_1 = _b.sent();
                 return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_1)];

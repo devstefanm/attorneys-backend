@@ -52,14 +52,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getCaseService = void 0;
 var attorneys_db_1 = require("../../attorneys-db");
+var casesHelpers_1 = require("../helpers/casesHelpers");
 var catchErrorStack_1 = __importDefault(require("../../utils/catchErrorStack"));
 var mapApiToResponse_1 = __importDefault(require("../../utils/mapApiToResponse"));
 var getCaseService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var caseId, caseQuery, chosenCase, apiResponse, error_1;
+    var caseId, caseQuery, chosenCase, caseTransactions, sumOfTransactions, apiResponse, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 2, , 3]);
+                _a.trys.push([0, 3, , 4]);
                 caseId = req.params.caseId;
                 caseQuery = (0, attorneys_db_1.db)('cases as c')
                     .select('c.id', 'c.case_number', 'c.contract_number', 'c.closing_date', 'c.state', 'c.principal', 'c.interest', 'c.old_payment', 'c.our_taxes', 'c.warning_price', 'c.entering_date', 'c.lawyer_hand_over_date', 'c.comment', 'c.limitation_objection', 'd.is_legal', 'd.cession', 'd.address', 'd.email', 'd.zip_code', 'p.first_name', 'p.last_name', 'p.jmbg', 'p.employed', 'o.name', 'o.pib', 'st.name as status', attorneys_db_1.db.raw("CASE WHEN COUNT(l.id) = 0 THEN null ELSE json_build_object('id', l.id, 'office_name', l.office_name, 'first_name', l.first_name, 'last_name', l.last_name) END as lawyer"), attorneys_db_1.db.raw("CASE WHEN COUNT(s.id) = 0 THEN null ELSE json_build_object('id', s.id, 'ssn', s.ssn) END as ssn_number"), attorneys_db_1.db.raw("CASE WHEN COUNT(pck.id) = 0 THEN null ELSE json_build_object('id', pck.id, 'package_name', pck.package_name) END as package"), attorneys_db_1.db.raw("CASE WHEN COUNT(cl.id) = 0 THEN null ELSE json_build_object('id', cl.id, 'name', cl.name) END as client"), attorneys_db_1.db.raw("CASE WHEN COUNT(co.id) = 0 THEN null ELSE json_build_object('id', co.id, 'name', co.name) END as court"), attorneys_db_1.db.raw("CASE WHEN COUNT(ci.id) = 0 THEN null ELSE json_build_object('id', ci.id, 'name', ci.name) END as city"), attorneys_db_1.db.raw("CASE WHEN COUNT(emp.id) = 0 THEN null ELSE json_build_object('id', emp.id, 'name', emp.name) END as employer"), attorneys_db_1.db.raw("CASE WHEN COUNT(e.id) = 0 THEN null ELSE json_agg(distinct jsonb_build_object('id', e.id, 'first_name', e.first_name, 'last_name', e.last_name)) END as executors"), attorneys_db_1.db.raw("CASE WHEN COUNT(bn.id) = 0 THEN null ELSE json_agg(distinct jsonb_build_object('id', bn.id, 'number', bn.number)) END as business_numbers"), attorneys_db_1.db.raw('CASE WHEN COUNT(pn.number) = 0 THEN null ELSE json_agg(distinct pn.number) END as phone_numbers'))
@@ -87,15 +88,21 @@ var getCaseService = function (req, res) { return __awaiter(void 0, void 0, void
                 chosenCase = _a.sent();
                 if (!chosenCase) {
                     res.status(404);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "message.case_not_found")];
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "errors.caseNotFound")];
                 }
-                apiResponse = __assign({}, chosenCase);
-                res.status(200);
-                return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "message.case_successfully_retrieved", apiResponse)];
+                return [4 /*yield*/, (0, attorneys_db_1.db)('transactions')
+                        .select('amount', 'type')
+                        .where('case_id', caseId)];
             case 2:
+                caseTransactions = _a.sent();
+                sumOfTransactions = (0, casesHelpers_1.calculateTypeSums)(caseTransactions);
+                apiResponse = __assign(__assign({}, chosenCase), sumOfTransactions);
+                res.status(200);
+                return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "messages.retrieveCaseSuccess", apiResponse)];
+            case 3:
                 error_1 = _a.sent();
                 return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_1)];
-            case 3: return [2 /*return*/];
+            case 4: return [2 /*return*/];
         }
     });
 }); };

@@ -60,11 +60,11 @@ var getPackagesListService = function (req, res) { return __awaiter(void 0, void
                     .leftJoin('cases as c', 'pck.id', 'c.package_id')
                     .first();
                 packagesQuery = (0, attorneys_db_1.db)('packages as pck')
-                    .select('pck.package_name', attorneys_db_1.db.raw('COUNT(c.id) as case_count'))
+                    .select('pck.id', 'pck.package_name', attorneys_db_1.db.raw('COUNT(c.id) as case_count'))
                     .leftJoin('cases as c', 'pck.id', 'c.package_id')
                     .offset(offset)
                     .limit(Number(size))
-                    .groupBy('pck.package_name', 'pck.created_at');
+                    .groupBy('pck.id', 'pck.package_name', 'pck.created_at');
                 switch (sortBy) {
                     case 'package_name':
                         packagesQuery.orderBy('pck.package_name', sort);

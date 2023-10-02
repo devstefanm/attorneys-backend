@@ -183,6 +183,19 @@ export const importCasesListService = async (
         return mapApiToResponse(400, `errors.noIsLegal`);
       }
 
+      if (closing_date && typeof closing_date === 'string') {
+        const parts = (closing_date as string).split('.');
+        closing_date = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+      }
+      if (entering_date && typeof entering_date === 'string') {
+        const parts = (entering_date as string).split('.');
+        entering_date = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+      }
+      if (lawyer_hand_over_date && typeof lawyer_hand_over_date === 'string') {
+        const parts = (lawyer_hand_over_date as string).split('.');
+        lawyer_hand_over_date = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+      }
+
       if (case_number && contract_number) {
         const existingCase = await db('cases')
           .select('id', 'case_number', 'contract_number')

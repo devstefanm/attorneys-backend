@@ -62,13 +62,13 @@ var getLawyersListService = function (req, res) { return __awaiter(void 0, void 
                     .leftJoin('phone_numbers as pn', 'l.id', 'pn.lawyer_id')
                     .first();
                 lawyersQuery = (0, attorneys_db_1.db)('lawyers as l')
-                    .select('l.first_name', 'l.last_name', 'l.office_name', 'l.email', 'l.address', 'ci.name as city', attorneys_db_1.db.raw("string_agg(distinct pn.number, ', ') as phone_numbers"), attorneys_db_1.db.raw("string_agg(distinct pn.display_number, ', ') as display_phone_numbers"), attorneys_db_1.db.raw('COUNT(c.id) as case_count'))
+                    .select('l.id', 'l.first_name', 'l.last_name', 'l.office_name', 'l.email', 'l.address', 'ci.name as city', attorneys_db_1.db.raw("string_agg(distinct pn.number, ', ') as phone_numbers"), attorneys_db_1.db.raw("string_agg(distinct pn.display_number, ', ') as display_phone_numbers"), attorneys_db_1.db.raw('COUNT(c.id) as case_count'))
                     .leftJoin('cases as c', 'l.id', 'c.lawyer_id')
                     .leftJoin('cities as ci', 'l.city_id', 'ci.id')
                     .leftJoin('phone_numbers as pn', 'l.id', 'pn.lawyer_id')
                     .offset(offset)
                     .limit(Number(size))
-                    .groupBy('l.first_name', 'l.last_name', 'l.office_name', 'l.email', 'l.address', 'l.created_at', 'ci.name');
+                    .groupBy('l.id', 'l.first_name', 'l.last_name', 'l.office_name', 'l.email', 'l.address', 'l.created_at', 'ci.name');
                 switch (sortBy) {
                     case 'name':
                         lawyersQuery.orderBy('l.first_name', sort);

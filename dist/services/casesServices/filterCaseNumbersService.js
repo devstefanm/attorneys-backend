@@ -90,7 +90,7 @@ var filterCaseNumbersService = function (req, res) { return __awaiter(void 0, vo
                     }
                 })
                     .union(function () {
-                    this.select('o.name', attorneys_db_1.db.raw('ca.id::text'), attorneys_db_1.db.raw('ca.case_number::text'), attorneys_db_1.db.raw('NULL as first_name'), attorneys_db_1.db.raw('NULL as last_name'))
+                    this.select(attorneys_db_1.db.raw('ca.id::text'), attorneys_db_1.db.raw('ca.case_number::text'), attorneys_db_1.db.raw('NULL as first_name'), attorneys_db_1.db.raw('NULL as last_name'), 'o.name')
                         .from('organizations as o')
                         .leftJoin('debtors as de', 'o.id', 'de.organization_id')
                         .leftJoin('cases as ca', 'de.id', 'ca.debtor_id')

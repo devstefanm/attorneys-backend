@@ -37,8 +37,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var createCityService_1 = require("../services/citiesServices/createCityService");
+var deleteCityService_1 = require("../services/citiesServices/deleteCityService");
+var editCityService_1 = require("../services/citiesServices/editCityService");
 var getCitiesListService_1 = require("../services/citiesServices/getCitiesListService");
 var getCitiesNamesService_1 = require("../services/citiesServices/getCitiesNamesService");
+var getCityService_1 = require("../services/citiesServices/getCityService");
 var cities = {
     getCitiesList: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
         var _a, _b, error_1;
@@ -80,8 +83,28 @@ var cities = {
             }
         });
     }); },
-    postCity: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+    getCity: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
         var _a, _b, error_3;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _c.trys.push([0, 2, , 3]);
+                    _b = (_a = res).json;
+                    return [4 /*yield*/, (0, getCityService_1.getCityService)(req, res)];
+                case 1:
+                    _b.apply(_a, [_c.sent()]);
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_3 = _c.sent();
+                    console.error({ error: error_3.message });
+                    res.json({ error: error_3.message });
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    }); },
+    postCity: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+        var _a, _b, error_4;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
@@ -92,9 +115,49 @@ var cities = {
                     _b.apply(_a, [_c.sent()]);
                     return [3 /*break*/, 3];
                 case 2:
-                    error_3 = _c.sent();
-                    console.error({ error: error_3.message });
-                    res.json({ error: error_3.message });
+                    error_4 = _c.sent();
+                    console.error({ error: error_4.message });
+                    res.json({ error: error_4.message });
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    }); },
+    patchCity: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+        var _a, _b, error_5;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _c.trys.push([0, 2, , 3]);
+                    _b = (_a = res).json;
+                    return [4 /*yield*/, (0, editCityService_1.editCityService)(req, res)];
+                case 1:
+                    _b.apply(_a, [_c.sent()]);
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_5 = _c.sent();
+                    console.error({ error: error_5.message });
+                    res.json({ error: error_5.message });
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    }); },
+    deleteCity: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+        var _a, _b, error_6;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _c.trys.push([0, 2, , 3]);
+                    _b = (_a = res).json;
+                    return [4 /*yield*/, (0, deleteCityService_1.deleteCityService)(req, res)];
+                case 1:
+                    _b.apply(_a, [_c.sent()]);
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_6 = _c.sent();
+                    console.error({ error: error_6.message });
+                    res.json({ error: error_6.message });
                     return [3 /*break*/, 3];
                 case 3: return [2 /*return*/];
             }

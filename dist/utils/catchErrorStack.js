@@ -7,6 +7,6 @@ var mapApiToResponse_1 = __importDefault(require("./mapApiToResponse"));
 var catchErrorStack = function (res, error) {
     console.error(error);
     res.status(500);
-    return (0, mapApiToResponse_1.default)(500, error.message || 'ERROR.SERVER', undefined);
+    return (0, mapApiToResponse_1.default)(500, error.message || 'errors.serverError', undefined);
 };
 exports.default = catchErrorStack;

@@ -91,7 +91,7 @@ export const editExecutorService = async (
 
     if (
       Object.keys(updateExecutorFields).length === 0 &&
-      phone_numbers.length === 0
+      phone_numbers?.length === 0
     ) {
       res.status(400);
       return mapApiToResponse(400, `errors.nothingChanged`);

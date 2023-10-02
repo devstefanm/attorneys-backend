@@ -45,26 +45,14 @@ var mapApiToResponse_1 = __importDefault(require("../../utils/mapApiToResponse")
 var attorneys_db_1 = require("../../attorneys-db");
 var phoneNumbersHelpers_1 = require("../helpers/phoneNumbersHelpers");
 var createLawyerService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, office_name, first_name, last_name, email, address, city_id, phone_numbers, newLawyerId_1, cityId, apiResponse, error_1;
+    var _a, office_name, first_name, last_name, email, address, city_id, phone_numbers, newLawyerId_1, apiResponse, error_1;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
-                _b.trys.push([0, 10, , 11]);
+                _b.trys.push([0, 7, , 8]);
                 _a = req.body, office_name = _a.office_name, first_name = _a.first_name, last_name = _a.last_name, email = _a.email, address = _a.address, city_id = _a.city_id, phone_numbers = _a.phone_numbers;
-                newLawyerId_1 = null, cityId = void 0;
-                if (!city_id) return [3 /*break*/, 2];
-                return [4 /*yield*/, (0, attorneys_db_1.db)('cities').select('id').where('id', city_id).first()];
-            case 1:
-                cityId = (_b.sent())
-                    .id;
-                return [3 /*break*/, 3];
-            case 2:
-                res.status(404);
-                return [2 /*return*/, (0, mapApiToResponse_1.default)(404, 'error.not_found.wrong_city_id', {
-                        id: null,
-                    })];
-            case 3:
-                if (!(first_name && last_name)) return [3 /*break*/, 5];
+                newLawyerId_1 = null;
+                if (!(first_name && last_name)) return [3 /*break*/, 2];
                 return [4 /*yield*/, (0, attorneys_db_1.db)('lawyers')
                         .insert({
                         office_name: office_name,
@@ -75,16 +63,16 @@ var createLawyerService = function (req, res) { return __awaiter(void 0, void 0,
                         city_id: city_id,
                     })
                         .returning('id')];
-            case 4:
+            case 1:
                 newLawyerId_1 = (_b.sent())[0].id;
-                return [3 /*break*/, 6];
-            case 5:
+                return [3 /*break*/, 3];
+            case 2:
                 res.status(400);
-                return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "message.lawyers_names")];
-            case 6:
+                return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.noName")];
+            case 3:
                 apiResponse = undefined;
-                if (!newLawyerId_1) return [3 /*break*/, 9];
-                if (!(phone_numbers && phone_numbers.length > 0)) return [3 /*break*/, 8];
+                if (!newLawyerId_1) return [3 /*break*/, 6];
+                if (!(phone_numbers && phone_numbers.length > 0)) return [3 /*break*/, 5];
                 return [4 /*yield*/, Promise.all(phone_numbers.map(function (phoneNumber) { return __awaiter(void 0, void 0, void 0, function () {
                         var displayNumber, existingPhoneNumber;
                         return __generator(this, function (_a) {
@@ -109,22 +97,22 @@ var createLawyerService = function (req, res) { return __awaiter(void 0, void 0,
                             }
                         });
                     }); }))];
-            case 7:
+            case 4:
                 _b.sent();
-                _b.label = 8;
-            case 8:
+                _b.label = 5;
+            case 5:
                 apiResponse = {
                     id: newLawyerId_1,
                 };
                 res.status(200);
-                return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "message.lawyer_successfully_created", apiResponse)];
-            case 9:
+                return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "messages.createLawyerSuccess", apiResponse)];
+            case 6:
                 res.status(404);
-                return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "message.lawyer_not_found", apiResponse)];
-            case 10:
+                return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "errors.notFound", apiResponse)];
+            case 7:
                 error_1 = _b.sent();
                 return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_1)];
-            case 11: return [2 /*return*/];
+            case 8: return [2 /*return*/];
         }
     });
 }); };

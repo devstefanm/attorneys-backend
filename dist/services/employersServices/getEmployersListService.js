@@ -60,11 +60,11 @@ var getEmployersListService = function (req, res) { return __awaiter(void 0, voi
                     .leftJoin('people as p', 'emp.id', 'p.employer_id')
                     .first();
                 employersQuery = (0, attorneys_db_1.db)('employers as emp')
-                    .select('emp.name as employer', attorneys_db_1.db.raw('COUNT(p.id) as employees_count'))
+                    .select('emp.id', 'emp.name as employer', attorneys_db_1.db.raw('COUNT(p.id) as employees_count'))
                     .leftJoin('people as p', 'emp.id', 'p.employer_id')
                     .offset(offset)
                     .limit(Number(size))
-                    .groupBy('emp.name', 'emp.created_at');
+                    .groupBy('emp.id', 'emp.name', 'emp.created_at');
                 switch (sortBy) {
                     case 'employer':
                         employersQuery.orderBy('emp.name', sort);

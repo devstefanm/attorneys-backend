@@ -82,11 +82,11 @@ export const filterCaseNumbersService = async (req: Request, res: Response) => {
         })
         .union(function () {
           this.select(
-            'o.name',
             db.raw('ca.id::text'),
             db.raw('ca.case_number::text'),
             db.raw('NULL as first_name'),
             db.raw('NULL as last_name'),
+            'o.name',
           )
             .from('organizations as o')
             .leftJoin('debtors as de', 'o.id', 'de.organization_id')

@@ -1,3 +1,4 @@
+import { CellValue } from 'exceljs';
 import { ICase } from './casesTypes';
 import { IExcerpt } from './excerptsTypes';
 import { IEntityMetadata, ITableResponseData } from './universalTypes';
@@ -14,14 +15,16 @@ export interface ITransaction extends IEntityMetadata {
   type?: ETransactionType;
   amount?: number;
   posting_method?: string;
-  payment_date?: string;
+  payment_date?: string | Date;
   case_id?: number | null;
+  case_number?: string | number;
 }
 
-export interface ITransactionForList extends ITransaction, IExcerpt {}
+export interface ITransactionForList extends ITransaction, Partial<IExcerpt> {}
 
 export interface ITransactionsListApiResponseData extends ITableResponseData {
   transactions: ITransactionForList[];
+  total_amount?: string | null;
 }
 
 export interface ICreateTransactionApiResponseData {
@@ -41,4 +44,13 @@ export interface ITransactionApiResponseData {
     last_name: string | null;
     case_number: string;
   };
+}
+
+export interface ICaseTransaction {
+  amount: string;
+  type: string;
+}
+
+export interface ITransactionForImport {
+  [key: string]: string | string[] | undefined | null | CellValue;
 }

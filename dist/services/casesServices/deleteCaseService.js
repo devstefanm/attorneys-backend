@@ -58,7 +58,7 @@ var deleteCaseService = function (req, res) { return __awaiter(void 0, void 0, v
                 existingCase = _a.sent();
                 if (!existingCase) {
                     res.status(404);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(404, 'message.case_not_found', existingCase)];
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(404, 'errors.caseNotFound', existingCase)];
                 }
                 return [4 /*yield*/, (0, attorneys_db_1.db)('case_executors').where('case_id', caseId).del()];
             case 2:
@@ -71,8 +71,8 @@ var deleteCaseService = function (req, res) { return __awaiter(void 0, void 0, v
             case 4:
                 // Delete the case with the specified caseId
                 _a.sent();
-                res.status(204); // 204 No Content status for successful deletion
-                return [2 /*return*/, (0, mapApiToResponse_1.default)(204, 'message.case_deleted', undefined)];
+                res.status(200); // 200 instead of 204 No Content status for successful deletion because message was not showing
+                return [2 /*return*/, (0, mapApiToResponse_1.default)(200, 'messages.caseDeleted', existingCase.id)];
             case 5:
                 error_1 = _a.sent();
                 return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_1)];

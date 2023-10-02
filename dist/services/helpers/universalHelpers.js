@@ -50,10 +50,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.debtorNameGenerator = exports.jmbgAndPibGenerator = exports.findRecordByNameOrCreateNew = exports.postShortNameServiceTemplate = exports.generateDecimalSearchQuery = exports.generateBigIntSearchQuery = exports.specialCharactersChecker = exports.generateShortNameSearchQuery = exports.generateFullNameSearchQuery = exports.getFullNamesServiceTemplate = exports.getShortNamesServiceTemplate = void 0;
+exports.getShortNameServiceTemplate = exports.editShortNameServiceTemplate = exports.debtorNameGenerator = exports.jmbgAndPibGenerator = exports.findRecordByNameOrCreateNew = exports.postShortNameServiceTemplate = exports.generateDecimalSearchQuery = exports.generateBigIntSearchQuery = exports.specialCharactersChecker = exports.generateShortNameSearchQuery = exports.generateFullNameSearchQuery = exports.getFullNamesServiceTemplate = exports.getShortNamesServiceTemplate = void 0;
 var attorneys_db_1 = require("../../attorneys-db");
 var mapApiToResponse_1 = __importDefault(require("../../utils/mapApiToResponse"));
 var specialCharacters_1 = __importDefault(require("../../utils/specialCharacters"));
+var transformData_1 = require("../../utils/transformData");
+var catchErrorStack_1 = __importDefault(require("../../utils/catchErrorStack"));
 var getShortNamesServiceTemplate = function (entity) {
     return function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
         var search, searchTerm, query, upperCaseEntity, searchTerms, names;
@@ -214,12 +216,13 @@ var generateDecimalSearchQuery = function (query, searchValue, column) {
 exports.generateDecimalSearchQuery = generateDecimalSearchQuery;
 var postShortNameServiceTemplate = function (entity) {
     return function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var name, newEntityId, apiResponse;
+        var name, newEntityId, uppercasedEntity, apiResponse;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     name = req.body.name;
                     newEntityId = null;
+                    uppercasedEntity = (0, transformData_1.uppercaseFirstLetter)(entity);
                     if (!name) return [3 /*break*/, 2];
                     return [4 /*yield*/, (0, attorneys_db_1.db)(entity)
                             .insert({
@@ -231,7 +234,7 @@ var postShortNameServiceTemplate = function (entity) {
                     return [3 /*break*/, 3];
                 case 2:
                     res.status(400);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "message.no_".concat(entity, "_name"))];
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.noName")];
                 case 3:
                     apiResponse = undefined;
                     if (newEntityId) {
@@ -239,10 +242,10 @@ var postShortNameServiceTemplate = function (entity) {
                             id: newEntityId,
                         };
                         res.status(200);
-                        return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "message.".concat(entity, "_successfully_created"), apiResponse)];
+                        return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "messages.create".concat(uppercasedEntity, "Success"), apiResponse)];
                     }
                     res.status(404);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "message.".concat(entity, "_not_found"), apiResponse)];
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "errors.notFound", apiResponse)];
             }
         });
     }); };
@@ -295,3 +298,65 @@ var debtorNameGenerator = function (singleCase) {
     return singleCase;
 };
 exports.debtorNameGenerator = debtorNameGenerator;
+var editShortNameServiceTemplate = function (entity, id) {
+    return function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+        var name, uppercasedEntity, existingRecord, apiResponse;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    name = req.body.name;
+                    uppercasedEntity = (0, transformData_1.uppercaseFirstLetter)(entity);
+                    if (name === null || name === '') {
+                        res.status(400);
+                        return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.noName")];
+                    }
+                    if (name === undefined) {
+                        res.status(400);
+                        return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.nothingChanged")];
+                    }
+                    return [4 /*yield*/, (0, attorneys_db_1.db)(entity)
+                            .select('name')
+                            .where('id', id)
+                            .first()];
+                case 1:
+                    existingRecord = _a.sent();
+                    if (!existingRecord) {
+                        res.status(404);
+                        return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "errors.notFound")];
+                    }
+                    if (!(name && existingRecord.name !== name)) return [3 /*break*/, 3];
+                    return [4 /*yield*/, (0, attorneys_db_1.db)(entity).where('id', id).update({ name: name }).returning('id')];
+                case 2:
+                    apiResponse = (_a.sent())[0];
+                    res.status(200);
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "messages.edit".concat(uppercasedEntity, "Success"), apiResponse)];
+                case 3: return [2 /*return*/, (0, catchErrorStack_1.default)(res, "errors.serverError")];
+            }
+        });
+    }); };
+};
+exports.editShortNameServiceTemplate = editShortNameServiceTemplate;
+var getShortNameServiceTemplate = function (entity, id) {
+    return function (res) { return __awaiter(void 0, void 0, void 0, function () {
+        var uppercasedEntity, chosenEntity;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    uppercasedEntity = (0, transformData_1.uppercaseFirstLetter)(entity);
+                    return [4 /*yield*/, (0, attorneys_db_1.db)(entity)
+                            .select('id', 'name')
+                            .where('id', id)
+                            .first()];
+                case 1:
+                    chosenEntity = _a.sent();
+                    if (!chosenEntity) {
+                        res.status(404);
+                        return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "errors.notFound")];
+                    }
+                    res.status(200);
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "messages.retrieve".concat(uppercasedEntity, "Success"), chosenEntity)];
+            }
+        });
+    }); };
+};
+exports.getShortNameServiceTemplate = getShortNameServiceTemplate;

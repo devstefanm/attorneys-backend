@@ -60,11 +60,11 @@ var getClientsListService = function (req, res) { return __awaiter(void 0, void 
                     .leftJoin('cases as c', 'cl.id', 'c.client_id')
                     .first();
                 clientsQuery = (0, attorneys_db_1.db)('clients as cl')
-                    .select('cl.name as client', attorneys_db_1.db.raw('COUNT(c.id) as case_count'))
+                    .select('cl.id', 'cl.name as client', attorneys_db_1.db.raw('COUNT(c.id) as case_count'))
                     .leftJoin('cases as c', 'cl.id', 'c.client_id')
                     .offset(offset)
                     .limit(Number(size))
-                    .groupBy('cl.name', 'cl.created_at');
+                    .groupBy('cl.id', 'cl.name', 'cl.created_at');
                 switch (sortBy) {
                     case 'client':
                         clientsQuery.orderBy('cl.name', sort);

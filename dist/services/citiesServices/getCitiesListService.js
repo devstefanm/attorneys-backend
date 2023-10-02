@@ -62,13 +62,13 @@ var getCitiesListService = function (req, res) { return __awaiter(void 0, void 0
                     .leftJoin('lawyers as l', 'ci.id', 'l.city_id')
                     .first();
                 citiesQuery = (0, attorneys_db_1.db)('cities as ci')
-                    .select('ci.name as city', attorneys_db_1.db.raw('COUNT(DISTINCT d.id) as debtor_count'), attorneys_db_1.db.raw('COUNT(DISTINCT e.id) as executor_count'), attorneys_db_1.db.raw('COUNT(DISTINCT l.id) as lawyer_count'))
+                    .select('ci.id', 'ci.name as city', attorneys_db_1.db.raw('COUNT(DISTINCT d.id) as debtor_count'), attorneys_db_1.db.raw('COUNT(DISTINCT e.id) as executor_count'), attorneys_db_1.db.raw('COUNT(DISTINCT l.id) as lawyer_count'))
                     .leftJoin('debtors as d', 'ci.id', 'd.city_id')
                     .leftJoin('executors as e', 'ci.id', 'e.city_id')
                     .leftJoin('lawyers as l', 'ci.id', 'l.city_id')
                     .offset(offset)
                     .limit(Number(size))
-                    .groupBy('ci.name', 'ci.created_at');
+                    .groupBy('ci.id', 'ci.name', 'ci.created_at');
                 switch (sortBy) {
                     case 'city':
                         citiesQuery.orderBy('ci.name', sort);

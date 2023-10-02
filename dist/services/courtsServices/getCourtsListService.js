@@ -60,11 +60,11 @@ var getCourtsListService = function (req, res) { return __awaiter(void 0, void 0
                     .leftJoin('cases as c', 'co.id', 'c.court_id')
                     .first();
                 courtsQuery = (0, attorneys_db_1.db)('courts as co')
-                    .select('co.name as court', attorneys_db_1.db.raw('COUNT(c.id) as case_count'))
+                    .select('co.id', 'co.name as court', attorneys_db_1.db.raw('COUNT(c.id) as case_count'))
                     .leftJoin('cases as c', 'co.id', 'c.court_id')
                     .offset(offset)
                     .limit(Number(size))
-                    .groupBy('co.name', 'co.created_at');
+                    .groupBy('co.id', 'co.name', 'co.created_at');
                 switch (sortBy) {
                     case 'court':
                         courtsQuery.orderBy('co.name', sort);

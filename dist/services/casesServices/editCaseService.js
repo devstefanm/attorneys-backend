@@ -42,25 +42,46 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.editCaseService = void 0;
 var attorneys_db_1 = require("../../attorneys-db");
 var phoneNumbersHelpers_1 = require("../helpers/phoneNumbersHelpers");
+var casesTypes_1 = require("../../types/casesTypes");
 var catchErrorStack_1 = __importDefault(require("../../utils/catchErrorStack"));
 var mapApiToResponse_1 = __importDefault(require("../../utils/mapApiToResponse"));
 var editCaseService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var caseId_1, _a, first_name, last_name, jmbg_1, employed, employer_id, name, pib_1, executor_ids, business_numbers, phone_numbers, cession, address, email, zip_code, city_id, case_number, contract_number, closing_date, lawyer_id, client_id, court_id, ssn_number_id, package_id, principal, interest, state, status, old_payment, our_taxes, warning_price, entering_date, lawyer_hand_over_date, comment, limitation_objection, updatedCaseFields, existingCase, debtorId_1, existingPerson, updatePersonFields, otherPersonId, otherDebtorId, existingOrganization, updateOrganizationFields, otherOrganizationId, otherDebtorId, _i, executor_ids_1, executor_id, existingDebtor, updatedDebtorFields, statusId, updatedCase, apiResponse, error_1;
+    var caseId_1, _a, first_name, last_name, jmbg_1, employed, employer_id, name, pib_1, executor_ids, business_numbers, phone_numbers, cession, address, email, zip_code, city_id, case_number, contract_number, closing_date, lawyer_id, client_id, court_id, ssn_number_id, package_id, principal, interest, status, old_payment, our_taxes, warning_price, entering_date, lawyer_hand_over_date, comment, limitation_objection, updatedCaseFields, existingCase, debtorId_1, existingPerson, updatePersonFields, otherPersonId, otherDebtorId, existingOrganization, updateOrganizationFields, otherOrganizationId, otherDebtorId, _i, executor_ids_1, executor_id, existingDebtor, updatedDebtorFields, statusId, updatedCase, apiResponse, error_1;
     var _b, _c, _d, _e, _f;
     return __generator(this, function (_g) {
         switch (_g.label) {
             case 0:
                 _g.trys.push([0, 45, , 46]);
                 caseId_1 = req.params.caseId;
-                _a = req.body, first_name = _a.first_name, last_name = _a.last_name, jmbg_1 = _a.jmbg, employed = _a.employed, employer_id = _a.employer_id, name = _a.name, pib_1 = _a.pib, executor_ids = _a.executor_ids, business_numbers = _a.business_numbers, phone_numbers = _a.phone_numbers, cession = _a.cession, address = _a.address, email = _a.email, zip_code = _a.zip_code, city_id = _a.city_id, case_number = _a.case_number, contract_number = _a.contract_number, closing_date = _a.closing_date, lawyer_id = _a.lawyer_id, client_id = _a.client_id, court_id = _a.court_id, ssn_number_id = _a.ssn_number_id, package_id = _a.package_id, principal = _a.principal, interest = _a.interest, state = _a.state, status = _a.status, old_payment = _a.old_payment, our_taxes = _a.our_taxes, warning_price = _a.warning_price, entering_date = _a.entering_date, lawyer_hand_over_date = _a.lawyer_hand_over_date, comment = _a.comment, limitation_objection = _a.limitation_objection;
+                _a = req.body, first_name = _a.first_name, last_name = _a.last_name, jmbg_1 = _a.jmbg, employed = _a.employed, employer_id = _a.employer_id, name = _a.name, pib_1 = _a.pib, executor_ids = _a.executor_ids, business_numbers = _a.business_numbers, phone_numbers = _a.phone_numbers, cession = _a.cession, address = _a.address, email = _a.email, zip_code = _a.zip_code, city_id = _a.city_id, case_number = _a.case_number, contract_number = _a.contract_number, closing_date = _a.closing_date, lawyer_id = _a.lawyer_id, client_id = _a.client_id, court_id = _a.court_id, ssn_number_id = _a.ssn_number_id, package_id = _a.package_id, principal = _a.principal, interest = _a.interest, status = _a.status, old_payment = _a.old_payment, our_taxes = _a.our_taxes, warning_price = _a.warning_price, entering_date = _a.entering_date, lawyer_hand_over_date = _a.lawyer_hand_over_date, comment = _a.comment, limitation_objection = _a.limitation_objection;
                 updatedCaseFields = {};
-                if (case_number === '' || contract_number === '') {
+                if ((first_name === null || last_name === null) && !name) {
                     res.status(400);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "message.no_case_or_contract_number")];
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.noName")];
+                }
+                if ((!first_name || !last_name) && name === null) {
+                    res.status(400);
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.noName")];
+                }
+                if (jmbg_1 === null) {
+                    res.status(400);
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.noJMBG")];
+                }
+                if (case_number === null) {
+                    res.status(400);
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.noCaseNumber")];
+                }
+                if (contract_number === null) {
+                    res.status(400);
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.noContractNumber")];
                 }
                 if (client_id === null) {
                     res.status(400);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "message.no_client")];
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.noClient")];
+                }
+                if (closing_date !== undefined && new Date(closing_date) > new Date()) {
+                    res.status(400);
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.closingDateLate")];
                 }
                 return [4 /*yield*/, (0, attorneys_db_1.db)('cases as c')
                         .select('c.case_number', 'c.contract_number', 'c.closing_date', 'c.lawyer_id', 'c.client_id', 'c.court_id', 'c.ssn_number_id', 'c.package_id', 'c.principal', 'c.interest', 'c.status_id', 'c.old_payment', 'c.our_taxes', 'c.warning_price', 'c.entering_date', 'c.lawyer_hand_over_date', 'c.comment', 'c.limitation_objection', 'c.debtor_id', 'c.state', 'd.person_id', 'd.organization_id')
@@ -71,11 +92,11 @@ var editCaseService = function (req, res) { return __awaiter(void 0, void 0, voi
                 existingCase = _g.sent();
                 if (!existingCase) {
                     res.status(404);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "message.case_not_found", existingCase)];
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "errors.caseNotFound", existingCase)];
                 }
                 if (business_numbers === null || business_numbers === void 0 ? void 0 : business_numbers.concat(phone_numbers, executor_ids).includes(null)) {
                     res.status(500);
-                    (0, catchErrorStack_1.default)(res, 'Phone numbers, beiliffs nor business numbers cannot include null');
+                    return [2 /*return*/, (0, catchErrorStack_1.default)(res, 'errors.phoneNumberNull')];
                 }
                 debtorId_1 = existingCase.debtor_id;
                 if (!existingCase.person_id) return [3 /*break*/, 11];
@@ -87,7 +108,7 @@ var editCaseService = function (req, res) { return __awaiter(void 0, void 0, voi
                 existingPerson = _g.sent();
                 if (!existingPerson) {
                     res.status(404);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "message.person_not_found", existingPerson)];
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "errors.personNotFound", existingPerson)];
                 }
                 updatePersonFields = {};
                 if (first_name !== undefined &&
@@ -154,7 +175,7 @@ var editCaseService = function (req, res) { return __awaiter(void 0, void 0, voi
                 existingOrganization = _g.sent();
                 if (!existingOrganization) {
                     res.status(404);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "message.organization_not_found", existingOrganization)];
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "errors.organizationNotFound", existingOrganization)];
                 }
                 updateOrganizationFields = {};
                 if (name !== undefined && existingOrganization.name != name) {
@@ -325,7 +346,7 @@ var editCaseService = function (req, res) { return __awaiter(void 0, void 0, voi
             case 35: return [3 /*break*/, 37];
             case 36:
                 res.status(404);
-                return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "message.organization_not_found", existingDebtor)];
+                return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "errors.organizationNotFound", existingDebtor)];
             case 37:
                 statusId = void 0;
                 if (!status) return [3 /*break*/, 41];
@@ -353,6 +374,12 @@ var editCaseService = function (req, res) { return __awaiter(void 0, void 0, voi
                 if (closing_date !== undefined &&
                     existingCase.closing_date !== closing_date) {
                     updatedCaseFields.closing_date = closing_date;
+                    if (closing_date === null || closing_date === '') {
+                        updatedCaseFields.state = casesTypes_1.EState.active;
+                    }
+                    else {
+                        updatedCaseFields.state = casesTypes_1.EState.closed;
+                    }
                 }
                 if (lawyer_id !== undefined && existingCase.lawyer_id !== lawyer_id) {
                     updatedCaseFields.lawyer_id = lawyer_id;
@@ -402,9 +429,6 @@ var editCaseService = function (req, res) { return __awaiter(void 0, void 0, voi
                     existingCase.limitation_objection !== limitation_objection) {
                     updatedCaseFields.limitation_objection = limitation_objection;
                 }
-                if (state && existingCase.state !== state) {
-                    updatedCaseFields.state = state;
-                }
                 if (!(Object.keys(updatedCaseFields).length > 0)) return [3 /*break*/, 43];
                 // Update the case with the new data
                 return [4 /*yield*/, (0, attorneys_db_1.db)('cases').where('id', caseId_1).update(updatedCaseFields)];
@@ -419,7 +443,7 @@ var editCaseService = function (req, res) { return __awaiter(void 0, void 0, voi
                     case_id: updatedCase,
                 };
                 res.status(200);
-                return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "message.case_successfully_updated", apiResponse)];
+                return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "messages.editCaseSuccess", apiResponse)];
             case 45:
                 error_1 = _g.sent();
                 return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_1)];

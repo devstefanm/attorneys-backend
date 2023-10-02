@@ -19,7 +19,7 @@ export interface ICase extends IEntityMetadata, IDebtor {
   case_number?: string;
   contract_number?: string;
   state?: EState;
-  closing_date?: string;
+  closing_date?: string | Date;
   business_numbers?: string[] | null[];
   principal?: number;
   interest?: number;
@@ -39,8 +39,8 @@ export interface ICase extends IEntityMetadata, IDebtor {
   old_payment?: number;
   our_taxes?: number;
   warning_price?: number;
-  entering_date?: string;
-  lawyer_hand_over_date?: string;
+  entering_date?: string | Date;
+  lawyer_hand_over_date?: string | Date;
   comment?: string;
   limitation_objection?: boolean;
   status_id?: number;
@@ -96,6 +96,19 @@ export interface ICaseApiResponseData {
   employed: boolean;
   name: string;
   pib: string;
+  status: string;
+  old_payment: number;
+  our_taxes: number;
+  warning_price: number;
+  entering_date: string;
+  lawyer_hand_over_date: string;
+  comment: string;
+  limitation_objection: boolean;
+  payment?: number;
+  fee?: number;
+  legal_fee?: number;
+  withdrawal?: number;
+  current_debt?: number;
   lawyer: {
     id: number;
     office_name: string;
@@ -109,10 +122,6 @@ export interface ICaseApiResponseData {
   package: {
     id: number;
     package_name: string;
-  };
-  status: {
-    id: number;
-    name: string;
   };
   client: {
     id: number;

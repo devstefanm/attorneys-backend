@@ -1,5 +1,6 @@
 import { db } from 'attorneys-db';
 import { Request, Response } from 'express';
+import { calculateTypeSums } from 'services/helpers/casesHelpers';
 import { ICaseApiResponseData } from 'types/casesTypes';
 import catchErrorStack from 'utils/catchErrorStack';
 import mapApiToResponse, { IApiResponse } from 'utils/mapApiToResponse';
@@ -139,7 +140,16 @@ export const getCaseService = async (
       return mapApiToResponse(404, `errors.caseNotFound`);
     }
 
-    const apiResponse: ICaseApiResponseData = { ...chosenCase };
+    const caseTransactions = await db('transactions')
+      .select('amount', 'type')
+      .where('case_id', caseId);
+
+    const sumOfTransactions = calculateTypeSums(caseTransactions);
+
+    const apiResponse: ICaseApiResponseData = {
+      ...chosenCase,
+      ...sumOfTransactions,
+    };
 
     res.status(200);
     return mapApiToResponse(200, `messages.retrieveCaseSuccess`, apiResponse);

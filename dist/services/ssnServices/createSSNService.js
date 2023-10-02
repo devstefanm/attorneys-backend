@@ -62,7 +62,7 @@ var createSSNService = function (req, res) { return __awaiter(void 0, void 0, vo
                 return [3 /*break*/, 3];
             case 2:
                 res.status(400);
-                return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "message.no_ssn")];
+                return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.noSSN")];
             case 3:
                 apiResponse = undefined;
                 if (newSSNId) {
@@ -70,10 +70,10 @@ var createSSNService = function (req, res) { return __awaiter(void 0, void 0, vo
                         id: newSSNId,
                     };
                     res.status(200);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "message.ssn_successfully_created", apiResponse)];
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "messages.createSSNSuccess", apiResponse)];
                 }
                 res.status(404);
-                return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "message.ssn_not_found", apiResponse)];
+                return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "errors.notFound", apiResponse)];
             case 4:
                 error_1 = _a.sent();
                 return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_1)];
