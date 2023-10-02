@@ -1,7 +1,12 @@
 import { Worksheet } from 'exceljs';
 import { Knex } from 'knex';
 import { HeadersRecord } from 'services/casesServices/casesServicesData';
-import { ICase, ICaseForExport, ICaseForImport } from 'types/casesTypes';
+import {
+  ICase,
+  ICaseApiResponseData,
+  ICaseForExport,
+  ICaseForImport,
+} from 'types/casesTypes';
 import { debtorNameGenerator, jmbgAndPibGenerator } from './universalHelpers';
 import { db } from 'attorneys-db';
 import { formatDateToDDMMYYYY } from 'utils/transformData';
@@ -582,4 +587,40 @@ export const calculateTypeSums = (
   }
 
   return typeSums;
+};
+
+export const calculateCurrentDebt = (
+  editCaseForm: ICaseApiResponseData,
+  transactions: Record<string, number>,
+): number => {
+  const { principal, interest, warning_price } = editCaseForm;
+
+  let principalValue = principal ? parseFloat(String(principal)) : 0;
+  let interestValue = interest ? parseFloat(String(interest)) : 0;
+  let warningPriceValue = warning_price ? parseFloat(String(warning_price)) : 0;
+
+  if (isNaN(principalValue)) {
+    principalValue = 0;
+  }
+
+  if (isNaN(interestValue)) {
+    interestValue = 0;
+  }
+
+  if (isNaN(warningPriceValue)) {
+    warningPriceValue = 0;
+  }
+
+  let currentDebt: number = principalValue + interestValue + warningPriceValue;
+  // Calculate current_debt based on transactions
+  if (transactions) {
+    currentDebt =
+      currentDebt +
+      (transactions['fee'] || 0) +
+      (transactions['legal_fee'] || 0) -
+      (transactions['withdrawal'] || 0) -
+      (transactions['payment'] || 0);
+  }
+
+  return parseFloat(currentDebt.toFixed(2));
 };

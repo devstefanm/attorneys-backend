@@ -12,6 +12,8 @@ import {
   generateJmbgAndPibSearchQuery,
   transformCasesArraysToIndexedFields,
   generateQueryColumns,
+  calculateTypeSums,
+  calculateCurrentDebt,
 } from '../helpers/casesHelpers';
 import { generateCSVFile, generateExcelFile } from 'utils/fileGenerationUtil';
 import { HeadersRecord } from './casesServicesData';
@@ -47,7 +49,7 @@ export const exportCasesListService = async (
     }
 
     const casesQuery = db('cases as c')
-      .select(...queryColumns.selectColumns)
+      .select(...queryColumns.selectColumns, 'c.id')
       .leftJoin('debtors as d', 'c.debtor_id', 'd.id')
       .leftJoin('people as p', 'd.person_id', 'p.id')
       .leftJoin('organizations as o', 'd.organization_id', 'o.id')
@@ -64,7 +66,7 @@ export const exportCasesListService = async (
       .leftJoin('cities as ci', 'd.city_id', 'ci.id')
       .leftJoin('employers as emp', 'p.employer_id', 'emp.id')
       .leftJoin('phone_numbers as pn', 'd.id', 'pn.debtor_id')
-      .groupBy(...(queryColumns.groupByColumns as string[]));
+      .groupBy(...(queryColumns.groupByColumns as string[]), 'c.id');
 
     if (filter) {
       casesQuery.where('c.state', filter);
@@ -156,6 +158,23 @@ export const exportCasesListService = async (
     }
 
     const cases = await casesQuery;
+
+    if (checkedProps.includes('current_debt')) {
+      for (const currentCase of cases) {
+        const caseTransactions = await db('transactions')
+          .select('amount', 'type')
+          .where('case_id', currentCase.id);
+
+        const sumOfTransactions = calculateTypeSums(caseTransactions);
+
+        currentCase.current_debt = calculateCurrentDebt(
+          currentCase,
+          sumOfTransactions,
+        ).toFixed(2);
+
+        delete currentCase.id;
+      }
+    }
 
     const transformedCases = transformCasesArraysToIndexedFields(cases);
     if (transformedCases.length === 0) {
