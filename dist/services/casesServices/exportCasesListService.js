@@ -35,6 +35,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -48,12 +57,12 @@ var casesServicesData_1 = require("./casesServicesData");
 var mapApiToResponse_1 = __importDefault(require("../../utils/mapApiToResponse"));
 var catchErrorStack_1 = __importDefault(require("../../utils/catchErrorStack"));
 var exportCasesListService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, name, jmbg_pib, case_number, contract_number, lawyer, executors, ssn, package_name, business_numbers, _b, filter, _c, clientsFilter, _d, fileType, checkedProps, queryColumns, casesQuery, nameForSearch, namesArr_1, jmbgPibNumber, caseNumber, contractNumber, lawyerForSearch, lawyersArr_1, ssnNumber, packageName, packageNamesArr, businesNumberForSearch, businesNumbersArr, conditions, executorForSearch, executorsArr, conditions, cases, transformedCases, fileData, error_1;
+    var _a, name, jmbg_pib, case_number, contract_number, lawyer, executors, ssn, package_name, business_numbers, _b, filter, _c, clientsFilter, _d, fileType, checkedProps, queryColumns, casesQuery, nameForSearch, namesArr_1, jmbgPibNumber, caseNumber, contractNumber, lawyerForSearch, lawyersArr_1, ssnNumber, packageName, packageNamesArr, businesNumberForSearch, businesNumbersArr, conditions, executorForSearch, executorsArr, conditions, cases, _i, cases_1, currentCase, caseTransactions, sumOfTransactions, transformedCases, fileData, error_1;
     var _e, _f;
     return __generator(this, function (_g) {
         switch (_g.label) {
             case 0:
-                _g.trys.push([0, 7, , 8]);
+                _g.trys.push([0, 11, , 12]);
                 _a = req.body, name = _a.name, jmbg_pib = _a.jmbg_pib, case_number = _a.case_number, contract_number = _a.contract_number, lawyer = _a.lawyer, executors = _a.executors, ssn = _a.ssn, package_name = _a.package, business_numbers = _a.business_numbers, _b = _a.filter, filter = _b === void 0 ? 'active' : _b, _c = _a.clientsFilter, clientsFilter = _c === void 0 ? '' : _c, _d = _a.fileType, fileType = _d === void 0 ? 'excel' : _d, checkedProps = _a.checkedProps;
                 queryColumns = (0, casesHelpers_1.generateQueryColumns)(checkedProps);
                 if (checkedProps.length === 0 || queryColumns.groupByColumns.length === 0) {
@@ -61,7 +70,7 @@ var exportCasesListService = function (req, res) { return __awaiter(void 0, void
                     return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.noValidExportFieldsChecked")];
                 }
                 casesQuery = (_e = (_f = (0, attorneys_db_1.db)('cases as c'))
-                    .select.apply(_f, queryColumns.selectColumns).leftJoin('debtors as d', 'c.debtor_id', 'd.id')
+                    .select.apply(_f, __spreadArray(__spreadArray([], queryColumns.selectColumns, false), ['c.id'], false)).leftJoin('debtors as d', 'c.debtor_id', 'd.id')
                     .leftJoin('people as p', 'd.person_id', 'p.id')
                     .leftJoin('organizations as o', 'd.organization_id', 'o.id')
                     .leftJoin('lawyers as l', 'c.lawyer_id', 'l.id')
@@ -77,7 +86,7 @@ var exportCasesListService = function (req, res) { return __awaiter(void 0, void
                     .leftJoin('cities as ci', 'd.city_id', 'ci.id')
                     .leftJoin('employers as emp', 'p.employer_id', 'emp.id')
                     .leftJoin('phone_numbers as pn', 'd.id', 'pn.debtor_id'))
-                    .groupBy.apply(_e, queryColumns.groupByColumns);
+                    .groupBy.apply(_e, __spreadArray(__spreadArray([], queryColumns.groupByColumns, false), ['c.id'], false));
                 if (filter) {
                     casesQuery.where('c.state', filter);
                 }
@@ -146,39 +155,58 @@ var exportCasesListService = function (req, res) { return __awaiter(void 0, void
                 return [4 /*yield*/, casesQuery];
             case 1:
                 cases = _g.sent();
+                if (!checkedProps.includes('current_debt')) return [3 /*break*/, 5];
+                _i = 0, cases_1 = cases;
+                _g.label = 2;
+            case 2:
+                if (!(_i < cases_1.length)) return [3 /*break*/, 5];
+                currentCase = cases_1[_i];
+                return [4 /*yield*/, (0, attorneys_db_1.db)('transactions')
+                        .select('amount', 'type')
+                        .where('case_id', currentCase.id)];
+            case 3:
+                caseTransactions = _g.sent();
+                sumOfTransactions = (0, casesHelpers_1.calculateTypeSums)(caseTransactions);
+                currentCase.current_debt = (0, casesHelpers_1.calculateCurrentDebt)(currentCase, sumOfTransactions).toFixed(2);
+                delete currentCase.id;
+                _g.label = 4;
+            case 4:
+                _i++;
+                return [3 /*break*/, 2];
+            case 5:
                 transformedCases = (0, casesHelpers_1.transformCasesArraysToIndexedFields)(cases);
                 if (transformedCases.length === 0) {
                     res.status(404);
                     return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "errors.notFound", String(transformedCases.length))];
                 }
                 fileData = '';
-                if (!(fileType === 'excel')) return [3 /*break*/, 3];
+                if (!(fileType === 'excel')) return [3 /*break*/, 7];
                 return [4 /*yield*/, (0, fileGenerationUtil_1.generateExcelFile)(transformedCases, casesServicesData_1.HeadersRecord, 'Cases')];
-            case 2:
+            case 6:
                 // Generate Excel file from casesData
                 fileData = _g.sent();
                 res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
                 res.setHeader('Content-Disposition', 'attachment; filename=cases.xlsx');
-                return [3 /*break*/, 6];
-            case 3:
-                if (!(fileType === 'csv')) return [3 /*break*/, 5];
+                return [3 /*break*/, 10];
+            case 7:
+                if (!(fileType === 'csv')) return [3 /*break*/, 9];
                 return [4 /*yield*/, (0, fileGenerationUtil_1.generateCSVFile)(transformedCases, casesServicesData_1.HeadersRecord)];
-            case 4:
+            case 8:
                 // Generate CSV file from casesData
                 fileData = _g.sent();
                 // Set the response headers to indicate a CSV file download
                 res.setHeader('Content-Type', 'text/csv');
                 res.setHeader('Content-Disposition', 'attachment; filename="cases.csv"');
-                return [3 /*break*/, 6];
-            case 5:
+                return [3 /*break*/, 10];
+            case 9:
                 res.status(400);
                 return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.invalidFileType", fileData)];
-            case 6: return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "messages.fileExportSuccess", fileData)];
-            case 7:
+            case 10: return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "messages.fileExportSuccess", fileData)];
+            case 11:
                 error_1 = _g.sent();
                 res.status(500);
                 return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_1)];
-            case 8: return [2 /*return*/];
+            case 12: return [2 /*return*/];
         }
     });
 }); };

@@ -25,6 +25,7 @@ export const getTransactionsListService = async (
       case_number,
       excerpt_number,
       filter = 'payment',
+      filterableDate,
     } = req.query;
 
     const offset = (Number(page) - 1) * Number(size);
@@ -62,6 +63,11 @@ export const getTransactionsListService = async (
     if (filter) {
       transactionsQuery.where('t.type', filter);
       totalCountQuery.where('t.type', filter);
+    }
+
+    if (filterableDate) {
+      transactionsQuery.where('t.payment_date', '<', filterableDate);
+      totalCountQuery.where('t.payment_date', '<', filterableDate);
     }
 
     switch (sortBy) {

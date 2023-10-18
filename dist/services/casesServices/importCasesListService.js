@@ -232,7 +232,7 @@ var importCasesListService = function (req, res) { return __awaiter(void 0, void
                                 _o.label = 15;
                             case 15:
                                 if (!packageName) return [3 /*break*/, 17];
-                                return [4 /*yield*/, (0, universalHelpers_1.findRecordByNameOrCreateNew)(packageName, 'packages', 'package_name')];
+                                return [4 /*yield*/, (0, universalHelpers_1.findRecordByNameOrCreateNew)((0, transformData_1.formatImportNames)(packageName), 'packages', 'package_name')];
                             case 16:
                                 package_id = _o.sent();
                                 _o.label = 17;

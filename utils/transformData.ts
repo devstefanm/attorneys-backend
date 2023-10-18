@@ -44,3 +44,17 @@ export const formatDateToISO = (inputDate: string): string | null => {
 
 export const uppercaseFirstLetter = (str: string) =>
   str.charAt(0).toUpperCase() + str.slice(1);
+
+export const formatImportNames = (input: string): string => {
+  // Replace dots, commas, and multiple whitespaces with a single space
+  const cleanedString = input.replace(/[\.,]+/g, ' ').replace(/\s+/g, ' ');
+
+  // Uppercase the first letter of every word
+  const formattedString = cleanedString.replace(/\b\w/g, (match) =>
+    match.toUpperCase(),
+  );
+  // Trim any trailing whitespace
+  const trimmedString = formattedString.trim();
+
+  return trimmedString;
+};

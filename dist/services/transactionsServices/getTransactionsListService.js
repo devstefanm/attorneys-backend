@@ -46,13 +46,13 @@ var mapApiToResponse_1 = __importDefault(require("../../utils/mapApiToResponse")
 var universalHelpers_1 = require("../helpers/universalHelpers");
 var casesHelpers_1 = require("../helpers/casesHelpers");
 var getTransactionsListService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b, sort, _c, sortBy, _d, size, _e, page, debtors_name, amount, posting_method, case_number, excerpt_number, _f, filter, offset, upperCaseTransactionsList, totalCountQuery, transactionsQuery, nameForSearch, namesArr_1, amountValue, postingMethod_1, caseNumber, excerptNumber, totalAmount, transactionAmounts, _g, totalCountResult, transactions, totalTransactions, totalPages, apiResponse, error_1;
+    var _a, _b, sort, _c, sortBy, _d, size, _e, page, debtors_name, amount, posting_method, case_number, excerpt_number, _f, filter, filterableDate, offset, upperCaseTransactionsList, totalCountQuery, transactionsQuery, nameForSearch, namesArr_1, amountValue, postingMethod_1, caseNumber, excerptNumber, totalAmount, transactionAmounts, _g, totalCountResult, transactions, totalTransactions, totalPages, apiResponse, error_1;
     var _h, _j;
     return __generator(this, function (_k) {
         switch (_k.label) {
             case 0:
                 _k.trys.push([0, 4, , 5]);
-                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'desc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 't.created_at' : _c, _d = _a.size, size = _d === void 0 ? 25 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, debtors_name = _a.debtors_name, amount = _a.amount, posting_method = _a.posting_method, case_number = _a.case_number, excerpt_number = _a.excerpt_number, _f = _a.filter, filter = _f === void 0 ? 'payment' : _f;
+                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'desc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 't.created_at' : _c, _d = _a.size, size = _d === void 0 ? 25 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, debtors_name = _a.debtors_name, amount = _a.amount, posting_method = _a.posting_method, case_number = _a.case_number, excerpt_number = _a.excerpt_number, _f = _a.filter, filter = _f === void 0 ? 'payment' : _f, filterableDate = _a.filterableDate;
                 offset = (Number(page) - 1) * Number(size);
                 upperCaseTransactionsList = 'transactionsList'.toUpperCase();
                 totalCountQuery = (0, attorneys_db_1.db)('transactions as t')
@@ -73,6 +73,10 @@ var getTransactionsListService = function (req, res) { return __awaiter(void 0, 
                 if (filter) {
                     transactionsQuery.where('t.type', filter);
                     totalCountQuery.where('t.type', filter);
+                }
+                if (filterableDate) {
+                    transactionsQuery.where('t.payment_date', '<', filterableDate);
+                    totalCountQuery.where('t.payment_date', '<', filterableDate);
                 }
                 switch (sortBy) {
                     case 'debtors_name':

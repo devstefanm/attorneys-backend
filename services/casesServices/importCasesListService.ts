@@ -9,7 +9,7 @@ import {
 import { ICaseForList, ICaseForImport } from 'types/casesTypes';
 import { db } from 'attorneys-db';
 import { findRecordByNameOrCreateNew } from 'services/helpers/universalHelpers';
-import { capitalizeEveryWord } from 'utils/transformData';
+import { capitalizeEveryWord, formatImportNames } from 'utils/transformData';
 import { IPeople } from 'types/peopleTypes';
 import { IOrganization } from 'types/organizationsTypes';
 import { mapPhoneNumberForDisplay } from 'services/helpers/phoneNumbersHelpers';
@@ -262,7 +262,7 @@ export const importCasesListService = async (
 
       if (packageName) {
         package_id = await findRecordByNameOrCreateNew(
-          packageName,
+          formatImportNames(packageName),
           'packages',
           'package_name',
         );

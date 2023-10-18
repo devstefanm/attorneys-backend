@@ -36,6 +36,8 @@ export const getCasesListService = async (
       business_numbers,
       filter = 'active',
       clientsFilter = '',
+      hasObjection = false,
+      hasPayments = false,
     } = req.query;
 
     const offset = (Number(page) - 1) * Number(size);
@@ -134,6 +136,31 @@ export const getCasesListService = async (
     if (clientsFilter) {
       casesQuery.where('c.client_id', clientsFilter);
       totalCountQuery.where('c.client_id', clientsFilter);
+    }
+
+    if (hasObjection) {
+      casesQuery.where('c.limitation_objection', hasObjection);
+      totalCountQuery.where('c.limitation_objection', hasObjection);
+    }
+
+    if (hasPayments) {
+      casesQuery
+        .leftJoin('transactions as t', 'c.id', 't.id')
+        .whereExists(function () {
+          this.select(db.raw('1'))
+            .from('transactions as t')
+            .whereRaw('c.id = t.case_id')
+            .where('t.type', '=', 'payment');
+        });
+
+      totalCountQuery
+        .leftJoin('transactions as t', 'c.id', 't.id')
+        .whereExists(function () {
+          this.select(db.raw('1'))
+            .from('transactions as t')
+            .whereRaw('c.id = t.case_id')
+            .where('t.type', '=', 'payment');
+        });
     }
 
     switch (sortBy) {

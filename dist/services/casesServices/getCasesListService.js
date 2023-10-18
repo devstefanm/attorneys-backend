@@ -46,13 +46,13 @@ var mapApiToResponse_1 = __importDefault(require("../../utils/mapApiToResponse")
 var universalHelpers_1 = require("../helpers/universalHelpers");
 var casesHelpers_1 = require("../helpers/casesHelpers");
 var getCasesListService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b, sort, _c, sortBy, _d, size, _e, page, name, jmbg_pib, case_number, contract_number, lawyer, executors, ssn, package_name, business_numbers, _f, filter, _g, clientsFilter, offset, upperCaseCasesList, totalCountQuery, casesQuery, nameForSearch, namesArr_1, jmbgPibNumber, caseNumber, contractNumber, lawyerForSearch, lawyersArr_1, ssnNumber, packageName, packageNamesArr, businesNumberForSearch, businesNumbersArr, conditions, executorForSearch, executorsArr, conditions, _h, totalCountResult, cases, totalCases, totalPages, apiResponse, error_1;
-    var _j, _k;
-    return __generator(this, function (_l) {
-        switch (_l.label) {
+    var _a, _b, sort, _c, sortBy, _d, size, _e, page, name, jmbg_pib, case_number, contract_number, lawyer, executors, ssn, package_name, business_numbers, _f, filter, _g, clientsFilter, _h, hasObjection, _j, hasPayments, offset, upperCaseCasesList, totalCountQuery, casesQuery, nameForSearch, namesArr_1, jmbgPibNumber, caseNumber, contractNumber, lawyerForSearch, lawyersArr_1, ssnNumber, packageName, packageNamesArr, businesNumberForSearch, businesNumbersArr, conditions, executorForSearch, executorsArr, conditions, _k, totalCountResult, cases, totalCases, totalPages, apiResponse, error_1;
+    var _l, _m;
+    return __generator(this, function (_o) {
+        switch (_o.label) {
             case 0:
-                _l.trys.push([0, 2, , 3]);
-                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'desc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'c.created_at' : _c, _d = _a.size, size = _d === void 0 ? 25 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, name = _a.name, jmbg_pib = _a.jmbg_pib, case_number = _a.case_number, contract_number = _a.contract_number, lawyer = _a.lawyer, executors = _a.executors, ssn = _a.ssn, package_name = _a.package, business_numbers = _a.business_numbers, _f = _a.filter, filter = _f === void 0 ? 'active' : _f, _g = _a.clientsFilter, clientsFilter = _g === void 0 ? '' : _g;
+                _o.trys.push([0, 2, , 3]);
+                _a = req.query, _b = _a.sort, sort = _b === void 0 ? 'desc' : _b, _c = _a.sortBy, sortBy = _c === void 0 ? 'c.created_at' : _c, _d = _a.size, size = _d === void 0 ? 25 : _d, _e = _a.page, page = _e === void 0 ? 1 : _e, name = _a.name, jmbg_pib = _a.jmbg_pib, case_number = _a.case_number, contract_number = _a.contract_number, lawyer = _a.lawyer, executors = _a.executors, ssn = _a.ssn, package_name = _a.package, business_numbers = _a.business_numbers, _f = _a.filter, filter = _f === void 0 ? 'active' : _f, _g = _a.clientsFilter, clientsFilter = _g === void 0 ? '' : _g, _h = _a.hasObjection, hasObjection = _h === void 0 ? false : _h, _j = _a.hasPayments, hasPayments = _j === void 0 ? false : _j;
                 offset = (Number(page) - 1) * Number(size);
                 upperCaseCasesList = 'casesList'.toUpperCase();
                 totalCountQuery = (0, attorneys_db_1.db)('cases as c');
@@ -99,6 +99,28 @@ var getCasesListService = function (req, res) { return __awaiter(void 0, void 0,
                 if (clientsFilter) {
                     casesQuery.where('c.client_id', clientsFilter);
                     totalCountQuery.where('c.client_id', clientsFilter);
+                }
+                if (hasObjection) {
+                    casesQuery.where('c.limitation_objection', hasObjection);
+                    totalCountQuery.where('c.limitation_objection', hasObjection);
+                }
+                if (hasPayments) {
+                    casesQuery
+                        .leftJoin('transactions as t', 'c.id', 't.id')
+                        .whereExists(function () {
+                        this.select(attorneys_db_1.db.raw('1'))
+                            .from('transactions as t')
+                            .whereRaw('c.id = t.case_id')
+                            .where('t.type', '=', 'payment');
+                    });
+                    totalCountQuery
+                        .leftJoin('transactions as t', 'c.id', 't.id')
+                        .whereExists(function () {
+                        this.select(attorneys_db_1.db.raw('1'))
+                            .from('transactions as t')
+                            .whereRaw('c.id = t.case_id')
+                            .where('t.type', '=', 'payment');
+                    });
                 }
                 switch (sortBy) {
                     case 'name':
@@ -225,7 +247,7 @@ var getCasesListService = function (req, res) { return __awaiter(void 0, void 0,
                         casesQuery,
                     ])];
             case 1:
-                _h = _l.sent(), totalCountResult = _h[0], cases = _h[1];
+                _k = _o.sent(), totalCountResult = _k[0], cases = _k[1];
                 if (cases.length === 0 || !totalCountResult) {
                     res.status(404);
                     return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "".concat(upperCaseCasesList, ".NOT_FOUND"))];
@@ -237,8 +259,8 @@ var getCasesListService = function (req, res) { return __awaiter(void 0, void 0,
                 apiResponse = {
                     cases: cases,
                     meta: {
-                        sort: (_j = sort) !== null && _j !== void 0 ? _j : 'asc',
-                        sortBy: (_k = sortBy) !== null && _k !== void 0 ? _k : 'created_at',
+                        sort: (_l = sort) !== null && _l !== void 0 ? _l : 'asc',
+                        sortBy: (_m = sortBy) !== null && _m !== void 0 ? _m : 'created_at',
                         total_number: totalCases,
                         total_pages: totalPages,
                         page: page,
@@ -247,7 +269,7 @@ var getCasesListService = function (req, res) { return __awaiter(void 0, void 0,
                 res.status(200);
                 return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "".concat(upperCaseCasesList, ".SUCCESSFULY_RETRIEVED_NAMES"), apiResponse)];
             case 2:
-                error_1 = _l.sent();
+                error_1 = _o.sent();
                 return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_1)];
             case 3: return [2 /*return*/];
         }

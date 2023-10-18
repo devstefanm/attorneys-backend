@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.calculateTypeSums = exports.generateQueryColumns = exports.generateRandomString = exports.transformParsedDataToCase = exports.splitLawyerName = exports.transformIndexedFieldsToCasesArrays = exports.reverseHeaderMapping = exports.transformCasesArraysToIndexedFields = exports.buildPeopleNameSearchConditions = exports.identifySearchedString = exports.generateJmbgAndPibSearchQuery = exports.buildLawyerNameSearchConditions = exports.buildCasesNameSearchConditions = void 0;
+exports.calculateCurrentDebt = exports.calculateTypeSums = exports.generateQueryColumns = exports.generateRandomString = exports.transformParsedDataToCase = exports.splitLawyerName = exports.transformIndexedFieldsToCasesArrays = exports.reverseHeaderMapping = exports.transformCasesArraysToIndexedFields = exports.buildPeopleNameSearchConditions = exports.identifySearchedString = exports.generateJmbgAndPibSearchQuery = exports.buildLawyerNameSearchConditions = exports.buildCasesNameSearchConditions = void 0;
 var casesServicesData_1 = require("../casesServices/casesServicesData");
 var universalHelpers_1 = require("./universalHelpers");
 var attorneys_db_1 = require("../../attorneys-db");
@@ -426,3 +426,30 @@ var calculateTypeSums = function (transactions) {
     return typeSums;
 };
 exports.calculateTypeSums = calculateTypeSums;
+var calculateCurrentDebt = function (editCaseForm, transactions) {
+    var principal = editCaseForm.principal, interest = editCaseForm.interest, warning_price = editCaseForm.warning_price;
+    var principalValue = principal ? parseFloat(String(principal)) : 0;
+    var interestValue = interest ? parseFloat(String(interest)) : 0;
+    var warningPriceValue = warning_price ? parseFloat(String(warning_price)) : 0;
+    if (isNaN(principalValue)) {
+        principalValue = 0;
+    }
+    if (isNaN(interestValue)) {
+        interestValue = 0;
+    }
+    if (isNaN(warningPriceValue)) {
+        warningPriceValue = 0;
+    }
+    var currentDebt = principalValue + interestValue + warningPriceValue;
+    // Calculate current_debt based on transactions
+    if (transactions) {
+        currentDebt =
+            currentDebt +
+                (transactions['fee'] || 0) +
+                (transactions['legal_fee'] || 0) -
+                (transactions['withdrawal'] || 0) -
+                (transactions['payment'] || 0);
+    }
+    return parseFloat(currentDebt.toFixed(2));
+};
+exports.calculateCurrentDebt = calculateCurrentDebt;

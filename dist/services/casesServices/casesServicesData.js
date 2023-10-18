@@ -12,6 +12,7 @@ exports.HeadersRecord = {
     old_payment: 'Otplaćeno pre utuženja',
     our_taxes: 'Dodatne takse',
     warning_price: 'Trošak opomene',
+    current_debt: 'Trenutno dugovanje',
     cession: 'Cesija',
     state: 'Aktivan',
     limitation_objection: 'Prigovor zastarelosti',

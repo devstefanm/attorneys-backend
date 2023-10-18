@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uppercaseFirstLetter = exports.formatDateToISO = exports.formatDateToDDMMYYYY = exports.capitalizeEveryWord = void 0;
+exports.formatImportNames = exports.uppercaseFirstLetter = exports.formatDateToISO = exports.formatDateToDDMMYYYY = exports.capitalizeEveryWord = void 0;
 var capitalizeEveryWord = function (sentence) {
     // Split the sentence into words
     var words = sentence.split(' ');
@@ -46,3 +46,15 @@ var uppercaseFirstLetter = function (str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 };
 exports.uppercaseFirstLetter = uppercaseFirstLetter;
+var formatImportNames = function (input) {
+    // Replace dots, commas, and multiple whitespaces with a single space
+    var cleanedString = input.replace(/[\.,]+/g, ' ').replace(/\s+/g, ' ');
+    // Uppercase the first letter of every word
+    var formattedString = cleanedString.replace(/\b\w/g, function (match) {
+        return match.toUpperCase();
+    });
+    // Trim any trailing whitespace
+    var trimmedString = formattedString.trim();
+    return trimmedString;
+};
+exports.formatImportNames = formatImportNames;
