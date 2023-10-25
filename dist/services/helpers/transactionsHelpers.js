@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.trimSemicolons = exports.transformTransactionType = exports.reverseHeaderMapping = void 0;
+exports.transformTypeForExport = exports.trimSemicolons = exports.transformTransactionType = exports.reverseHeaderMapping = void 0;
 var transactionsServicesData_1 = require("../transactionsServices/transactionsServicesData");
+var transactionsTypes_1 = require("../../types/transactionsTypes");
 var reverseHeaderMapping = function (importedHeaders) {
     var reversedHeaders = importedHeaders.map(function (header) {
         // Try to find a matching header in the reverse mapping
@@ -36,3 +37,16 @@ var trimSemicolons = function (input) {
     return input.replace(/;/g, '');
 };
 exports.trimSemicolons = trimSemicolons;
+var transformTypeForExport = function (type) {
+    switch (type) {
+        case transactionsTypes_1.ETransactionType.payment:
+            return 'Uplata';
+        case transactionsTypes_1.ETransactionType.fee:
+            return 'Taksa';
+        case transactionsTypes_1.ETransactionType.legal_fee:
+            return 'Sudska taksa';
+        case transactionsTypes_1.ETransactionType.withdrawal:
+            return 'Povlačenje predmeta';
+    }
+};
+exports.transformTypeForExport = transformTypeForExport;

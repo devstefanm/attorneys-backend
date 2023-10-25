@@ -173,7 +173,7 @@ export const getTransactionsListService = async (
 
     if (transactions.length === 0 || !totalCountResult) {
       res.status(404);
-      return mapApiToResponse(404, `${upperCaseTransactionsList}.NOT_FOUND`);
+      return mapApiToResponse(404, `errors.notFound`);
     }
 
     const totalTransactions = Number(totalCountResult.total_transactions);

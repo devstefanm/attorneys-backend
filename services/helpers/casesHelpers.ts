@@ -329,6 +329,12 @@ export const transformParsedDataToCase = (
             : uppercasedRowDataObj === 'NE'
             ? 'closed'
             : uppercasedRowDataObj;
+      } else if (key === 'is_legal') {
+        transformedRowDataObject[key] =
+          uppercasedRowDataObj === 'FIZICKO' ||
+          uppercasedRowDataObj === 'FIZIČKO'
+            ? false
+            : true;
       } else {
         transformedRowDataObject[key] = uppercasedRowDataObj === 'DA';
       }
@@ -456,7 +462,7 @@ export const generateQueryColumns = (
     if (checkedProps.includes('is_legal')) {
       selectColumns.push(
         db.raw(
-          "CASE WHEN d.is_legal = true THEN 'DA' ELSE 'NE' END AS is_legal",
+          "CASE WHEN d.is_legal = true THEN 'PRAVNO' ELSE 'FIZICKO' END AS is_legal",
         ),
       );
       groupByColumns.push('d.is_legal');

@@ -12,12 +12,18 @@ const {
   deleteTransaction,
   getTransaction,
   importTransactionsList,
+  exportTransactionsList,
 } = transactions;
 
 router.get('/transactions-list', authenticateToken, getTransactionsList);
 router.get('/transaction/:transactionId', authenticateToken, getTransaction);
 
 router.post('/transactions', authenticateToken, postTransaction);
+router.post(
+  '/export-transactions-list',
+  authenticateToken,
+  exportTransactionsList,
+);
 router.post(
   '/import-transactions-list',
   authenticateToken,

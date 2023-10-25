@@ -42,6 +42,7 @@ var editTransactionService_1 = require("../services/transactionsServices/editTra
 var deleteTransactionService_1 = require("../services/transactionsServices/deleteTransactionService");
 var getTransactionService_1 = require("../services/transactionsServices/getTransactionService");
 var importTransactionsListService_1 = require("../services/transactionsServices/importTransactionsListService");
+var exportTransactionsListService_1 = require("../services/transactionsServices/exportTransactionsListService");
 var transactions = {
     getTransactionsList: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
         var _a, _b, error_1;
@@ -158,6 +159,26 @@ var transactions = {
                     error_6 = _c.sent();
                     console.error({ error: error_6.message });
                     res.json({ error: error_6.message });
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    }); },
+    exportTransactionsList: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
+        var _a, _b, error_7;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _c.trys.push([0, 2, , 3]);
+                    _b = (_a = res).json;
+                    return [4 /*yield*/, (0, exportTransactionsListService_1.exportTransactionsListService)(req, res)];
+                case 1:
+                    _b.apply(_a, [_c.sent()]);
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_7 = _c.sent();
+                    console.error({ error: error_7.message });
+                    res.json({ error: error_7.message });
                     return [3 /*break*/, 3];
                 case 3: return [2 /*return*/];
             }

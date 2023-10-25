@@ -22,12 +22,7 @@ export const editLawyerService = async (
       phone_numbers,
     } = req.body;
 
-    if (
-      first_name === null ||
-      last_name === null ||
-      first_name === '' ||
-      last_name === ''
-    ) {
+    if (first_name === null || first_name === '') {
       res.status(400);
       return mapApiToResponse(400, `errors.noName`);
     }

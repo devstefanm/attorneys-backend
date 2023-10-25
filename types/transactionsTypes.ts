@@ -12,7 +12,7 @@ export enum ETransactionType {
 
 export interface ITransaction extends IEntityMetadata {
   id?: number;
-  type?: ETransactionType;
+  type?: ETransactionType | string;
   amount?: number;
   posting_method?: string;
   payment_date?: string | Date;

@@ -48,7 +48,7 @@ var uppercaseFirstLetter = function (str) {
 exports.uppercaseFirstLetter = uppercaseFirstLetter;
 var formatImportNames = function (input) {
     // Replace dots, commas, and multiple whitespaces with a single space
-    var cleanedString = input.replace(/[\.,]+/g, ' ').replace(/\s+/g, ' ');
+    var cleanedString = input.replace(/\s+/g, ' ');
     // Uppercase the first letter of every word
     var formattedString = cleanedString.replace(/\b\w/g, function (match) {
         return match.toUpperCase();

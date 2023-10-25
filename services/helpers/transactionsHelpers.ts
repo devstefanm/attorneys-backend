@@ -1,4 +1,5 @@
 import { HeadersRecord } from 'services/transactionsServices/transactionsServicesData';
+import { ETransactionType } from 'types/transactionsTypes';
 
 export const reverseHeaderMapping = (importedHeaders: string[]): string[] => {
   const reversedHeaders = importedHeaders.map((header) => {
@@ -34,4 +35,17 @@ export const transformTransactionType = (input: string): string => {
 export const trimSemicolons = (input: string): string => {
   // Use the String.replace() method to replace all semicolons with an empty string.
   return input.replace(/;/g, '');
+};
+
+export const transformTypeForExport = (type: ETransactionType): string => {
+  switch (type) {
+    case ETransactionType.payment:
+      return 'Uplata';
+    case ETransactionType.fee:
+      return 'Taksa';
+    case ETransactionType.legal_fee:
+      return 'Sudska taksa';
+    case ETransactionType.withdrawal:
+      return 'Povlačenje predmeta';
+  }
 };

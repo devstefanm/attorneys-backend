@@ -52,10 +52,7 @@ var editLawyerService = function (req, res) { return __awaiter(void 0, void 0, v
                 _b.trys.push([0, 7, , 8]);
                 lawyerId_1 = req.params.lawyerId;
                 _a = req.body, first_name = _a.first_name, last_name = _a.last_name, email = _a.email, address = _a.address, city_id = _a.city_id, office_name = _a.office_name, phone_numbers = _a.phone_numbers;
-                if (first_name === null ||
-                    last_name === null ||
-                    first_name === '' ||
-                    last_name === '') {
+                if (first_name === null || first_name === '') {
                     res.status(400);
                     return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.noName")];
                 }

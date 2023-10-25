@@ -22,7 +22,7 @@ export const createLawyerService = async (
 
     let newLawyerId: number | null = null;
 
-    if (first_name && last_name) {
+    if (first_name) {
       newLawyerId = (
         await db('lawyers')
           .insert({

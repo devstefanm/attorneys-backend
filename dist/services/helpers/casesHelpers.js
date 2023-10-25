@@ -250,6 +250,13 @@ var transformParsedDataToCase = function (rowDataObject) {
                             ? 'closed'
                             : uppercasedRowDataObj;
             }
+            else if (key === 'is_legal') {
+                transformedRowDataObject[key] =
+                    uppercasedRowDataObj === 'FIZICKO' ||
+                        uppercasedRowDataObj === 'FIZIČKO'
+                        ? false
+                        : true;
+            }
             else {
                 transformedRowDataObject[key] = uppercasedRowDataObj === 'DA';
             }
@@ -348,7 +355,7 @@ var generateQueryColumns = function (checkedProps) {
             groupByColumns.push('c.limitation_objection');
         }
         if (checkedProps.includes('is_legal')) {
-            selectColumns.push(attorneys_db_1.db.raw("CASE WHEN d.is_legal = true THEN 'DA' ELSE 'NE' END AS is_legal"));
+            selectColumns.push(attorneys_db_1.db.raw("CASE WHEN d.is_legal = true THEN 'PRAVNO' ELSE 'FIZICKO' END AS is_legal"));
             groupByColumns.push('d.is_legal');
         }
         if (checkedProps.includes('cession')) {

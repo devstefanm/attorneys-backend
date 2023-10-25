@@ -52,7 +52,7 @@ var createLawyerService = function (req, res) { return __awaiter(void 0, void 0,
                 _b.trys.push([0, 7, , 8]);
                 _a = req.body, office_name = _a.office_name, first_name = _a.first_name, last_name = _a.last_name, email = _a.email, address = _a.address, city_id = _a.city_id, phone_numbers = _a.phone_numbers;
                 newLawyerId_1 = null;
-                if (!(first_name && last_name)) return [3 /*break*/, 2];
+                if (!first_name) return [3 /*break*/, 2];
                 return [4 /*yield*/, (0, attorneys_db_1.db)('lawyers')
                         .insert({
                         office_name: office_name,

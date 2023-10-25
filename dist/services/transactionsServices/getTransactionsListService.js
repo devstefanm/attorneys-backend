@@ -170,7 +170,7 @@ var getTransactionsListService = function (req, res) { return __awaiter(void 0, 
                 _g = _k.sent(), totalCountResult = _g[0], transactions = _g[1];
                 if (transactions.length === 0 || !totalCountResult) {
                     res.status(404);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "".concat(upperCaseTransactionsList, ".NOT_FOUND"))];
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "errors.notFound")];
                 }
                 totalTransactions = Number(totalCountResult.total_transactions);
                 totalPages = Math.ceil(Number(totalTransactions) / Number(size));

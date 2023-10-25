@@ -47,7 +47,7 @@ export const uppercaseFirstLetter = (str: string) =>
 
 export const formatImportNames = (input: string): string => {
   // Replace dots, commas, and multiple whitespaces with a single space
-  const cleanedString = input.replace(/[\.,]+/g, ' ').replace(/\s+/g, ' ');
+  const cleanedString = input.replace(/\s+/g, ' ');
 
   // Uppercase the first letter of every word
   const formattedString = cleanedString.replace(/\b\w/g, (match) =>
