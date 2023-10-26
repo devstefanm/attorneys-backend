@@ -1,5 +1,4 @@
 import { CellValue } from 'exceljs';
-import { ICase } from './casesTypes';
 import { IExcerpt } from './excerptsTypes';
 import { IEntityMetadata, ITableResponseData } from './universalTypes';
 

@@ -1,12 +1,12 @@
 export interface IApiResponse<T> {
   data?: T;
   error?: number;
-  message?: string;
+  message?: string | string[];
 }
 
 const mapApiToResponse = <T>(
   statusCode: number = 200,
-  message?: string,
+  message?: string | string[],
   data?: T,
 ): IApiResponse<T> => {
   if (statusCode >= 200 && statusCode < 300) {

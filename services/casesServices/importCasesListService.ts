@@ -97,7 +97,122 @@ export const importCasesListService = async (
         });
     }
 
+    const validationErrors: string[] = [];
     const newCaseIds: number[] = [];
+
+    for (const caseData of cases) {
+      let {
+        first_name,
+        last_name,
+        jmbg,
+        name,
+        cession,
+        case_number,
+        contract_number,
+        closing_date,
+        client,
+        is_legal,
+        entering_date,
+        lawyer_hand_over_date,
+      } = caseData;
+
+      if ((!first_name || !last_name) && !name) {
+        validationErrors.push(
+          `entities.caseNumber->${case_number}->errors.noName`,
+        );
+      }
+
+      if (first_name && last_name && !jmbg) {
+        validationErrors.push(
+          `entities.caseNumber->${case_number}->errors.noJMBG`,
+        );
+      }
+
+      if (!case_number) {
+        validationErrors.push(
+          `entities.name->${first_name} ${
+            last_name || ''
+          }->errors.noCaseNumber`,
+        );
+      }
+
+      if (!contract_number) {
+        validationErrors.push(
+          `entities.caseNumber->${case_number}->errors.noContractNumber`,
+        );
+      }
+
+      if (!client) {
+        validationErrors.push(
+          `entities.caseNumber->${case_number}->errors.noClient`,
+        );
+      }
+
+      if (cession === undefined || cession === null || cession === '') {
+        validationErrors.push(
+          `entities.caseNumber->${case_number}->errors.noCession`,
+        );
+      }
+
+      if (is_legal === undefined || is_legal === null || is_legal === '') {
+        validationErrors.push(
+          `entities.caseNumber->${case_number}->errors.noIsLegal`,
+        );
+      }
+
+      if (case_number && contract_number) {
+        const existingCases = await db('cases')
+          .select('id', 'case_number', 'contract_number')
+          .where('case_number', case_number)
+          .orWhere('contract_number', contract_number);
+
+        if (existingCases?.length > 0) {
+          existingCases.forEach((existingCase) => {
+            validationErrors.push(
+              `entities.caseNumber->${case_number}->errors.caseOrContractNumberDuplicate`,
+            );
+          });
+        }
+      }
+
+      if (closing_date && typeof closing_date === 'string') {
+        const parts = (closing_date as string).split('.');
+        if (parts.length === 3) {
+          closing_date = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+        } else {
+          validationErrors.push(
+            `entities.caseNumber->${case_number}->errors.closingDateWrongFormat`,
+          );
+        }
+      }
+      if (entering_date && typeof entering_date === 'string') {
+        const parts = (entering_date as string).split('.');
+        if (parts.length === 3) {
+          entering_date = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+        } else {
+          validationErrors.push(
+            `entities.caseNumber->${case_number}->errors.enteringDateWrongFormat`,
+          );
+        }
+      }
+      if (lawyer_hand_over_date && typeof lawyer_hand_over_date === 'string') {
+        const parts = (lawyer_hand_over_date as string).split('.');
+        if (parts.length === 3) {
+          lawyer_hand_over_date = new Date(
+            `${parts[2]}-${parts[1]}-${parts[0]}`,
+          );
+        } else {
+          validationErrors.push(
+            `entities.caseNumber->${case_number}->errors.lawyerHandOverDateWrongFormat`,
+          );
+        }
+      }
+    }
+
+    if (validationErrors.length > 0) {
+      res.status(400);
+      return mapApiToResponse(400, validationErrors);
+    }
 
     for (const caseData of cases) {
       let {
@@ -136,7 +251,6 @@ export const importCasesListService = async (
         ssn_number_id,
         package_id,
         lawyer_id,
-        is_legal,
         status_id,
         status,
         old_payment,
@@ -147,71 +261,6 @@ export const importCasesListService = async (
         comment,
         limitation_objection,
       } = caseData;
-
-      if ((!first_name || !last_name) && !name) {
-        res.status(400);
-        return mapApiToResponse(400, `errors.noName`);
-      }
-
-      if (first_name && last_name && !jmbg) {
-        res.status(400);
-        return mapApiToResponse(400, `errors.noJMBG`);
-      }
-
-      if (!case_number) {
-        res.status(400);
-        return mapApiToResponse(400, `errors.noCaseNumber`);
-      }
-
-      if (!contract_number) {
-        res.status(400);
-        return mapApiToResponse(400, `errors.noContractNumber`);
-      }
-
-      if (!client) {
-        res.status(400);
-        return mapApiToResponse(400, `errors.noClient`);
-      }
-
-      if (cession === undefined || cession === null || cession === '') {
-        res.status(400);
-        return mapApiToResponse(400, `errors.noCession`);
-      }
-
-      if (is_legal === undefined || is_legal === null || is_legal === '') {
-        res.status(400);
-        return mapApiToResponse(400, `errors.noIsLegal`);
-      }
-
-      if (closing_date && typeof closing_date === 'string') {
-        const parts = (closing_date as string).split('.');
-        closing_date = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
-      }
-      if (entering_date && typeof entering_date === 'string') {
-        const parts = (entering_date as string).split('.');
-        entering_date = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
-      }
-      if (lawyer_hand_over_date && typeof lawyer_hand_over_date === 'string') {
-        const parts = (lawyer_hand_over_date as string).split('.');
-        lawyer_hand_over_date = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
-      }
-
-      if (case_number && contract_number) {
-        const existingCase = await db('cases')
-          .select('id', 'case_number', 'contract_number')
-          .where('case_number', case_number)
-          .orWhere('contract_number', contract_number)
-          .first();
-
-        if (existingCase?.id) {
-          res.status(400);
-          return mapApiToResponse(
-            400,
-            `errors.caseOrContractNumberDuplicate`,
-            `${existingCase.case_number}, ${existingCase.contract_number}`,
-          );
-        }
-      }
 
       if (status) {
         status_id = await findRecordByNameOrCreateNew(
@@ -243,9 +292,6 @@ export const importCasesListService = async (
           'clients',
           'name',
         );
-      } else {
-        res.status(400);
-        return mapApiToResponse(400, `errors.noClient`);
       }
 
       if (court) {

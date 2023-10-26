@@ -117,30 +117,43 @@ export const importTransactionsListService = async (
         });
     }
 
+    const validationErrors: string[] = [];
     const newTransactionIds: number[] = [];
 
     for (const transaction of transactions) {
-      let { amount, case_id, payment_date, posting_method, type, case_number } =
-        transaction;
+      let { amount, payment_date, type, case_number } = transaction;
+
+      if (!case_number) {
+        validationErrors.push(
+          `entities.amount->${amount}->errors.errors.noCaseNumber`,
+        );
+      }
 
       if (!amount) {
-        res.status(400);
-        return mapApiToResponse(400, `errors.noAmount`);
+        validationErrors.push(
+          `entities.caseNumber->${case_number}->errors.noAmount`,
+        );
       }
 
       if (!type) {
-        res.status(400);
-        return mapApiToResponse(400, `errors.noType`);
+        validationErrors.push(
+          `entities.caseNumber->${case_number}->errors.noType`,
+        );
       }
 
-      if (!case_number) {
-        res.status(400);
-        return mapApiToResponse(400, `errors.noCaseNumber`);
+      if (
+        type &&
+        !['payment', 'fee', 'legal_fee', 'withdrawal'].includes(type)
+      ) {
+        validationErrors.push(
+          `entities.caseNumber->${case_number}->errors.wrongType`,
+        );
       }
 
       if (!payment_date) {
-        res.status(400);
-        return mapApiToResponse(400, `errors.noPaymentDate`);
+        validationErrors.push(
+          `entities.caseNumber->${case_number}->errors.noPaymentDate`,
+        );
       }
 
       const caseId = (
@@ -148,14 +161,35 @@ export const importTransactionsListService = async (
       )?.id;
 
       if (!caseId) {
-        res.status(404);
-        return mapApiToResponse(404, `errors.caseNumberWithoutCase`);
+        validationErrors.push(
+          `entities.caseNumber->${case_number}->errors.caseNumberWithoutCase`,
+        );
       }
 
       if (typeof payment_date === 'string') {
         const parts = (payment_date as string).split('.');
-        payment_date = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+        if (parts.length === 3) {
+          payment_date = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+        } else {
+          validationErrors.push(
+            `entities.caseNumber->${case_number}->errors.paymentDateWrongFormat`,
+          );
+        }
       }
+    }
+
+    if (validationErrors.length > 0) {
+      res.status(400);
+      return mapApiToResponse(400, validationErrors);
+    }
+
+    for (const transaction of transactions) {
+      let { amount, case_id, payment_date, posting_method, type, case_number } =
+        transaction;
+
+      const caseId = (
+        await db('cases').select('id').where('case_number', case_number).first()
+      )?.id;
 
       case_id = caseId;
 
