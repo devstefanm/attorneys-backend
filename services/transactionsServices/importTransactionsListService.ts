@@ -169,7 +169,7 @@ export const importTransactionsListService = async (
             posting_method,
           })
           .returning('id')
-      )[0].id;
+      )[0]?.id;
 
       newTransactionIds.push(newTransactionId);
     }

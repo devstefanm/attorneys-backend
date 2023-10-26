@@ -317,18 +317,23 @@ export const transformParsedDataToCase = (
   Object.keys(transformedRowDataObject).forEach((key) => {
     if (
       transformedRowDataObject[key] === 'DA' ||
-      transformedRowDataObject[key] === 'NE'
+      transformedRowDataObject[key] === 'NE' ||
+      transformedRowDataObject[key] === 'FIZICKO' ||
+      transformedRowDataObject[key] === 'FIZIČKO' ||
+      transformedRowDataObject[key]?.toString().toUpperCase() === 'ACTIVE' ||
+      transformedRowDataObject[key]?.toString().toUpperCase() === 'CLOSED'
     ) {
       const uppercasedRowDataObj = (
         transformedRowDataObject[key] as string
       )?.toUpperCase();
+
       if (key === 'state') {
         transformedRowDataObject[key] =
           uppercasedRowDataObj === 'DA'
             ? 'active'
             : uppercasedRowDataObj === 'NE'
             ? 'closed'
-            : uppercasedRowDataObj;
+            : uppercasedRowDataObj.toLowerCase();
       } else if (key === 'is_legal') {
         transformedRowDataObject[key] =
           uppercasedRowDataObj === 'FIZICKO' ||

@@ -50,11 +50,18 @@ export const formatImportNames = (input: string): string => {
   const cleanedString = input.replace(/\s+/g, ' ');
 
   // Uppercase the first letter of every word
-  const formattedString = cleanedString.replace(/\b\w/g, (match) =>
-    match.toUpperCase(),
-  );
-  // Trim any trailing whitespace
-  const trimmedString = formattedString.trim();
+  const words = cleanedString.split(/\s+/);
 
-  return trimmedString;
+  // Capitalize the first letter of each word
+  const formattedWords = words.map((word) => {
+    if (word.length > 0) {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    }
+    return word; // If the word is empty, preserve it as is
+  });
+
+  // Join the words back together with spaces
+  const formattedString = formattedWords.join(' ');
+
+  return formattedString;
 };

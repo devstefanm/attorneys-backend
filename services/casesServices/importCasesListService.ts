@@ -354,7 +354,7 @@ export const importCasesListService = async (
                 employer_id,
               })
               .returning('id')
-          )[0].id;
+          )[0]?.id;
 
           debtorId = (
             await db('debtors')
@@ -369,7 +369,7 @@ export const importCasesListService = async (
                 city_id,
               })
               .returning('id')
-          )[0].id;
+          )[0]?.id;
         }
       } else if (name || pib) {
         const organizationName = name as string;
@@ -430,7 +430,7 @@ export const importCasesListService = async (
                       pib: organizationPib,
                     })
                     .returning('id')
-                )[0].id;
+                )[0]?.id;
 
                 debtorId = (
                   await db('debtors')
@@ -445,7 +445,7 @@ export const importCasesListService = async (
                       city_id,
                     })
                     .returning('id')
-                )[0].id;
+                )[0]?.id;
               }
             } else {
               const newOrganizationId = (
@@ -455,7 +455,7 @@ export const importCasesListService = async (
                     pib: organizationPib,
                   })
                   .returning('id')
-              )[0].id;
+              )[0]?.id;
 
               debtorId = (
                 await db('debtors')
@@ -470,7 +470,7 @@ export const importCasesListService = async (
                     city_id,
                   })
                   .returning('id')
-              )[0].id;
+              )[0]?.id;
             }
           } else {
             const newOrganizationId = (
@@ -480,7 +480,7 @@ export const importCasesListService = async (
                   pib: organizationPib,
                 })
                 .returning('id')
-            )[0].id;
+            )[0]?.id;
 
             debtorId = (
               await db('debtors')
@@ -495,7 +495,7 @@ export const importCasesListService = async (
                   city_id,
                 })
                 .returning('id')
-            )[0].id;
+            )[0]?.id;
           }
         }
       }
@@ -524,7 +524,7 @@ export const importCasesListService = async (
             limitation_objection,
           })
           .returning('id')
-      )[0].id;
+      )[0]?.id;
 
       if (business_numbers && business_numbers.length > 0) {
         await Promise.all(
