@@ -1,7 +1,7 @@
 import knex, { Knex } from 'knex';
 import config from './knexfile';
 
-const environment = process.env.ENV || 'development';
+const environment = process.env.ENV as string;
 const connectionConfig = config[environment];
 
 export const db: Knex = knex(connectionConfig);

@@ -46,6 +46,8 @@ export const createCaseService = async (
       lawyer_hand_over_date,
       comment,
       limitation_objection,
+      case_category,
+      opposing_party_expense,
     } = req.body;
 
     if (business_numbers?.concat(phone_numbers, executor_ids).includes(null)) {
@@ -296,6 +298,8 @@ export const createCaseService = async (
           lawyer_hand_over_date,
           comment,
           limitation_objection,
+          case_category,
+          opposing_party_expense,
           closing_date,
           ...(closing_date ? { state: 'closed' } : { state: 'active' }),
         })

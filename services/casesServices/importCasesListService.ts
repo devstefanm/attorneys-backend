@@ -260,6 +260,8 @@ export const importCasesListService = async (
         lawyer_hand_over_date,
         comment,
         limitation_objection,
+        case_category,
+        opposing_party_expense,
       } = caseData;
 
       if (status) {
@@ -568,6 +570,8 @@ export const importCasesListService = async (
             lawyer_hand_over_date,
             comment,
             limitation_objection,
+            case_category,
+            opposing_party_expense,
           })
           .returning('id')
       )[0]?.id;

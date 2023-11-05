@@ -2,6 +2,7 @@ import { Worksheet } from 'exceljs';
 import { Knex } from 'knex';
 import { HeadersRecord } from 'services/casesServices/casesServicesData';
 import {
+  ECaseCategory,
   ICase,
   ICaseApiResponseData,
   ICaseForExport,
@@ -321,7 +322,13 @@ export const transformParsedDataToCase = (
       transformedRowDataObject[key] === 'FIZICKO' ||
       transformedRowDataObject[key] === 'FIZIČKO' ||
       transformedRowDataObject[key]?.toString().toUpperCase() === 'ACTIVE' ||
-      transformedRowDataObject[key]?.toString().toUpperCase() === 'CLOSED'
+      transformedRowDataObject[key]?.toString().toUpperCase() === 'CLOSED' ||
+      transformedRowDataObject[key]?.toString().toUpperCase() === 'POVUCENI' ||
+      transformedRowDataObject[key]?.toString().toUpperCase() === 'POVUČENI' ||
+      transformedRowDataObject[key]?.toString().toUpperCase() ===
+        'KOMBINOVANI' ||
+      transformedRowDataObject[key]?.toString().toUpperCase() === 'ZASTARELI' ||
+      transformedRowDataObject[key]?.toString().toUpperCase() === 'SA UPLATOM'
     ) {
       const uppercasedRowDataObj = (
         transformedRowDataObject[key] as string
@@ -340,6 +347,28 @@ export const transformParsedDataToCase = (
           uppercasedRowDataObj === 'FIZIČKO'
             ? false
             : true;
+      } else if (key === 'case_category') {
+        switch (uppercasedRowDataObj) {
+          case 'POVUCENI':
+            transformedRowDataObject[key] = ECaseCategory.withdrawn;
+            break;
+          case 'POVUČENI':
+            transformedRowDataObject[key] = ECaseCategory.withdrawn;
+            break;
+          case 'KOMBINOVANI':
+            transformedRowDataObject[key] = ECaseCategory.combined;
+            break;
+          case 'ZASTARELI':
+            transformedRowDataObject[key] = ECaseCategory.obsolete;
+            break;
+          case 'SA UPLATOM':
+            transformedRowDataObject[key] = ECaseCategory.with_payment;
+            break;
+
+          default:
+            transformedRowDataObject[key] = '';
+            break;
+        }
       } else {
         transformedRowDataObject[key] = uppercasedRowDataObj === 'DA';
       }
@@ -408,6 +437,7 @@ export const generateQueryColumns = (
       'entering_date',
       'lawyer_hand_over_date',
       'comment',
+      'opposing_party_expense',
     ];
     const debtorProps = ['address', 'email', 'zip_code'];
 
@@ -557,6 +587,21 @@ export const generateQueryColumns = (
       selectColumns.push(
         db.raw('array_agg(distinct pn.number) as phone_numbers'),
       );
+    }
+
+    if (checkedProps.includes('case_category')) {
+      selectColumns.push(
+        db.raw(
+          `CASE 
+            WHEN c.case_category = 'withdrawn' THEN 'POVUČENI' 
+            WHEN c.case_category = 'combined' THEN 'KOMBINOVANI' 
+            WHEN c.case_category = 'obsolete' THEN 'ZASTARELI' 
+            WHEN c.case_category = 'with_payment' THEN 'SA UPLATOM' 
+            ELSE '' 
+          END AS case_category`,
+        ),
+      );
+      groupByColumns.push('c.case_category');
     }
   }
 

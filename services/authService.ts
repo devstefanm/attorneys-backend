@@ -42,14 +42,14 @@ export const loginService = async (
 
     if (!user) {
       res.status(401);
-      return mapApiToResponse(401, 'LOGIN.IDENTIFIER_INCORRECT');
+      return mapApiToResponse(401, 'errors.wrongEmailOrUsername');
     }
 
     const validPassword = await bcrypt.compare(password, user.password);
 
     if (!validPassword) {
       res.status(401);
-      return mapApiToResponse(401, 'LOGIN.PASSWORD_INCORRECT');
+      return mapApiToResponse(401, 'errors.wrongPassword');
     }
 
     const { id, email, username, role_name } = user;
@@ -63,39 +63,53 @@ export const loginService = async (
   }
 };
 
-export const registrationService = async (
+export const changePasswordService = async (
   req: Request,
   res: Response,
 ): Promise<IApiResponse<undefined>> => {
   try {
-    const { id } = req.params;
-    const { password } = req.body;
+    const { userId } = req.params; // Change the parameter name from "id" to "userId"
+    const { newPassword } = req.body; // Change the parameter name from "password" to "newPassword"
 
-    const validator = registrationSchema.validate(req.body);
-
-    if (validator.error) {
+    // Check if the new password is at least 6 characters long
+    if (newPassword.length < 6) {
       res.status(400);
-      return mapApiToResponse(400, validator.error.message);
+      return mapApiToResponse(400, 'errors.newPasswordTooShort');
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]*$/;
 
-    const query = db('users').select('password').where('id', id).first();
-
-    let passwordUpdate: IRegistrationPassword = await query;
-
-    if (!passwordUpdate.password) {
+    if (!passwordRegex.test(newPassword)) {
       res.status(400);
-      return mapApiToResponse(400, 'REGISTRATION.USER_NOT_FOUND');
+      return mapApiToResponse(400, 'errors.passwordComplexity');
     }
 
-    if (await bcrypt.compare(password, passwordUpdate.password)) {
-      res.status(400);
-      return mapApiToResponse(400, 'REGISTRATION.PASSWORD_SAME_AS_OLD');
-    }
-    passwordUpdate = await query.update({ password: hashedPassword });
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
-    return mapApiToResponse(200, 'REGISTRATION.SUCCESS');
+    // Check if the user exists
+    const user = await db('users')
+      .select('password')
+      .where('id', userId)
+      .first();
+
+    if (!user) {
+      res.status(400);
+      return mapApiToResponse(400, 'USER_NOT_FOUND');
+    }
+
+    // Compare the new password with the old password
+    if (await bcrypt.compare(newPassword, user.password)) {
+      res.status(400);
+      return mapApiToResponse(400, 'errors.newPasswordSameAsOld');
+    }
+
+    // Update the user's password
+    await db('users')
+      .where('id', userId)
+      .update({ password: hashedNewPassword });
+
+    return mapApiToResponse(200, 'messages.passwordChanged');
   } catch (error) {
     return catchErrorStack(res, error);
   }

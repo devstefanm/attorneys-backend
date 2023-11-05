@@ -14,6 +14,13 @@ export enum EState {
   closed = 'closed',
 }
 
+export enum ECaseCategory {
+  withdrawn = 'withdrawn',
+  combined = 'combined',
+  obsolete = 'obsolete',
+  with_payment = 'with_payment',
+}
+
 export interface ICase extends IEntityMetadata, IDebtor {
   id?: number;
   case_number?: string;
@@ -45,6 +52,8 @@ export interface ICase extends IEntityMetadata, IDebtor {
   limitation_objection?: boolean;
   status_id?: number;
   status?: string;
+  case_category?: ECaseCategory;
+  opposing_party_expense?: number;
 }
 
 export interface ICaseForList
@@ -149,6 +158,8 @@ export interface ICaseApiResponseData {
     number: string;
   }[];
   phone_numbers: string[];
+  case_category?: ECaseCategory;
+  opposing_party_expense?: number;
 }
 
 export interface ICaseForExport {

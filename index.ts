@@ -12,6 +12,7 @@ import transactionsRoutes from './routes/transactions';
 import packagesRoutes from './routes/packages';
 import ssnRoutes from './routes/ssnNumbers';
 import citiesRoutes from './routes/cities';
+import { runMigrations } from 'attorneys-db';
 
 const PORT = process.env.PORT || 5000;
 

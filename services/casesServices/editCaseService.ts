@@ -48,6 +48,8 @@ export const editCaseService = async (
       lawyer_hand_over_date,
       comment,
       limitation_objection,
+      case_category,
+      opposing_party_expense,
     } = req.body;
 
     const updatedCaseFields: ICase = {};
@@ -110,6 +112,8 @@ export const editCaseService = async (
         'c.limitation_objection',
         'c.debtor_id',
         'c.state',
+        'c.case_category',
+        'c.opposing_party_expense',
         'd.person_id',
         'd.organization_id',
       )
@@ -487,6 +491,17 @@ export const editCaseService = async (
       existingCase.limitation_objection !== limitation_objection
     ) {
       updatedCaseFields.limitation_objection = limitation_objection;
+    }
+
+    if (case_category && existingCase.case_category !== case_category) {
+      updatedCaseFields.case_category = case_category;
+    }
+
+    if (
+      opposing_party_expense &&
+      existingCase.opposing_party_expense !== opposing_party_expense
+    ) {
+      updatedCaseFields.opposing_party_expense = opposing_party_expense;
     }
 
     if (Object.keys(updatedCaseFields).length > 0) {

@@ -15,8 +15,9 @@ const config: { [key: string]: Knex.Config } = {
       port: Number(process.env.DB_PORT),
     },
     pool: {
-      max: Number(process.env.DB_POOL_SIZE),
-      idleTimeoutMillis: Number(process.env.DB_POOL_CLIENT_IDLE_TIMEOUT),
+      max: Number(process.env.DB_POOL_SIZE) || 2,
+      idleTimeoutMillis:
+        Number(process.env.DB_POOL_CLIENT_IDLE_TIMEOUT) || 10000,
     },
     migrations: {
       directory: './attorneys-db/migrations/initial',
