@@ -50,11 +50,16 @@ var formatImportNames = function (input) {
     // Replace dots, commas, and multiple whitespaces with a single space
     var cleanedString = input.replace(/\s+/g, ' ');
     // Uppercase the first letter of every word
-    var formattedString = cleanedString.replace(/\b\w/g, function (match) {
-        return match.toUpperCase();
+    var words = cleanedString.split(/\s+/);
+    // Capitalize the first letter of each word
+    var formattedWords = words.map(function (word) {
+        if (word.length > 0) {
+            return word.charAt(0).toUpperCase() + word.slice(1);
+        }
+        return word; // If the word is empty, preserve it as is
     });
-    // Trim any trailing whitespace
-    var trimmedString = formattedString.trim();
-    return trimmedString;
+    // Join the words back together with spaces
+    var formattedString = formattedWords.join(' ');
+    return formattedString;
 };
 exports.formatImportNames = formatImportNames;

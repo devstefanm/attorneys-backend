@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.registrationService = exports.loginService = void 0;
+exports.changePasswordService = exports.loginService = void 0;
 var attorneys_db_1 = require("../attorneys-db");
 var bcryptjs_1 = __importDefault(require("bcryptjs"));
 var authSchemas_1 = require("../middlewares/schemas/authSchemas");
@@ -68,14 +68,14 @@ var loginService = function (req, res) { return __awaiter(void 0, void 0, void 0
                 user = _b.sent();
                 if (!user) {
                     res.status(401);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(401, 'LOGIN.IDENTIFIER_INCORRECT')];
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(401, 'errors.wrongEmailOrUsername')];
                 }
                 return [4 /*yield*/, bcryptjs_1.default.compare(password, user.password)];
             case 2:
                 validPassword = _b.sent();
                 if (!validPassword) {
                     res.status(401);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(401, 'LOGIN.PASSWORD_INCORRECT')];
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(401, 'errors.wrongPassword')];
                 }
                 id = user.id, email = user.email, username = user.username, role_name = user.role_name;
                 tokens = (0, jwtGenerator_1.default)({ id: id, email: email, username: username, role_name: role_name });
@@ -90,40 +90,52 @@ var loginService = function (req, res) { return __awaiter(void 0, void 0, void 0
     });
 }); };
 exports.loginService = loginService;
-var registrationService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var id, password, validator, hashedPassword, query, passwordUpdate, error_2;
+var changePasswordService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var userId, newPassword, passwordRegex, hashedNewPassword, user, error_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 5, , 6]);
-                id = req.params.id;
-                password = req.body.password;
-                validator = authSchemas_1.registrationSchema.validate(req.body);
-                if (validator.error) {
+                userId = req.params.userId;
+                newPassword = req.body.newPassword;
+                // Check if the new password is at least 6 characters long
+                if (newPassword.length < 6) {
                     res.status(400);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, validator.error.message)];
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, 'errors.newPasswordTooShort')];
                 }
-                return [4 /*yield*/, bcryptjs_1.default.hash(password, 10)];
+                passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]*$/;
+                if (!passwordRegex.test(newPassword)) {
+                    res.status(400);
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, 'errors.passwordComplexity')];
+                }
+                return [4 /*yield*/, bcryptjs_1.default.hash(newPassword, 10)];
             case 1:
-                hashedPassword = _a.sent();
-                query = (0, attorneys_db_1.db)('users').select('password').where('id', id).first();
-                return [4 /*yield*/, query];
+                hashedNewPassword = _a.sent();
+                return [4 /*yield*/, (0, attorneys_db_1.db)('users')
+                        .select('password')
+                        .where('id', userId)
+                        .first()];
             case 2:
-                passwordUpdate = _a.sent();
-                if (!passwordUpdate.password) {
+                user = _a.sent();
+                if (!user) {
                     res.status(400);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, 'REGISTRATION.USER_NOT_FOUND')];
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, 'USER_NOT_FOUND')];
                 }
-                return [4 /*yield*/, bcryptjs_1.default.compare(password, passwordUpdate.password)];
+                return [4 /*yield*/, bcryptjs_1.default.compare(newPassword, user.password)];
             case 3:
+                // Compare the new password with the old password
                 if (_a.sent()) {
                     res.status(400);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, 'REGISTRATION.PASSWORD_SAME_AS_OLD')];
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, 'errors.newPasswordSameAsOld')];
                 }
-                return [4 /*yield*/, query.update({ password: hashedPassword })];
+                // Update the user's password
+                return [4 /*yield*/, (0, attorneys_db_1.db)('users')
+                        .where('id', userId)
+                        .update({ password: hashedNewPassword })];
             case 4:
-                passwordUpdate = _a.sent();
-                return [2 /*return*/, (0, mapApiToResponse_1.default)(200, 'REGISTRATION.SUCCESS')];
+                // Update the user's password
+                _a.sent();
+                return [2 /*return*/, (0, mapApiToResponse_1.default)(200, 'messages.passwordChanged')];
             case 5:
                 error_2 = _a.sent();
                 return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_2)];
@@ -131,4 +143,4 @@ var registrationService = function (req, res) { return __awaiter(void 0, void 0,
         }
     });
 }); };
-exports.registrationService = registrationService;
+exports.changePasswordService = changePasswordService;

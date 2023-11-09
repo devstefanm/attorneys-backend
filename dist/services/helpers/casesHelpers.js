@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.calculateCurrentDebt = exports.calculateTypeSums = exports.generateQueryColumns = exports.generateRandomString = exports.transformParsedDataToCase = exports.splitLawyerName = exports.transformIndexedFieldsToCasesArrays = exports.reverseHeaderMapping = exports.transformCasesArraysToIndexedFields = exports.buildPeopleNameSearchConditions = exports.identifySearchedString = exports.generateJmbgAndPibSearchQuery = exports.buildLawyerNameSearchConditions = exports.buildCasesNameSearchConditions = void 0;
 var casesServicesData_1 = require("../casesServices/casesServicesData");
+var casesTypes_1 = require("../../types/casesTypes");
 var universalHelpers_1 = require("./universalHelpers");
 var attorneys_db_1 = require("../../attorneys-db");
 var transformData_1 = require("../../utils/transformData");
@@ -238,17 +239,27 @@ var transformParsedDataToCase = function (rowDataObject) {
     var transformedRowDataObject = (0, exports.transformIndexedFieldsToCasesArrays)(rowDataObject);
     // Transform 'DA' to true and 'NE' to false
     Object.keys(transformedRowDataObject).forEach(function (key) {
-        var _a;
+        var _a, _b, _c, _d, _e, _f, _g, _h;
         if (transformedRowDataObject[key] === 'DA' ||
-            transformedRowDataObject[key] === 'NE') {
-            var uppercasedRowDataObj = (_a = transformedRowDataObject[key]) === null || _a === void 0 ? void 0 : _a.toUpperCase();
+            transformedRowDataObject[key] === 'NE' ||
+            transformedRowDataObject[key] === 'FIZICKO' ||
+            transformedRowDataObject[key] === 'FIZIČKO' ||
+            ((_a = transformedRowDataObject[key]) === null || _a === void 0 ? void 0 : _a.toString().toUpperCase()) === 'ACTIVE' ||
+            ((_b = transformedRowDataObject[key]) === null || _b === void 0 ? void 0 : _b.toString().toUpperCase()) === 'CLOSED' ||
+            ((_c = transformedRowDataObject[key]) === null || _c === void 0 ? void 0 : _c.toString().toUpperCase()) === 'POVUCENI' ||
+            ((_d = transformedRowDataObject[key]) === null || _d === void 0 ? void 0 : _d.toString().toUpperCase()) === 'POVUČENI' ||
+            ((_e = transformedRowDataObject[key]) === null || _e === void 0 ? void 0 : _e.toString().toUpperCase()) ===
+                'KOMBINOVANI' ||
+            ((_f = transformedRowDataObject[key]) === null || _f === void 0 ? void 0 : _f.toString().toUpperCase()) === 'ZASTARELI' ||
+            ((_g = transformedRowDataObject[key]) === null || _g === void 0 ? void 0 : _g.toString().toUpperCase()) === 'SA UPLATOM') {
+            var uppercasedRowDataObj = (_h = transformedRowDataObject[key]) === null || _h === void 0 ? void 0 : _h.toUpperCase();
             if (key === 'state') {
                 transformedRowDataObject[key] =
                     uppercasedRowDataObj === 'DA'
                         ? 'active'
                         : uppercasedRowDataObj === 'NE'
                             ? 'closed'
-                            : uppercasedRowDataObj;
+                            : uppercasedRowDataObj.toLowerCase();
             }
             else if (key === 'is_legal') {
                 transformedRowDataObject[key] =
@@ -256,6 +267,28 @@ var transformParsedDataToCase = function (rowDataObject) {
                         uppercasedRowDataObj === 'FIZIČKO'
                         ? false
                         : true;
+            }
+            else if (key === 'case_category') {
+                switch (uppercasedRowDataObj) {
+                    case 'POVUCENI':
+                        transformedRowDataObject[key] = casesTypes_1.ECaseCategory.withdrawn;
+                        break;
+                    case 'POVUČENI':
+                        transformedRowDataObject[key] = casesTypes_1.ECaseCategory.withdrawn;
+                        break;
+                    case 'KOMBINOVANI':
+                        transformedRowDataObject[key] = casesTypes_1.ECaseCategory.combined;
+                        break;
+                    case 'ZASTARELI':
+                        transformedRowDataObject[key] = casesTypes_1.ECaseCategory.obsolete;
+                        break;
+                    case 'SA UPLATOM':
+                        transformedRowDataObject[key] = casesTypes_1.ECaseCategory.with_payment;
+                        break;
+                    default:
+                        transformedRowDataObject[key] = '';
+                        break;
+                }
             }
             else {
                 transformedRowDataObject[key] = uppercasedRowDataObj === 'DA';
@@ -310,6 +343,7 @@ var generateQueryColumns = function (checkedProps) {
             'entering_date',
             'lawyer_hand_over_date',
             'comment',
+            'opposing_party_expense',
         ];
         var debtorProps = ['address', 'email', 'zip_code'];
         for (var _i = 0, caseProps_1 = caseProps; _i < caseProps_1.length; _i++) {
@@ -398,6 +432,10 @@ var generateQueryColumns = function (checkedProps) {
         }
         if (checkedProps.includes('phone_numbers')) {
             selectColumns.push(attorneys_db_1.db.raw('array_agg(distinct pn.number) as phone_numbers'));
+        }
+        if (checkedProps.includes('case_category')) {
+            selectColumns.push(attorneys_db_1.db.raw("CASE \n            WHEN c.case_category = 'withdrawn' THEN 'POVU\u010CENI' \n            WHEN c.case_category = 'combined' THEN 'KOMBINOVANI' \n            WHEN c.case_category = 'obsolete' THEN 'ZASTARELI' \n            WHEN c.case_category = 'with_payment' THEN 'SA UPLATOM' \n            ELSE '' \n          END AS case_category"));
+            groupByColumns.push('c.case_category');
         }
     }
     if (!checkedProps.includes('is_legal') &&

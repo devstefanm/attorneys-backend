@@ -42,7 +42,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.runMigrations = exports.db = void 0;
 var knex_1 = __importDefault(require("knex"));
 var knexfile_1 = __importDefault(require("./knexfile"));
-var environment = process.env.ENV || 'development';
+var environment = process.env.ENV;
 var connectionConfig = knexfile_1.default[environment];
 exports.db = (0, knex_1.default)(connectionConfig);
 var runMigrations = function () { return __awaiter(void 0, void 0, void 0, function () {

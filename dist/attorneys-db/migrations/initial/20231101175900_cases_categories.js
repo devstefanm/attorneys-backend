@@ -36,47 +36,39 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var authService_1 = require("../services/authService");
-var auth = {
-    login: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
-        var _a, _b, error_1;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
-                case 0:
-                    _c.trys.push([0, 2, , 3]);
-                    _b = (_a = res).json;
-                    return [4 /*yield*/, (0, authService_1.loginService)(req, res)];
+exports.down = exports.up = void 0;
+function up(knex) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, knex.schema.table('cases', function (table) {
+                        table.decimal('opposing_party_expense');
+                        table.enum('case_category', ['withdrawn', 'combined', 'obsolete', 'with_payment'], {
+                            useNative: true,
+                            enumName: 'case_categories',
+                        });
+                    })];
                 case 1:
-                    _b.apply(_a, [_c.sent()]);
-                    return [3 /*break*/, 3];
-                case 2:
-                    error_1 = _c.sent();
-                    console.error({ error: error_1.message });
-                    res.json({ error: error_1.message });
-                    return [3 /*break*/, 3];
-                case 3: return [2 /*return*/];
+                    _a.sent();
+                    return [2 /*return*/];
             }
         });
-    }); },
-    changePassword: function (req, res, _next) { return __awaiter(void 0, void 0, void 0, function () {
-        var _a, _b, error_2;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
-                case 0:
-                    _c.trys.push([0, 2, , 3]);
-                    _b = (_a = res).json;
-                    return [4 /*yield*/, (0, authService_1.changePasswordService)(req, res)];
+    });
+}
+exports.up = up;
+function down(knex) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, knex.schema.table('cases', function (table) {
+                        table.dropColumn('opposing_party_expense');
+                        table.dropColumn('case_category');
+                    })];
                 case 1:
-                    _b.apply(_a, [_c.sent()]);
-                    return [3 /*break*/, 3];
-                case 2:
-                    error_2 = _c.sent();
-                    console.error({ error: error_2.message });
-                    res.json({ error: error_2.message });
-                    return [3 /*break*/, 3];
-                case 3: return [2 /*return*/];
+                    _a.sent();
+                    return [2 /*return*/];
             }
         });
-    }); },
-};
-exports.default = auth;
+    });
+}
+exports.down = down;

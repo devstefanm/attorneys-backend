@@ -38,5 +38,7 @@ exports.HeadersRecord = {
     entering_date: 'Datum ulaska u CE',
     lawyer_hand_over_date: 'Datum predaje advokatima',
     closing_date: 'Datum zatvaranja',
+    case_category: 'Kategorija slučaja',
+    opposing_party_expense: 'Trošak protivničke strane',
     comment: 'Komentar',
 };

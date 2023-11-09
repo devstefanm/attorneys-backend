@@ -293,7 +293,7 @@ function up(knex) {
                             })
                                 .notNullable();
                             table.decimal('amount', 16, 2).notNullable();
-                            table.string('posting_method', 5).notNullable();
+                            table.string('posting_method', 5).nullable();
                             table.timestamp('payment_date').defaultTo(knex.fn.now()).notNullable();
                             table.integer('case_id').unsigned().notNullable();
                             table.foreign('case_id').references('cases.id').onDelete('CASCADE');

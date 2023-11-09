@@ -46,14 +46,14 @@ var casesTypes_1 = require("../../types/casesTypes");
 var catchErrorStack_1 = __importDefault(require("../../utils/catchErrorStack"));
 var mapApiToResponse_1 = __importDefault(require("../../utils/mapApiToResponse"));
 var editCaseService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var caseId_1, _a, first_name, last_name, jmbg_1, employed, employer_id, name, pib_1, executor_ids, business_numbers, phone_numbers, cession, address, email, zip_code, city_id, case_number, contract_number, closing_date, lawyer_id, client_id, court_id, ssn_number_id, package_id, principal, interest, status, old_payment, our_taxes, warning_price, entering_date, lawyer_hand_over_date, comment, limitation_objection, updatedCaseFields, existingCase, debtorId_1, existingPerson, updatePersonFields, otherPersonId, otherDebtorId, existingOrganization, updateOrganizationFields, otherOrganizationId, otherDebtorId, _i, executor_ids_1, executor_id, existingDebtor, updatedDebtorFields, statusId, updatedCase, apiResponse, error_1;
+    var caseId_1, _a, first_name, last_name, jmbg_1, employed, employer_id, name, pib_1, executor_ids, business_numbers, phone_numbers, cession, address, email, zip_code, city_id, case_number, contract_number, closing_date, lawyer_id, client_id, court_id, ssn_number_id, package_id, principal, interest, status, old_payment, our_taxes, warning_price, entering_date, lawyer_hand_over_date, comment, limitation_objection, case_category, opposing_party_expense, updatedCaseFields, existingCase, debtorId_1, existingPerson, updatePersonFields, otherPersonId, otherDebtorId, existingOrganization, updateOrganizationFields, otherOrganizationId, otherDebtorId, _i, executor_ids_1, executor_id, existingDebtor, updatedDebtorFields, statusId, updatedCase, apiResponse, error_1;
     var _b, _c, _d, _e, _f;
     return __generator(this, function (_g) {
         switch (_g.label) {
             case 0:
                 _g.trys.push([0, 45, , 46]);
                 caseId_1 = req.params.caseId;
-                _a = req.body, first_name = _a.first_name, last_name = _a.last_name, jmbg_1 = _a.jmbg, employed = _a.employed, employer_id = _a.employer_id, name = _a.name, pib_1 = _a.pib, executor_ids = _a.executor_ids, business_numbers = _a.business_numbers, phone_numbers = _a.phone_numbers, cession = _a.cession, address = _a.address, email = _a.email, zip_code = _a.zip_code, city_id = _a.city_id, case_number = _a.case_number, contract_number = _a.contract_number, closing_date = _a.closing_date, lawyer_id = _a.lawyer_id, client_id = _a.client_id, court_id = _a.court_id, ssn_number_id = _a.ssn_number_id, package_id = _a.package_id, principal = _a.principal, interest = _a.interest, status = _a.status, old_payment = _a.old_payment, our_taxes = _a.our_taxes, warning_price = _a.warning_price, entering_date = _a.entering_date, lawyer_hand_over_date = _a.lawyer_hand_over_date, comment = _a.comment, limitation_objection = _a.limitation_objection;
+                _a = req.body, first_name = _a.first_name, last_name = _a.last_name, jmbg_1 = _a.jmbg, employed = _a.employed, employer_id = _a.employer_id, name = _a.name, pib_1 = _a.pib, executor_ids = _a.executor_ids, business_numbers = _a.business_numbers, phone_numbers = _a.phone_numbers, cession = _a.cession, address = _a.address, email = _a.email, zip_code = _a.zip_code, city_id = _a.city_id, case_number = _a.case_number, contract_number = _a.contract_number, closing_date = _a.closing_date, lawyer_id = _a.lawyer_id, client_id = _a.client_id, court_id = _a.court_id, ssn_number_id = _a.ssn_number_id, package_id = _a.package_id, principal = _a.principal, interest = _a.interest, status = _a.status, old_payment = _a.old_payment, our_taxes = _a.our_taxes, warning_price = _a.warning_price, entering_date = _a.entering_date, lawyer_hand_over_date = _a.lawyer_hand_over_date, comment = _a.comment, limitation_objection = _a.limitation_objection, case_category = _a.case_category, opposing_party_expense = _a.opposing_party_expense;
                 updatedCaseFields = {};
                 if ((first_name === null || last_name === null) && !name) {
                     res.status(400);
@@ -84,7 +84,7 @@ var editCaseService = function (req, res) { return __awaiter(void 0, void 0, voi
                     return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.closingDateLate")];
                 }
                 return [4 /*yield*/, (0, attorneys_db_1.db)('cases as c')
-                        .select('c.case_number', 'c.contract_number', 'c.closing_date', 'c.lawyer_id', 'c.client_id', 'c.court_id', 'c.ssn_number_id', 'c.package_id', 'c.principal', 'c.interest', 'c.status_id', 'c.old_payment', 'c.our_taxes', 'c.warning_price', 'c.entering_date', 'c.lawyer_hand_over_date', 'c.comment', 'c.limitation_objection', 'c.debtor_id', 'c.state', 'd.person_id', 'd.organization_id')
+                        .select('c.case_number', 'c.contract_number', 'c.closing_date', 'c.lawyer_id', 'c.client_id', 'c.court_id', 'c.ssn_number_id', 'c.package_id', 'c.principal', 'c.interest', 'c.status_id', 'c.old_payment', 'c.our_taxes', 'c.warning_price', 'c.entering_date', 'c.lawyer_hand_over_date', 'c.comment', 'c.limitation_objection', 'c.debtor_id', 'c.state', 'c.case_category', 'c.opposing_party_expense', 'd.person_id', 'd.organization_id')
                         .where('c.id', caseId_1)
                         .leftJoin('debtors as d', 'c.debtor_id', 'd.id')
                         .first()];
@@ -428,6 +428,13 @@ var editCaseService = function (req, res) { return __awaiter(void 0, void 0, voi
                 if (limitation_objection &&
                     existingCase.limitation_objection !== limitation_objection) {
                     updatedCaseFields.limitation_objection = limitation_objection;
+                }
+                if (case_category && existingCase.case_category !== case_category) {
+                    updatedCaseFields.case_category = case_category;
+                }
+                if (opposing_party_expense &&
+                    existingCase.opposing_party_expense !== opposing_party_expense) {
+                    updatedCaseFields.opposing_party_expense = opposing_party_expense;
                 }
                 if (!(Object.keys(updatedCaseFields).length > 0)) return [3 /*break*/, 43];
                 // Update the case with the new data

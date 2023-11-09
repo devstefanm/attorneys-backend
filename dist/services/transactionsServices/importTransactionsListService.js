@@ -46,24 +46,24 @@ var transactionsHelpers_1 = require("../helpers/transactionsHelpers");
 var attorneys_db_1 = require("../../attorneys-db");
 var catchErrorStack_1 = __importDefault(require("../../utils/catchErrorStack"));
 var importTransactionsListService = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var uploadedFile, fileExtension, transactions_2, workbook, worksheet, headerRow, reversedHeaders_1, csvBuffer, headers_1, newTransactionIds, _i, transactions_1, transaction, amount, case_id, payment_date, posting_method, type, case_number, caseId, parts, newTransactionId, error_1;
-    var _a;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
+    var uploadedFile, fileExtension, transactions_3, workbook, worksheet, headerRow, reversedHeaders_1, csvBuffer, headers_1, validationErrors, newTransactionIds, _i, transactions_1, transaction, amount, payment_date, type, case_number, caseId, parts, _a, transactions_2, transaction, amount, case_id, payment_date, posting_method, type, case_number, caseId, newTransactionId, error_1;
+    var _b, _c, _d;
+    return __generator(this, function (_e) {
+        switch (_e.label) {
             case 0:
-                _b.trys.push([0, 9, , 10]);
+                _e.trys.push([0, 13, , 14]);
                 if (!req.file) {
                     res.status(400);
                     return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.noFile")];
                 }
                 uploadedFile = req.file;
                 fileExtension = uploadedFile.originalname.split('.').pop();
-                transactions_2 = [];
+                transactions_3 = [];
                 if (!(fileExtension === 'xlsx')) return [3 /*break*/, 2];
                 workbook = new exceljs_1.default.Workbook();
                 return [4 /*yield*/, workbook.xlsx.load(uploadedFile.buffer)];
             case 1:
-                _b.sent();
+                _e.sent();
                 worksheet = workbook.worksheets[0];
                 headerRow = worksheet.getRow(1).values;
                 reversedHeaders_1 = (0, transactionsHelpers_1.reverseHeaderMapping)(headerRow);
@@ -82,7 +82,7 @@ var importTransactionsListService = function (req, res) { return __awaiter(void 
                             rowDataObject_1.amount = parseFloat((_a = rowDataObject_1.amount) === null || _a === void 0 ? void 0 : _a.replace(',', ''));
                         }
                         rowDataObject_1.type = (0, transactionsHelpers_1.transformTransactionType)(rowDataObject_1.type);
-                        transactions_2.push(rowDataObject_1);
+                        transactions_3.push(rowDataObject_1);
                     }
                 });
                 return [3 /*break*/, 3];
@@ -121,47 +121,70 @@ var importTransactionsListService = function (req, res) { return __awaiter(void 
                             }
                             rowDataObject_2.type = (0, transactionsHelpers_1.transformTransactionType)(rowDataObject_2.type);
                             if (!skipRow_1) {
-                                transactions_2.push(rowDataObject_2);
+                                transactions_3.push(rowDataObject_2);
                             }
                         }
                     });
                 }
-                _b.label = 3;
+                _e.label = 3;
             case 3:
+                validationErrors = [];
                 newTransactionIds = [];
-                _i = 0, transactions_1 = transactions_2;
-                _b.label = 4;
+                _i = 0, transactions_1 = transactions_3;
+                _e.label = 4;
             case 4:
-                if (!(_i < transactions_1.length)) return [3 /*break*/, 8];
+                if (!(_i < transactions_1.length)) return [3 /*break*/, 7];
                 transaction = transactions_1[_i];
-                amount = transaction.amount, case_id = transaction.case_id, payment_date = transaction.payment_date, posting_method = transaction.posting_method, type = transaction.type, case_number = transaction.case_number;
+                amount = transaction.amount, payment_date = transaction.payment_date, type = transaction.type, case_number = transaction.case_number;
+                if (!case_number) {
+                    validationErrors.push("entities.amount->".concat(amount, "->errors.errors.noCaseNumber"));
+                }
                 if (!amount) {
-                    res.status(400);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.noAmount")];
+                    validationErrors.push("entities.caseNumber->".concat(case_number, "->errors.noAmount"));
                 }
                 if (!type) {
-                    res.status(400);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.noType")];
+                    validationErrors.push("entities.caseNumber->".concat(case_number, "->errors.noType"));
                 }
-                if (!case_number) {
-                    res.status(400);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.noCaseNumber")];
+                if (type &&
+                    !['payment', 'fee', 'legal_fee', 'withdrawal'].includes(type)) {
+                    validationErrors.push("entities.caseNumber->".concat(case_number, "->errors.wrongType"));
                 }
                 if (!payment_date) {
-                    res.status(400);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, "errors.noPaymentDate")];
+                    validationErrors.push("entities.caseNumber->".concat(case_number, "->errors.noPaymentDate"));
                 }
                 return [4 /*yield*/, (0, attorneys_db_1.db)('cases').select('id').where('case_number', case_number).first()];
             case 5:
-                caseId = (_a = (_b.sent())) === null || _a === void 0 ? void 0 : _a.id;
+                caseId = (_b = (_e.sent())) === null || _b === void 0 ? void 0 : _b.id;
                 if (!caseId) {
-                    res.status(404);
-                    return [2 /*return*/, (0, mapApiToResponse_1.default)(404, "errors.caseNumberWithoutCase")];
+                    validationErrors.push("entities.caseNumber->".concat(case_number, "->errors.caseNumberWithoutCase"));
                 }
                 if (typeof payment_date === 'string') {
                     parts = payment_date.split('.');
-                    payment_date = new Date("".concat(parts[2], "-").concat(parts[1], "-").concat(parts[0]));
+                    if (parts.length === 3) {
+                        payment_date = new Date("".concat(parts[2], "-").concat(parts[1], "-").concat(parts[0]));
+                    }
+                    else {
+                        validationErrors.push("entities.caseNumber->".concat(case_number, "->errors.paymentDateWrongFormat"));
+                    }
                 }
+                _e.label = 6;
+            case 6:
+                _i++;
+                return [3 /*break*/, 4];
+            case 7:
+                if (validationErrors.length > 0) {
+                    res.status(400);
+                    return [2 /*return*/, (0, mapApiToResponse_1.default)(400, validationErrors)];
+                }
+                _a = 0, transactions_2 = transactions_3;
+                _e.label = 8;
+            case 8:
+                if (!(_a < transactions_2.length)) return [3 /*break*/, 12];
+                transaction = transactions_2[_a];
+                amount = transaction.amount, case_id = transaction.case_id, payment_date = transaction.payment_date, posting_method = transaction.posting_method, type = transaction.type, case_number = transaction.case_number;
+                return [4 /*yield*/, (0, attorneys_db_1.db)('cases').select('id').where('case_number', case_number).first()];
+            case 9:
+                caseId = (_c = (_e.sent())) === null || _c === void 0 ? void 0 : _c.id;
                 case_id = caseId;
                 return [4 /*yield*/, (0, attorneys_db_1.db)('transactions')
                         .insert({
@@ -172,20 +195,20 @@ var importTransactionsListService = function (req, res) { return __awaiter(void 
                         posting_method: posting_method,
                     })
                         .returning('id')];
-            case 6:
-                newTransactionId = (_b.sent())[0].id;
+            case 10:
+                newTransactionId = (_d = (_e.sent())[0]) === null || _d === void 0 ? void 0 : _d.id;
                 newTransactionIds.push(newTransactionId);
-                _b.label = 7;
-            case 7:
-                _i++;
-                return [3 /*break*/, 4];
-            case 8:
+                _e.label = 11;
+            case 11:
+                _a++;
+                return [3 /*break*/, 8];
+            case 12:
                 res.status(200);
                 return [2 /*return*/, (0, mapApiToResponse_1.default)(200, "messages.fileImportSuccess", newTransactionIds.length)];
-            case 9:
-                error_1 = _b.sent();
+            case 13:
+                error_1 = _e.sent();
                 return [2 /*return*/, (0, catchErrorStack_1.default)(res, error_1)];
-            case 10: return [2 /*return*/];
+            case 14: return [2 /*return*/];
         }
     });
 }); };
